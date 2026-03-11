@@ -20,17 +20,15 @@ export function ReturnList({ withdrawnItems }: ReturnListProps) {
       {withdrawnItems.map((item) => (
         <li
           key={item.session_item_id || item.item_id}
-          className="flex items-center justify-between rounded-lg border border-amber-100 bg-amber-50 px-4 py-3"
+          className="flex items-center justify-between gap-3 rounded-lg border border-amber-100 bg-amber-50 px-4 py-3"
         >
-          <span className="truncate text-sm text-gray-800">
-            {item.name}
-            {item.unit && (
-              <span className="ml-1.5 text-[11px] text-gray-400">
-                {item.unit}
-              </span>
-            )}
-          </span>
-          <div className="ml-3 flex shrink-0 items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm text-gray-800">{item.name}</p>
+            <span className="mt-0.5 inline-block rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 uppercase">
+              {item.category}
+            </span>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
             <span className="text-sm font-semibold text-amber-700 tabular-nums">
               {item.quantity}
             </span>

@@ -18,8 +18,8 @@ export default async function CabinetsPage() {
     <div className="min-h-screen bg-gray-50">
       <AppNav userEmail={user.email} />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        <div className="mb-8">
+      <main className="pb-8">
+        <div className="mx-auto max-w-7xl px-4 pt-8 pb-5 sm:px-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Gabinetes
           </h1>
@@ -30,7 +30,9 @@ export default async function CabinetsPage() {
           </p>
         </div>
 
-        <CabinetGrid initialCabinets={cabinets} userId={user.id} />
+        <div className="mx-auto max-w-7xl">
+          <CabinetGrid initialCabinets={cabinets} userId={user.id} />
+        </div>
       </main>
     </div>
   )

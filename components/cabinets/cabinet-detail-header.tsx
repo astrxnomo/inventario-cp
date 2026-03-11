@@ -1,23 +1,9 @@
-import { Badge } from "@/components/ui/badge"
-import {
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
-import { STATUS_CONFIG } from "@/lib/constants/cabinet-status"
-import type { Cabinet } from "@/lib/types/cabinets"
-import { cn } from "@/lib/utils"
+import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { Cabinet } from "@/lib/types/cabinets"
+
 import { Archive, Users } from "lucide-react"
 
-interface CabinetDetailHeaderProps {
-  cabinet: Cabinet
-  isReturning: boolean
-}
-
-export function CabinetDetailHeader({
-  cabinet,
-  isReturning,
-}: CabinetDetailHeaderProps) {
+export function CabinetDetailHeader({ cabinet }: { cabinet: Cabinet }) {
   return (
     <DrawerHeader className="shrink-0 border-b border-gray-100 px-5 pt-4 pb-3 text-left">
       <div className="flex items-start justify-between gap-3">
@@ -25,21 +11,7 @@ export function CabinetDetailHeader({
           <DrawerTitle className="text-base leading-tight font-semibold text-gray-900">
             {cabinet.name}
           </DrawerTitle>
-          <DrawerDescription className="mt-0.5 text-sm text-gray-500">
-            {isReturning
-              ? "Sesión abierta — confirma la devolución"
-              : (cabinet.location ?? "Selecciona los artículos a retirar")}
-          </DrawerDescription>
         </div>
-        <Badge
-          variant="outline"
-          className={cn(
-            "mt-0.5 shrink-0 border text-[11px] font-medium",
-            STATUS_CONFIG[cabinet.status].badgeClass,
-          )}
-        >
-          {STATUS_CONFIG[cabinet.status].label}
-        </Badge>
       </div>
 
       <div className="mt-3 flex items-center gap-4">

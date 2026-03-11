@@ -32,14 +32,16 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
 
   if (cabinets.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50">
-          <span className="text-3xl">🗄️</span>
+      <div className="px-4 sm:px-6">
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50">
+            <span className="text-3xl">🗄️</span>
+          </div>
+          <p className="text-sm text-gray-500">No hay gabinetes registrados.</p>
+          <p className="mt-1 text-xs text-gray-400">
+            Pide a un administrador que agregue gabinetes.
+          </p>
         </div>
-        <p className="text-sm text-gray-500">No hay gabinetes registrados.</p>
-        <p className="mt-1 text-xs text-gray-400">
-          Pide a un administrador que agregue gabinetes.
-        </p>
       </div>
     )
   }
@@ -64,7 +66,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {cabinets.map((cabinet) => (
           <CabinetCard
             key={cabinet.id}

@@ -1,6 +1,6 @@
 import type { InventoryItem, Selections } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
-import { AlertTriangle, Minus, Package, Plus } from "lucide-react"
+import { Minus, Package, Plus } from "lucide-react"
 
 interface BrowseListProps {
   items: InventoryItem[]
@@ -21,7 +21,6 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
   return (
     <ul className="space-y-2">
       {items.map((item) => {
-        const isLow = item.quantity <= item.min_quantity
         const qty = selections[item.id] ?? 0
         const outOfStock = item.quantity === 0
 
@@ -38,33 +37,28 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
             )}
           >
             {/* Left: name + stock info */}
-            <div className="mr-3 min-w-0 flex-1">
-              <div className="flex min-w-0 items-center gap-1.5">
-                {isLow && !outOfStock && (
-                  <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
-                )}
-                <span className="truncate text-sm text-gray-800">
-                  {item.name}
-                </span>
-                {item.unit && (
-                  <span className="shrink-0 text-[11px] text-gray-400">
-                    {item.unit}
-                  </span>
-                )}
-              </div>
-              <span
-                className={cn(
-                  "text-[11px] tabular-nums",
-                  isLow ? "text-amber-600" : "text-gray-400",
-                )}
-              >
-                {item.quantity} disponible{item.quantity !== 1 ? "s" : ""}
-                {item.in_use > 0 && (
-                  <span className="ml-1.5 text-orange-400">
-                    · {item.in_use} en uso
-                  </span>
-                )}
+            <div className="mr-3 min-w-0 flex-1 space-y-1">
+              <span className="block truncate text-sm font-medium text-gray-800">
+                {item.name}
               </span>
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={cn(
+                    "text-[11px] tabular-nums",
+                    outOfStock ? "text-amber-600" : "text-gray-400",
+                  )}
+                >
+                  {item.quantity} disponible{item.quantity !== 1 ? "s" : ""}
+                  {item.in_use > 0 && (
+                    <span className="ml-1.5 text-orange-400">
+                      · {item.in_use} en uso
+                    </span>
+                  )}
+                </span>
+                <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 uppercase">
+                  {item.category}
+                </span>
+              </div>
             </div>
 
             {/* Right: stepper */}

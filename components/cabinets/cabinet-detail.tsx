@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Drawer, DrawerContent, DrawerFooter } from "@/components/ui/drawer"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { returnCabinetItems } from "@/lib/actions/cabinets/return"
 import { withdrawCabinetItems } from "@/lib/actions/cabinets/withdraw"
@@ -102,7 +101,7 @@ export function CabinetDetail({
           session_item_id: "",
           item_id: item.id,
           name: item.name,
-          unit: item.unit,
+          category: item.category,
           quantity: selections[item.id],
         })),
     )
@@ -144,7 +143,7 @@ export function CabinetDetail({
       <DrawerContent className="flex max-h-[92vh] flex-col">
         {cabinet && (
           <>
-            <CabinetDetailHeader cabinet={cabinet} isReturning={isReturning} />
+            <CabinetDetailHeader cabinet={cabinet} />
 
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="flex shrink-0 items-center gap-2 px-5 py-2.5">
@@ -161,7 +160,7 @@ export function CabinetDetail({
               </div>
               <Separator className="shrink-0 bg-gray-100" />
 
-              <ScrollArea className="flex-1 px-5 py-3">
+              <div className="flex-1 overflow-y-auto px-5 py-3">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="h-5 w-5 animate-spin text-gray-300" />
@@ -175,7 +174,7 @@ export function CabinetDetail({
                     setQty={setQty}
                   />
                 )}
-              </ScrollArea>
+              </div>
             </div>
 
             <DrawerFooter className="shrink-0 border-t border-gray-100 px-5 pt-2 pb-6">

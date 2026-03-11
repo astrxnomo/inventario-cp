@@ -9,7 +9,9 @@ export async function fetchInventoryItems(
   const [{ data: rawItems, error }, { data: sessions }] = await Promise.all([
     supabase
       .from("inventory_items")
-      .select("*")
+      .select(
+        "id, cabinet_id, category_id, name, quantity, created_at, updated_at, inventory_categories(name)",
+      )
       .eq("cabinet_id", cabinetId)
       .order("name"),
     supabase
@@ -36,9 +38,27 @@ export async function fetchInventoryItems(
     }
   }
 
+  type JoinedInventoryItem = {
+    id: string
+    cabinet_id: string
+    category_id: string
+    name: string
+    quantity: number
+    created_at: string
+    updated_at: string
+    inventory_categories: { name: string } | null
+  }
+
   return {
-    data: (rawItems ?? []).map((item) => ({
-      ...item,
+    data: ((rawItems ?? []) as JoinedInventoryItem[]).map((item) => ({
+      id: item.id,
+      cabinet_id: item.cabinet_id,
+      category_id: item.category_id,
+      name: item.name,
+      quantity: item.quantity,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+      category: item.inventory_categories?.name ?? "Sin categoría",
       in_use: inUseMap[item.id] ?? 0,
     })),
     error: null,

@@ -15,7 +15,10 @@ export type Cabinet = CabinetRow & {
 }
 
 // Enriched with computed in-use count (items currently checked out across open sessions)
-export type InventoryItem = InventoryItemRow & { in_use: number }
+export type InventoryItem = InventoryItemRow & {
+  category: string
+  in_use: number
+}
 
 // ─── Detail drawer state machine ──────────────────────────────────────────────
 export type Mode = "loading" | "browse" | "returning"
@@ -26,7 +29,7 @@ export interface WithdrawnItem {
   session_item_id: string
   item_id: string
   name: string
-  unit: string | null
+  category: string
   quantity: number
 }
 

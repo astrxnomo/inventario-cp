@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/client"
 import type {
-  ActionResult,
-  InventoryItem,
-  WithdrawnItem,
+    ActionResult,
+    InventoryItem,
+    WithdrawnItem,
 } from "@/lib/types/cabinets"
 import { fetchInventoryItems } from "./get-inventory-items"
 
@@ -29,7 +29,7 @@ export async function fetchCabinetDetailState(
   if (session) {
     const { data: sessionItems, error } = await supabase
       .from("session_items")
-      .select("id, item_id, quantity, inventory_items(name, unit)")
+      .select("id, item_id, quantity, inventory_items(name, inventory_categories(name))")
       .eq("session_id", session.id)
       .eq("action", "withdrawn")
 
@@ -39,7 +39,10 @@ export async function fetchCabinetDetailState(
       id: string
       item_id: string
       quantity: number
-      inventory_items: { name: string; unit: string | null } | null
+      inventory_items: {
+        name: string
+        inventory_categories: { name: string } | null
+      } | null
     }
 
     const withdrawnItems: WithdrawnItem[] = (
@@ -48,7 +51,7 @@ export async function fetchCabinetDetailState(
       session_item_id: si.id,
       item_id: si.item_id,
       name: si.inventory_items?.name ?? "",
-      unit: si.inventory_items?.unit ?? null,
+      category: si.inventory_items?.inventory_categories?.name ?? "Sin categoría",
       quantity: si.quantity,
     }))
 

@@ -92,6 +92,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_open: boolean
           location: string | null
           name: string
           status: Database["public"]["Enums"]["cabinet_status"]
@@ -101,6 +102,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_open?: boolean
           location?: string | null
           name: string
           status?: Database["public"]["Enums"]["cabinet_status"]
@@ -110,6 +112,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_open?: boolean
           location?: string | null
           name?: string
           status?: Database["public"]["Enums"]["cabinet_status"]
@@ -117,35 +120,53 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           cabinet_id: string
+          category_id: string
           created_at: string
           id: string
-          min_quantity: number
           name: string
           quantity: number
-          unit: string | null
           updated_at: string
         }
         Insert: {
           cabinet_id: string
+          category_id: string
           created_at?: string
           id?: string
-          min_quantity?: number
           name: string
           quantity?: number
-          unit?: string | null
           updated_at?: string
         }
         Update: {
           cabinet_id?: string
+          category_id?: string
           created_at?: string
           id?: string
-          min_quantity?: number
           name?: string
           quantity?: number
-          unit?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -154,6 +175,13 @@ export type Database = {
             columns: ["cabinet_id"]
             isOneToOne: false
             referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -230,6 +258,14 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      return_items: {
+        Args: { p_session_id: string; p_user_id: string }
+        Returns: undefined
+      }
+      withdraw_items: {
+        Args: { p_cabinet_id: string; p_items: Json; p_user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       access_action:
