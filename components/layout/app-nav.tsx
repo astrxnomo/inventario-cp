@@ -1,12 +1,7 @@
 import { LayoutGrid } from "lucide-react"
 import { UserMenu } from "./user-menu"
 
-interface AppNavProps {
-  userEmail: string | undefined
-  userName?: string | null
-}
-
-export function AppNav({ userEmail, userName }: AppNavProps) {
+export function AppNav({ userEmail }: { userEmail?: string }) {
   return (
     <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -19,7 +14,7 @@ export function AppNav({ userEmail, userName }: AppNavProps) {
           </span>
         </div>
 
-        <UserMenu userEmail={userEmail} userName={userName} />
+        <UserMenu userEmail={userEmail} />
       </div>
     </header>
   )

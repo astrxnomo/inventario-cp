@@ -12,18 +12,11 @@ export default async function CabinetsPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
-  const [cabinets, profileRes] = await Promise.all([
-    getCabinetsWithCounts(supabase),
-    supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("id", user.id)
-      .maybeSingle(),
-  ])
+  const cabinets = await getCabinetsWithCounts(supabase)
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AppNav userEmail={user.email} userName={profileRes.data?.full_name} />
+      <AppNav userEmail={user.email} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-8">
