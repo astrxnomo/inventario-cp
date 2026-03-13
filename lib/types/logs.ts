@@ -1,12 +1,3 @@
-// ─── Admin user list ─────────────────────────────────────────────────────────
-export interface AdminUser {
-  id: string
-  email: string
-  full_name: string | null
-  role: string
-  created_at: string
-}
-
 // ─── Log entries ──────────────────────────────────────────────────────────────
 export interface AccessLogEntry {
   id: string

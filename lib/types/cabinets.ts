@@ -12,6 +12,7 @@ export type Cabinet = CabinetRow & {
     inventory_items: number
     active_sessions: number
   }
+  item_names: string[]
 }
 
 // Enriched with computed in-use count (items currently checked out across open sessions)
@@ -55,3 +56,39 @@ export interface ReturnSingleItemPayload {
 export type ActionResult<T> =
   | { data: T; error: null }
   | { data: null; error: string }
+
+// ─── User session history ─────────────────────────────────────────────────────
+export interface HistorySessionItem {
+  name: string
+  quantity: number
+  action: "withdrawn" | "returned"
+}
+
+export interface HistorySession {
+  id: string
+  cabinet_name: string
+  opened_at: string
+  closed_at: string | null
+  notes: string | null
+  items: HistorySessionItem[]
+}
+
+// ─── Cabinet management (admin) ───────────────────────────────────────────────
+export interface CabinetAdmin {
+  id: string
+  name: string
+  description: string | null
+  location: string | null
+  status: "available" | "in_use" | "locked"
+  is_open: boolean
+  item_count: number
+  created_at: string
+}
+
+export interface CabinetItemAdmin {
+  id: string
+  name: string
+  quantity: number
+  category_id: string
+  category_name: string
+}
