@@ -28,3 +28,12 @@ export const returnSingleItemSchema = z.object({
 export type WithdrawInput = z.infer<typeof withdrawSchema>
 export type ReturnInput = z.infer<typeof returnSchema>
 export type ReturnSingleItemInput = z.infer<typeof returnSingleItemSchema>
+
+// ─── Cabinet CRUD (admin) ─────────────────────────────────────────────────────
+export const cabinetSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido"),
+  description: z.string().optional(),
+  location: z.string().optional(),
+})
+
+export type CabinetInput = z.infer<typeof cabinetSchema>

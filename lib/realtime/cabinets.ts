@@ -23,8 +23,8 @@ export interface CabinetsGridCallbacks {
   onCabinetDelete: (id: string) => void
   /** Cabinet session opened (+1) or closed (-1) — update that cabinet's count inline */
   onSessionChanged: (cabinetId: string, delta: 1 | -1) => void
-  onInventoryInsert: (cabinetId: string) => void
-  onInventoryDelete: (cabinetId: string) => void
+  onInventoryInsert: (cabinetId: string, itemName: string) => void
+  onInventoryDelete: (cabinetId: string, itemName: string) => void
   onConnected: (connected: boolean) => void
 }
 
@@ -49,10 +49,11 @@ export function subscribeCabinetsGrid(
         if (payload.table === "cabinets") {
           callbacks.onCabinetInsert(payload.record as unknown as CabinetRow)
         } else if (payload.table === "inventory_items") {
-          callbacks.onInventoryInsert(
-            (payload.record as unknown as Pick<InventoryItemRow, "cabinet_id">)
-              .cabinet_id,
-          )
+          const row = payload.record as unknown as Pick<
+            InventoryItemRow,
+            "cabinet_id" | "name"
+          >
+          callbacks.onInventoryInsert(row.cabinet_id, row.name)
         } else if (payload.table === "cabinet_sessions") {
           const cabinetId = (payload.record as { cabinet_id: string })
             .cabinet_id
@@ -81,9 +82,10 @@ export function subscribeCabinetsGrid(
         if (payload.table === "cabinets") {
           callbacks.onCabinetDelete((payload.old_record as { id: string }).id)
         } else if (payload.table === "inventory_items") {
-          // cabinet_id is available from the trigger's OLD record (no replica identity needed)
+          // cabinet_id and name are available from the trigger's OLD record (no replica identity needed)
           const old = payload.old_record as Partial<InventoryItemRow>
-          if (old.cabinet_id) callbacks.onInventoryDelete(old.cabinet_id)
+          if (old.cabinet_id)
+            callbacks.onInventoryDelete(old.cabinet_id, old.name ?? "")
         } else if (payload.table === "cabinet_sessions") {
           const cabinetId = (payload.old_record as { cabinet_id: string })
             .cabinet_id
