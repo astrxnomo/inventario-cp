@@ -1,5 +1,5 @@
-import type { AdminUser } from "@/lib/types/users"
 import type { Database } from "@/lib/supabase/types"
+import type { AdminUser } from "@/lib/types/users"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type { AdminUser }
