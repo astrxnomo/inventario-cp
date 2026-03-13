@@ -1,30 +1,27 @@
-import { LogsView } from "@/components/admin/logs-view"
+import { DashboardKpis } from "@/components/admin/dashboard-kpis"
 import { RefreshButton } from "@/components/ui/refresh-button"
-import { getAccessLogs, getSessionsWithItems } from "@/lib/data/logs/get-logs"
+import { getDashboardKpis } from "@/lib/data/dashboard/get-dashboard"
 import { createClient } from "@/lib/supabase/server"
 
-export default async function AdminLogsPage() {
+export default async function AdminDashboardPage() {
   const supabase = await createClient()
-  const [sessions, accessLogs] = await Promise.all([
-    getSessionsWithItems(supabase),
-    getAccessLogs(supabase),
-  ])
+  const kpis = await getDashboardKpis(supabase)
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Actividad
+            Dashboard
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Últimas 100 sesiones · ordenadas por fecha descendente
+            Resumen general del sistema
           </p>
         </div>
         <RefreshButton />
       </div>
 
-      <LogsView sessions={sessions} accessLogs={accessLogs} />
+      <DashboardKpis kpis={kpis} />
     </main>
   )
 }

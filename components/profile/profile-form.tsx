@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -10,12 +9,12 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { updateProfileAction } from "@/lib/actions/auth/update-profile"
-import { updatePasswordAction } from "@/lib/actions/auth/update-password"
+import { SubmitButton } from "@/components/ui/submit-button"
 import type { AuthState } from "@/lib/actions/auth/shared"
+import { updatePasswordAction } from "@/lib/actions/auth/update-password"
+import { updateProfileAction } from "@/lib/actions/auth/update-profile"
 import { CheckCircle2 } from "lucide-react"
 import { useActionState } from "react"
-import { SubmitButton } from "@/components/ui/submit-button"
 
 const initialState: AuthState = {}
 

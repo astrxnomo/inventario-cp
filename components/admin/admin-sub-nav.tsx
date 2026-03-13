@@ -1,21 +1,25 @@
 "use client"
 
+import { ActivitySquare, LayoutDashboard, Package, Users } from "lucide-react"
 import Link from "next/link"
-
-import { ActivitySquare, Users } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 const tabs = [
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/users", label: "Usuarios", icon: Users },
-  { href: "/admin/logs", label: "Logs de actividad", icon: ActivitySquare },
+  { href: "/admin/cabinets", label: "Gabinetes", icon: Package },
+  { href: "/admin/logs", label: "Logs", icon: ActivitySquare },
 ]
 
-export function AdminSubNav({ active }: { active: "users" | "logs" }) {
+export function AdminSubNav() {
+  const pathname = usePathname()
+
   return (
     <div className="border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <nav className="-mb-px flex gap-1">
           {tabs.map((tab) => {
-            const isActive = tab.href.includes(active)
+            const isActive = pathname.startsWith(tab.href)
             const Icon = tab.icon
             return (
               <Link
