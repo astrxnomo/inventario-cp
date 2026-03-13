@@ -8,7 +8,11 @@ interface ReturnListProps {
   returningItemId?: string | null
 }
 
-export function ReturnList({ withdrawnItems, onReturnItem, returningItemId }: ReturnListProps) {
+export function ReturnList({
+  withdrawnItems,
+  onReturnItem,
+  returningItemId,
+}: ReturnListProps) {
   if (withdrawnItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">

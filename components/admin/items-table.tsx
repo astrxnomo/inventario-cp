@@ -1,15 +1,7 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -18,8 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { authorizeUser, changeUserRole } from "@/lib/actions/users/manage"
-import type { AdminUser } from "@/lib/types/users"
+import { deleteItem } from "@/lib/actions/items/manage"
+import type { CabinetItemAdmin } from "@/lib/types/cabinets"
+import type { Category } from "@/lib/types/categories"
 import {
   flexRender,
   getCoreRowModel,
@@ -29,82 +22,44 @@ import {
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
-  type FilterFn,
   type SortingState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, CheckCircle, Loader2 } from "lucide-react"
+import { ArrowUpDown, Loader2, Trash2 } from "lucide-react"
 import * as React from "react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
+import { ItemFormDialog } from "./item-form-dialog"
 
-const ROLE_LABELS: Record<string, string> = {
-  pending: "Pendiente",
-  user: "Usuario",
-  admin: "Administrador",
-  root: "Root",
+interface Props {
+  cabinetId: string
+  items: CabinetItemAdmin[]
+  categories: Category[]
 }
 
-const ROLE_BADGE_VARIANT: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  pending: "outline",
-  user: "secondary",
-  admin: "default",
-  root: "destructive",
-}
-
-// Global filter: match name or email
-const globalFilterFn: FilterFn<AdminUser> = (
-  row,
-  _columnId,
-  filterValue: string,
-) => {
-  const search = filterValue.toLowerCase()
-  const name = (row.original.full_name ?? "").toLowerCase()
-  const email = row.original.email.toLowerCase()
-  return name.includes(search) || email.includes(search)
-}
-
-interface UsersTableProps {
-  users: AdminUser[]
-  callerRole: string
-}
-
-export function UsersTable({ users, callerRole }: UsersTableProps) {
-  const isRoot = callerRole === "root"
+export function ItemsTable({ cabinetId, items, categories }: Props) {
   const [isPending, startTransition] = useTransition()
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   )
-  const [globalFilter, setGlobalFilter] = React.useState("")
 
-  function handleAuthorize(userId: string) {
-    setLoadingId(userId)
+  function handleDelete(id: string) {
+    setLoadingId(id)
     startTransition(async () => {
-      const result = await authorizeUser(userId)
+      const result = await deleteItem(id)
       setLoadingId(null)
+      setDeleteConfirmId(null)
       if (result.error) toast.error(result.error)
-      else toast.success("Usuario autorizado correctamente")
+      else toast.success("Artículo eliminado")
     })
   }
 
-  function handleChangeRole(userId: string, newRole: string) {
-    setLoadingId(userId)
-    startTransition(async () => {
-      const result = await changeUserRole(userId, newRole)
-      setLoadingId(null)
-      if (result.error) toast.error(result.error)
-      else toast.success("Rol actualizado correctamente")
-    })
-  }
-
-  const columns: ColumnDef<AdminUser>[] = [
+  const columns: ColumnDef<CabinetItemAdmin>[] = [
     {
-      accessorKey: "full_name",
+      accessorKey: "name",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -115,95 +70,80 @@ export function UsersTable({ users, callerRole }: UsersTableProps) {
           <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
         </Button>
       ),
-      cell: ({ row }) =>
-        row.original.full_name ? (
-          <span className="font-medium">{row.original.full_name}</span>
-        ) : (
-          <span className="text-muted-foreground italic">Sin nombre</span>
-        ),
+      cell: ({ row }) => (
+        <span className="font-medium">{row.original.name}</span>
+      ),
     },
     {
-      accessorKey: "email",
+      accessorKey: "category_name",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-3"
         >
-          Email
+          Categoría
           <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
         </Button>
       ),
       cell: ({ row }) => (
-        <span className="text-muted-foreground">{row.original.email}</span>
+        <span className="text-muted-foreground">
+          {row.original.category_name}
+        </span>
       ),
     },
     {
-      accessorKey: "role",
-      header: "Rol",
-      cell: ({ row }) => (
-        <Badge variant={ROLE_BADGE_VARIANT[row.original.role] ?? "outline"}>
-          {ROLE_LABELS[row.original.role] ?? row.original.role}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "created_at",
+      accessorKey: "quantity",
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-3"
         >
-          Registrado
+          Cantidad
           <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
         </Button>
       ),
-      cell: ({ row }) =>
-        new Date(row.original.created_at).toLocaleDateString("es-MX", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">{row.original.quantity}</span>
+      ),
     },
     {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const user = row.original
-        const isLoading = loadingId === user.id && isPending
+        const item = row.original
+        const isLoading = loadingId === item.id && isPending
+        const isConfirm = deleteConfirmId === item.id
 
         return (
-          <div className="flex items-center justify-end gap-2">
-            {user.role === "pending" && (
+          <div className="flex items-center justify-end gap-1.5">
+            <ItemFormDialog
+              cabinetId={cabinetId}
+              categories={categories}
+              item={item}
+            />
+            {isConfirm ? (
               <Button
                 size="sm"
+                variant="destructive"
                 disabled={isLoading}
-                onClick={() => handleAuthorize(user.id)}
+                onClick={() => handleDelete(item.id)}
               >
                 {isLoading ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <CheckCircle className="mr-1 h-3.5 w-3.5" />
+                  "¿Confirmar?"
                 )}
-                Autorizar
               </Button>
-            )}
-            {isRoot && user.role !== "root" && (
-              <Select
-                defaultValue={user.role}
-                disabled={isLoading}
-                onValueChange={(val) => handleChangeRole(user.id, val)}
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setDeleteConfirmId(item.id)}
               >
-                <SelectTrigger className="h-8 w-36">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pendiente</SelectItem>
-                  <SelectItem value="user">Usuario</SelectItem>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
+                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+              </Button>
             )}
           </div>
         )
@@ -212,28 +152,33 @@ export function UsersTable({ users, callerRole }: UsersTableProps) {
   ]
 
   const table = useReactTable({
-    data: users,
+    data: items,
     columns,
-    globalFilterFn,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { sorting, columnFilters, globalFilter },
+    state: { sorting, columnFilters },
   })
 
   return (
     <div className="space-y-4">
       {/* toolbar */}
-      <Input
-        placeholder="Buscar por nombre o email..."
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-        className="max-w-sm"
-      />
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder="Buscar artículos..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(e) =>
+            table.getColumn("name")?.setFilterValue(e.target.value)
+          }
+          className="max-w-xs"
+        />
+        <div className="ml-auto">
+          <ItemFormDialog cabinetId={cabinetId} categories={categories} />
+        </div>
+      </div>
 
       {/* table */}
       <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
@@ -274,7 +219,9 @@ export function UsersTable({ users, callerRole }: UsersTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No hay usuarios registrados.
+                  {items.length === 0
+                    ? "Este gabinete no tiene artículos aún."
+                    : "Sin resultados para la búsqueda."}
                 </TableCell>
               </TableRow>
             )}

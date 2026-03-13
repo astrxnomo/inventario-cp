@@ -10,7 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { signOut } from "@/lib/actions/auth/sign-out"
-import { LogOut, User } from "lucide-react"
+import { Clock, LogOut, Settings, User } from "lucide-react"
+import Link from "next/link"
 import { Button } from "../ui/button"
 
 const ROLE_LABELS: Record<string, string> = {
@@ -45,14 +46,6 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
         <Button className="flex items-center gap-1.5">
           <User className="h-4 w-4" />
           <span>{displayName}</span>
-          {userRole && userRole !== "user" && (
-            <Badge
-              variant={ROLE_BADGE_VARIANT[userRole] ?? "outline"}
-              className="ml-0.5 px-1.5 py-0 text-[10px]"
-            >
-              {ROLE_LABELS[userRole] ?? userRole}
-            </Badge>
-          )}
         </Button>
       </DropdownMenuTrigger>
 
@@ -84,6 +77,22 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
             </div>
           </div>
         </DropdownMenuLabel>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/profile" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Mi perfil
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/history" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Mi historial
+          </Link>
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 

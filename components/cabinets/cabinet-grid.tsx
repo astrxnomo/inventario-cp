@@ -1,10 +1,11 @@
 "use client"
 
+import { Input } from "@/components/ui/input"
 import { useCabinets } from "@/hooks/use-cabinets"
-import type { Cabinet } from "@/lib/types/cabinets"
+import type { Cabinet, CabinetStatus } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
 import { Wifi, WifiOff } from "lucide-react"
-import { useState } from "react"
+import * as React from "react"
 import { CabinetCard } from "./cabinet-card"
 import { CabinetDetail } from "./cabinet-detail"
 
@@ -13,14 +14,22 @@ interface CabinetGridProps {
   userId: string
 }
 
+type StatusFilter = "all" | CabinetStatus
+
+const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
+  { id: "all", label: "Todos" },
+  { id: "available", label: "Disponibles" },
+  { id: "in_use", label: "En uso" },
+  { id: "locked", label: "Bloqueados" },
+]
+
 export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
   const { cabinets, isConnected } = useCabinets(initialCabinets)
-  // Store only the ID so the drawer always receives the *live* cabinet from the
-  // realtime-updated cabinets array — not a stale snapshot from click time.
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = React.useState(false)
+  const [search, setSearch] = React.useState("")
+  const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all")
 
-  // Derive the current live cabinet on every render
   const selectedCabinet = selectedId
     ? (cabinets.find((c) => c.id === selectedId) ?? null)
     : null
@@ -29,6 +38,18 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
     setSelectedId(cabinet.id)
     setDrawerOpen(true)
   }
+
+  const q = search.toLowerCase().trim()
+
+  const filtered = cabinets.filter((c) => {
+    const matchSearch =
+      !q ||
+      c.name.toLowerCase().includes(q) ||
+      (c.location ?? "").toLowerCase().includes(q) ||
+      c.item_names.some((n) => n.toLowerCase().includes(q))
+    const matchStatus = statusFilter === "all" || c.status === statusFilter
+    return matchSearch && matchStatus
+  })
 
   if (cabinets.length === 0) {
     return (
@@ -65,16 +86,69 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
         {isConnected ? "En vivo" : "Sin conexión"}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {cabinets.map((cabinet) => (
-          <CabinetCard
-            key={cabinet.id}
-            cabinet={cabinet}
-            onClick={handleCardClick}
-          />
-        ))}
+      {/* Toolbar */}
+      <div className="flex flex-col gap-2 px-4 pb-4 sm:px-6">
+        <Input
+          placeholder="Buscar por gabinete, ubicación o artículo..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:max-w-sm"
+        />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1 rounded-lg border border-gray-200 bg-white p-1">
+            {STATUS_FILTERS.map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setStatusFilter(f.id)}
+                className={cn(
+                  "rounded-md px-3 py-1 text-xs font-medium transition-colors",
+                  statusFilter === f.id
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-gray-100",
+                )}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-muted-foreground">
+            {filtered.length} de {cabinets.length}
+          </span>
+        </div>
       </div>
+
+      {/* Grid */}
+      {filtered.length === 0 ? (
+        <div className="px-4 sm:px-6">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-sm text-gray-500">
+              Sin gabinetes con ese criterio.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {filtered.map((cabinet) => {
+            const matchedItems = q
+              ? [
+                  ...new Set(
+                    cabinet.item_names.filter((n) =>
+                      n.toLowerCase().includes(q),
+                    ),
+                  ),
+                ]
+              : undefined
+            return (
+              <CabinetCard
+                key={cabinet.id}
+                cabinet={cabinet}
+                onClick={handleCardClick}
+                matchedItems={matchedItems}
+              />
+            )
+          })}
+        </div>
+      )}
 
       <CabinetDetail
         cabinet={selectedCabinet}

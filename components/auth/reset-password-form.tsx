@@ -2,17 +2,15 @@
 
 import { Button } from "@/components/ui/button"
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    resetPasswordAction,
-} from "@/lib/actions/auth/reset-password"
+import { resetPasswordAction } from "@/lib/actions/auth/reset-password"
 import type { AuthState } from "@/lib/actions/auth/shared"
 import Link from "next/link"
 import { useActionState } from "react"
