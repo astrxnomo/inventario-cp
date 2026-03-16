@@ -1,10 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// AUTO-GENERATED — do not edit manually.
-// To regenerate run:
-//   npx supabase gen types typescript --project-id "$PROJECT_REF" --schema public \
-//     > lib/supabase/database.types.ts
-// ─────────────────────────────────────────────────────────────────────────────
-
 export type Json =
   | string
   | number
@@ -193,6 +186,83 @@ export type Database = {
           },
         ]
       }
+      item_reservations: {
+        Row: {
+          cabinet_id: string
+          cancelled_at: string | null
+          created_at: string
+          ends_at: string
+          group_id: string | null
+          id: string
+          item_id: string
+          note: string | null
+          quantity: number
+          starts_at: string
+          status: Database["public"]["Enums"]["reservation_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cabinet_id: string
+          cancelled_at?: string | null
+          created_at?: string
+          ends_at: string
+          group_id?: string | null
+          id?: string
+          item_id: string
+          note?: string | null
+          quantity: number
+          starts_at: string
+          status?: Database["public"]["Enums"]["reservation_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cabinet_id?: string
+          cancelled_at?: string | null
+          created_at?: string
+          ends_at?: string
+          group_id?: string | null
+          id?: string
+          item_id?: string
+          note?: string | null
+          quantity?: number
+          starts_at?: string
+          status?: Database["public"]["Enums"]["reservation_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_reservations_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_reservations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "reservation_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_reservations_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -216,6 +286,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      reservation_groups: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          note: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["reservation_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          note?: string | null
+          starts_at: string
+          status?: Database["public"]["Enums"]["reservation_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          note?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["reservation_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservation_groups_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_items: {
         Row: {
@@ -269,25 +380,48 @@ export type Database = {
         Returns: undefined
       }
       authorize_user: { Args: { p_target_user_id: string }; Returns: undefined }
-      change_user_role: {
-        Args: { p_target_user_id: string; p_new_role: string }
+      cancel_reservation: {
+        Args: { p_reservation_id: string }
         Returns: undefined
       }
+      change_user_role: {
+        Args: { p_new_role: string; p_target_user_id: string }
+        Returns: undefined
+      }
+      expire_past_reservations: { Args: never; Returns: undefined }
       get_admin_user_list: {
         Args: never
-        Returns: Array<{
-          id: string
-          email: string
-          full_name: string | null
-          role: string
+        Returns: {
           created_at: string
-        }>
+          email: string
+          full_name: string
+          id: string
+          role: string
+        }[]
+      }
+      get_item_available_quantity: {
+        Args: { p_ends_at: string; p_item_id: string; p_starts_at: string }
+        Returns: number
       }
       get_my_role: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_root: { Args: never; Returns: boolean }
+      reserve_item: {
+        Args: {
+          p_ends_at: string
+          p_item_id: string
+          p_note?: string
+          p_quantity: number
+          p_starts_at: string
+        }
+        Returns: string
+      }
       return_items: {
         Args: { p_session_id: string; p_user_id: string }
+        Returns: undefined
+      }
+      return_single_item: {
+        Args: { p_item_id: string; p_session_id: string; p_user_id: string }
         Returns: undefined
       }
       withdraw_items: {
@@ -303,6 +437,7 @@ export type Database = {
         | "closed"
       cabinet_status: "available" | "in_use" | "locked"
       item_action: "withdrawn" | "returned"
+      reservation_status: "active" | "cancelled" | "completed" | "expired"
       user_role: "admin" | "user" | "pending" | "root"
     }
     CompositeTypes: {
@@ -311,8 +446,8 @@ export type Database = {
   }
 }
 
-// ─── Regeneration helpers ─────────────────────────────────────────────────────
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
@@ -439,6 +574,7 @@ export const Constants = {
       ],
       cabinet_status: ["available", "in_use", "locked"],
       item_action: ["withdrawn", "returned"],
+      reservation_status: ["active", "cancelled", "completed", "expired"],
       user_role: ["admin", "user", "pending", "root"],
     },
   },

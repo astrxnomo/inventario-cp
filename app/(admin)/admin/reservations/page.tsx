@@ -1,40 +1,37 @@
-import { LogsView } from "@/components/admin/logs-view"
+import { ReservationsTable } from "@/components/admin/reservations-table"
 import { RefreshButton } from "@/components/ui/refresh-button"
-import { getAccessLogs, getSessionsWithItems } from "@/lib/data/logs/get-logs"
 import { getAllReservations } from "@/lib/data/reservations/get-reservations"
 import { createClient } from "@/lib/supabase/server"
 
-export default async function AdminLogsPage() {
+export default async function AdminReservationsPage() {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const [sessions, accessLogs, reservations] = await Promise.all([
-    getSessionsWithItems(supabase),
-    getAccessLogs(supabase),
-    getAllReservations(supabase, user?.id ?? ""),
-  ])
+  const reservations = await getAllReservations(supabase, user?.id ?? "")
+
+  const counts = {
+    total: reservations.length,
+    active: reservations.filter((r) => r.status === "active").length,
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Actividad
+            Reservas
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Últimas 100 sesiones · ordenadas por fecha descendente
+            {counts.total} total · {counts.active} activa
+            {counts.active !== 1 ? "s" : ""}
           </p>
         </div>
         <RefreshButton />
       </div>
 
-      <LogsView
-        sessions={sessions}
-        accessLogs={accessLogs}
-        reservations={reservations}
-      />
+      <ReservationsTable reservations={reservations} />
     </main>
   )
 }
