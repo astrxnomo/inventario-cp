@@ -19,6 +19,7 @@ import type {
 } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
 import {
+  CalendarClock,
   ClipboardList,
   Loader2,
   Lock,
@@ -30,6 +31,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { BrowseList } from "./browse-list"
 import { CabinetDetailHeader } from "./cabinet-detail-header"
+import { ReserveDialog } from "./reserve-dialog"
 import { ReturnList } from "./return-list"
 
 interface CabinetDetailProps {
@@ -53,6 +55,7 @@ export function CabinetDetail({
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [addingMore, setAddingMore] = useState(false)
   const [returningItemId, setReturningItemId] = useState<string | null>(null)
+  const [reserveOpen, setReserveOpen] = useState(false)
 
   const isReturning = sessionId !== null
 
@@ -63,6 +66,7 @@ export function CabinetDetail({
       setSelections({})
       setSessionId(null)
       setAddingMore(false)
+      setReserveOpen(false)
       return
     }
 
@@ -83,7 +87,6 @@ export function CabinetDetail({
     }
 
     load()
-    // userId is the authenticated user's stable ID — it never changes between renders
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, cabinet?.id])
 
@@ -91,7 +94,7 @@ export function CabinetDetail({
     setAddingMore(true)
     if (items.length === 0) {
       setLoading(true)
-      const result = await fetchInventoryItems(cabinet!.id)
+      const result = await fetchInventoryItems(cabinet!.id, userId)
       setLoading(false)
       setItems(result.data ?? [])
     }
@@ -158,6 +161,25 @@ export function CabinetDetail({
     }
   }
 
+  async function handleReserve() {
+    if (!cabinet) return
+    if (items.length === 0) {
+      setLoading(true)
+      const result = await fetchInventoryItems(cabinet.id, userId)
+      setLoading(false)
+      setItems(result.data ?? [])
+    }
+    setReserveOpen(true)
+  }
+
+  async function refreshItems() {
+    if (!cabinet) return
+    setLoading(true)
+    const result = await fetchInventoryItems(cabinet.id, userId)
+    setLoading(false)
+    if (result.data) setItems(result.data)
+  }
+
   async function handleReturn() {
     setSubmitting(true)
     const result = await returnCabinetItems({ sessionId: sessionId!, userId })
@@ -170,7 +192,7 @@ export function CabinetDetail({
 
     setSessionId(null)
     setWithdrawnItems([])
-    const itemsResult = await fetchInventoryItems(cabinet!.id)
+    const itemsResult = await fetchInventoryItems(cabinet!.id, userId)
     setItems(itemsResult.data ?? [])
   }
 
@@ -193,7 +215,7 @@ export function CabinetDetail({
 
     if (remaining.length === 0) {
       setSessionId(null)
-      const itemsResult = await fetchInventoryItems(cabinet!.id)
+      const itemsResult = await fetchInventoryItems(cabinet!.id, userId)
       setItems(itemsResult.data ?? [])
     }
   }
@@ -330,28 +352,47 @@ export function CabinetDetail({
                   Gabinete bloqueado
                 </Button>
               ) : (
-                <Button
-                  size="lg"
-                  disabled={totalSelected === 0 || submitting || loading}
-                  onClick={handleWithdraw}
-                  className={cn(
-                    "h-12 w-full gap-2 text-base font-semibold transition-colors",
-                    totalSelected > 0
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : "cursor-not-allowed bg-gray-100 text-gray-400",
-                  )}
-                >
-                  {submitting ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Unlock className="h-5 w-5" />
-                  )}
-                  {totalSelected > 0
-                    ? `Retirar ${totalSelected} artículo${totalSelected !== 1 ? "s" : ""}`
-                    : "Selecciona artículos"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="lg"
+                    disabled={totalSelected === 0 || submitting || loading}
+                    onClick={handleWithdraw}
+                    className={cn(
+                      "h-12 flex-1 gap-2 text-base font-semibold transition-colors",
+                      totalSelected > 0
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "cursor-not-allowed bg-gray-100 text-gray-400",
+                    )}
+                  >
+                    {submitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Unlock className="h-5 w-5" />
+                    )}
+                    {totalSelected > 0 ? `Retirar ${totalSelected}` : "Retirar"}
+                  </Button>
+
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    disabled={totalSelected === 0 || submitting || loading}
+                    onClick={handleReserve}
+                    className="h-12 gap-2 px-5 font-semibold"
+                  >
+                    <CalendarClock className="h-4 w-4" />
+                    Reservar
+                  </Button>
+                </div>
               )}
             </DrawerFooter>
+
+            <ReserveDialog
+              open={reserveOpen}
+              onOpenChange={setReserveOpen}
+              items={items}
+              selections={selections}
+              onReserved={refreshItems}
+            />
           </>
         )}
       </DrawerContent>

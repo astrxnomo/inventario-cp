@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/client"
 import type {
-  ActionResult,
-  InventoryItem,
-  WithdrawnItem,
+    ActionResult,
+    InventoryItem,
+    WithdrawnItem,
 } from "@/lib/types/cabinets"
 import { fetchInventoryItems } from "./get-inventory-items"
 
@@ -85,7 +85,7 @@ export async function fetchCabinetDetailState(
     }
   }
 
-  const itemsResult = await fetchInventoryItems(cabinetId)
+  const itemsResult = await fetchInventoryItems(cabinetId, userId)
   if (itemsResult.error) return { data: null, error: itemsResult.error }
 
   return {

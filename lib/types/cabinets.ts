@@ -19,6 +19,8 @@ export type Cabinet = CabinetRow & {
 export type InventoryItem = InventoryItemRow & {
   category: string
   in_use: number
+  reserved_by_me: number
+  reserved_by_others: number
 }
 
 // ─── Detail drawer state machine ──────────────────────────────────────────────

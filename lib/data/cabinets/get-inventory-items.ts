@@ -3,10 +3,17 @@ import type { ActionResult, InventoryItem } from "@/lib/types/cabinets"
 
 export async function fetchInventoryItems(
   cabinetId: string,
+  userId: string,
 ): Promise<ActionResult<InventoryItem[]>> {
   const supabase = createClient()
 
-  const [{ data: rawItems, error }, { data: sessions }] = await Promise.all([
+  const now = new Date().toISOString()
+
+  const [
+    { data: rawItems, error },
+    { data: sessions },
+    { data: reservations },
+  ] = await Promise.all([
     supabase
       .from("inventory_items")
       .select(
@@ -19,11 +26,31 @@ export async function fetchInventoryItems(
       .select("id")
       .eq("cabinet_id", cabinetId)
       .is("closed_at", null),
+    supabase
+      .from("item_reservations")
+      .select("item_id, quantity, user_id")
+      .eq("cabinet_id", cabinetId)
+      .eq("status", "active")
+      .lte("starts_at", now)
+      .gte("ends_at", now),
   ])
 
   if (error) return { data: null, error: error.message }
 
   const inUseMap: Record<string, number> = {}
+  const reservedByMeMap: Record<string, number> = {}
+  const reservedByOthersMap: Record<string, number> = {}
+
+  for (const res of reservations ?? []) {
+    if (res.user_id === userId) {
+      reservedByMeMap[res.item_id] =
+        (reservedByMeMap[res.item_id] ?? 0) + res.quantity
+    } else {
+      reservedByOthersMap[res.item_id] =
+        (reservedByOthersMap[res.item_id] ?? 0) + res.quantity
+    }
+  }
+
   const sessionIds = (sessions ?? []).map((s) => s.id)
 
   if (sessionIds.length > 0) {
@@ -63,6 +90,8 @@ export async function fetchInventoryItems(
           ? item.inventory_categories[0]?.name
           : item.inventory_categories?.name) ?? "Sin categoría",
       in_use: inUseMap[item.id] ?? 0,
+      reserved_by_me: reservedByMeMap[item.id] ?? 0,
+      reserved_by_others: reservedByOthersMap[item.id] ?? 0,
     })),
     error: null,
   }
