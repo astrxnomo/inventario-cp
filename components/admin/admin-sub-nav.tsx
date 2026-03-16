@@ -8,7 +8,7 @@ const tabs = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/users", label: "Usuarios", icon: Users },
   { href: "/admin/cabinets", label: "Gabinetes", icon: Package },
-  { href: "/admin/logs", label: "Logs", icon: ActivitySquare },
+  { href: "/admin/logs", label: "Actividad", icon: ActivitySquare },
 ]
 
 export function AdminSubNav() {

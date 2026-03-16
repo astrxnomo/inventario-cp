@@ -1,36 +1,40 @@
 "use client"
 
+import { ReservationsTable } from "@/components/admin/reservations-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Input } from "@/components/ui/input"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { AccessLogEntry, SessionWithItems } from "@/lib/types/logs"
+import type { ItemReservation } from "@/lib/types/reservations"
 import { cn } from "@/lib/utils"
 import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type ColumnDef,
-  type FilterFn,
-  type SortingState,
+    flexRender,
+    getCoreRowModel,
+    getExpandedRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+    type ColumnDef,
+    type FilterFn,
+    type SortingState,
 } from "@tanstack/react-table"
 import {
-  ArrowUpDown,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  Package,
+    ArrowUpDown,
+    ChevronDown,
+    ChevronRight,
+    Clock,
+    Package,
 } from "lucide-react"
 import * as React from "react"
 
@@ -100,128 +104,7 @@ const ACCESS_VARIANT: Record<
   closed: "secondary",
 }
 
-// ─── Session card (accordion) ─────────────────────────────────────────────────
-
-function SessionCard({ session }: { session: SessionWithItems }) {
-  const isActive = !session.closed_at
-  const [expanded, setExpanded] = React.useState(isActive)
-  const dur = duration(session.opened_at, session.closed_at)
-  const withdrawn = session.items.filter((i) => i.action === "withdrawn")
-
-  return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-lg border bg-white transition-shadow hover:shadow-sm",
-        isActive && "border-primary/40 ring-1 ring-primary/10",
-      )}
-    >
-      <button
-        onClick={() => setExpanded((e) => !e)}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50/80"
-      >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-          {initials(session.user_name)}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-1.5">
-            <span className="text-sm font-semibold text-gray-900">
-              {session.user_name ?? "—"}
-            </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-sm text-gray-600">
-              {session.cabinet_name ?? "—"}
-            </span>
-          </div>
-          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-            <span>
-              {fmtDate(session.opened_at)} · {fmtTime(session.opened_at)}
-            </span>
-            {dur && (
-              <span className="flex items-center gap-0.5">
-                <Clock className="size-3" />
-                {dur}
-              </span>
-            )}
-            {withdrawn.length > 0 && (
-              <span className="flex items-center gap-0.5">
-                <Package className="size-3" />
-                {withdrawn.length} artículo{withdrawn.length !== 1 ? "s" : ""}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Badge
-            variant={isActive ? "default" : "secondary"}
-            className="text-xs"
-          >
-            {isActive ? "Activa" : "Cerrada"}
-          </Badge>
-          {expanded ? (
-            <ChevronDown className="size-4 text-gray-400" />
-          ) : (
-            <ChevronRight className="size-4 text-gray-400" />
-          )}
-        </div>
-      </button>
-
-      {expanded && (
-        <div className="border-t border-gray-100 bg-gray-50/60 px-4 py-3">
-          {session.items.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              Sin artículos registrados.
-            </p>
-          ) : (
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-muted-foreground">
-                  <th className="pb-1.5 text-left font-medium">Artículo</th>
-                  <th className="pb-1.5 text-center font-medium">Cant.</th>
-                  <th className="pb-1.5 text-center font-medium">Acción</th>
-                  <th className="pb-1.5 text-right font-medium">Hora</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {session.items.map((item) => (
-                  <tr key={item.id}>
-                    <td className="py-1.5 font-medium text-gray-800">
-                      {item.item_name ?? "Artículo"}
-                    </td>
-                    <td className="py-1.5 text-center text-gray-600 tabular-nums">
-                      {item.quantity}
-                    </td>
-                    <td className="py-1.5 text-center">
-                      <span
-                        className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                          item.action === "withdrawn"
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-green-100 text-green-700",
-                        )}
-                      >
-                        {item.action === "withdrawn" ? "Retirado" : "Devuelto"}
-                      </span>
-                    </td>
-                    <td className="py-1.5 text-right text-muted-foreground tabular-nums">
-                      {fmtTime(item.created_at)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {session.closed_at && (
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              Cerrada el {fmtFull(session.closed_at)}
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Sessions tab: filtered + paginated list ──────────────────────────────────
+// ─── Sessions tab: filtered + paginated list ─────────────────────────────────
 
 const SESSIONS_PAGE_SIZE = 10
 
@@ -233,43 +116,186 @@ const SESSION_STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
   { id: "closed", label: "Cerradas" },
 ]
 
+const sessionGlobalFilter: FilterFn<SessionWithItems> = (
+  row,
+  _id,
+  value: string,
+) => {
+  const q = value.toLowerCase()
+  const s = row.original
+  return (
+    (s.user_name ?? "").toLowerCase().includes(q) ||
+    (s.cabinet_name ?? "").toLowerCase().includes(q) ||
+    s.items.some((i) => (i.item_name ?? "").toLowerCase().includes(q))
+  )
+}
+
 function SessionsPanel({ sessions }: { sessions: SessionWithItems[] }) {
   const [search, setSearch] = React.useState("")
   const [status, setStatus] = React.useState<StatusFilter>("all")
   const [dateFrom, setDateFrom] = React.useState("")
   const [dateTo, setDateTo] = React.useState("")
-  const [page, setPage] = React.useState(0)
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "opened_at", desc: true },
+  ])
 
-  const q = search.toLowerCase()
-  const filtered = sessions.filter((s) => {
-    const matchSearch =
-      !q ||
-      (s.user_name ?? "").toLowerCase().includes(q) ||
-      (s.cabinet_name ?? "").toLowerCase().includes(q) ||
-      s.items.some((i) => (i.item_name ?? "").toLowerCase().includes(q))
-    const matchStatus =
-      status === "all" ||
-      (status === "active" && !s.closed_at) ||
-      (status === "closed" && !!s.closed_at)
-    const d = s.opened_at.slice(0, 10)
-    const matchFrom = !dateFrom || d >= dateFrom
-    const matchTo = !dateTo || d <= dateTo
-    return matchSearch && matchStatus && matchFrom && matchTo
-  })
+  const preFiltered = React.useMemo(() => {
+    return sessions.filter((s) => {
+      const matchStatus =
+        status === "all" ||
+        (status === "active" && !s.closed_at) ||
+        (status === "closed" && !!s.closed_at)
+      const d = s.opened_at.slice(0, 10)
+      const matchFrom = !dateFrom || d >= dateFrom
+      const matchTo = !dateTo || d <= dateTo
+      return matchStatus && matchFrom && matchTo
+    })
+  }, [sessions, status, dateFrom, dateTo])
 
-  // Reset page when filter changes
-  React.useEffect(() => {
-    setPage(0)
-  }, [search, status, dateFrom, dateTo])
-
-  const pageCount = Math.ceil(filtered.length / SESSIONS_PAGE_SIZE)
-  const paged = filtered.slice(
-    page * SESSIONS_PAGE_SIZE,
-    (page + 1) * SESSIONS_PAGE_SIZE,
+  const columns = React.useMemo<ColumnDef<SessionWithItems>[]>(
+    () => [
+      {
+        id: "expander",
+        header: () => null,
+        cell: ({ row }) => {
+          return row.getCanExpand() ? (
+            <button
+              {...{
+                onClick: row.getToggleExpandedHandler(),
+                style: { cursor: "pointer" },
+                className: "p-1 rounded-sm hover:bg-gray-100",
+              }}
+            >
+              {row.getIsExpanded() ? (
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-gray-500" />
+              )}
+            </button>
+          ) : null
+        },
+      },
+      {
+        accessorKey: "user_name",
+        header: "Usuario",
+        cell: ({ row }) => {
+          const s = row.original
+          return (
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
+                {initials(s.user_name)}
+              </span>
+              <span className="font-medium text-gray-900">
+                {s.user_name ?? "—"}
+              </span>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: "cabinet_name",
+        header: "Gabinete",
+        cell: ({ getValue }) => (
+          <span className="text-gray-700">{getValue<string>() ?? "—"}</span>
+        ),
+      },
+      {
+        accessorKey: "opened_at",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Apertura <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap text-muted-foreground">
+            {fmtFull(row.original.opened_at)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "closed_at",
+        header: "Duración / Cierre",
+        cell: ({ row }) => {
+          const s = row.original
+          const dur = duration(s.opened_at, s.closed_at)
+          return (
+            <div className="flex flex-col">
+              {s.closed_at ? (
+                <span className="whitespace-nowrap text-muted-foreground">
+                  {fmtFull(s.closed_at)}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )}
+              {dur && (
+                <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  {dur}
+                </span>
+              )}
+            </div>
+          )
+        },
+      },
+      {
+        id: "status",
+        header: "Estado",
+        cell: ({ row }) => {
+          const s = row.original
+          return s.closed_at ? (
+            <Badge variant="secondary">Cerrada</Badge>
+          ) : (
+            <Badge>Activa</Badge>
+          )
+        },
+      },
+      {
+        id: "items",
+        header: "Artículos",
+        cell: ({ row }) => {
+          const s = row.original
+          const withdrawn = s.items.filter(
+            (i) => i.action === "withdrawn",
+          ).length
+          return (
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Package className="h-4 w-4" />
+              {withdrawn}
+            </span>
+          )
+        },
+      },
+    ],
+    [],
   )
 
+  const table = useReactTable({
+    data: preFiltered,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    globalFilterFn: sessionGlobalFilter,
+    getRowCanExpand: () => true,
+    onGlobalFilterChange: setSearch,
+    onSortingChange: setSorting,
+    state: {
+      globalFilter: search,
+      sorting,
+    },
+    initialState: {
+      pagination: { pageSize: SESSIONS_PAGE_SIZE },
+    },
+  })
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* toolbar */}
       <div className="flex flex-col gap-2">
         <Input
@@ -304,53 +330,149 @@ function SessionsPanel({ sessions }: { sessions: SessionWithItems[] }) {
             }}
           />
           <span className="ml-auto text-xs text-muted-foreground">
-            {filtered.length} sesión{filtered.length !== 1 ? "es" : ""}
+            {table.getFilteredRowModel().rows.length} sesión
+            {table.getFilteredRowModel().rows.length !== 1 ? "es" : ""}
           </span>
         </div>
       </div>
 
-      {/* list */}
-      {paged.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 bg-white py-12 text-center text-sm text-muted-foreground">
-          {sessions.length === 0
-            ? "Sin sesiones registradas."
-            : "Sin resultados."}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {paged.map((s) => (
-            <SessionCard key={s.id} session={s} />
-          ))}
-        </div>
-      )}
+      {/* Table */}
+      <div className="rounded-md border bg-white">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((hg) => (
+              <TableRow key={hg.id}>
+                {hg.headers.map((h) => (
+                  <TableHead key={h.id}>
+                    {h.isPlaceholder
+                      ? null
+                      : flexRender(h.column.columnDef.header, h.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    className={cn(
+                      !row.original.closed_at &&
+                        "border-l-2 border-l-primary bg-primary/5",
+                    )}
+                  >
+                    {row.getVisibleCells().map((c) => (
+                      <TableCell key={c.id}>
+                        {flexRender(c.column.columnDef.cell, c.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {row.getIsExpanded() && (
+                    <TableRow className="bg-gray-50/50 hover:bg-transparent">
+                      <TableCell colSpan={columns.length} className="p-0">
+                        <div className="px-10 py-4">
+                          {row.original.items.length === 0 ? (
+                            <p className="text-xs text-muted-foreground">
+                              Sin artículos registrados.
+                            </p>
+                          ) : (
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b bg-transparent text-muted-foreground">
+                                  <th className="pb-2 text-left font-medium">
+                                    Artículo
+                                  </th>
+                                  <th className="pb-2 text-center font-medium">
+                                    Cant.
+                                  </th>
+                                  <th className="pb-2 text-center font-medium">
+                                    Acción
+                                  </th>
+                                  <th className="pb-2 text-right font-medium">
+                                    Hora
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-100">
+                                {row.original.items.map((item) => (
+                                  <tr
+                                    key={item.id}
+                                    className="border-b-0 bg-transparent"
+                                  >
+                                    <td className="py-2 font-medium text-gray-800">
+                                      {item.item_name ?? "Artículo"}
+                                    </td>
+                                    <td className="py-2 text-center text-gray-600 tabular-nums">
+                                      {item.quantity}
+                                    </td>
+                                    <td className="py-2 text-center">
+                                      <span
+                                        className={cn(
+                                          "rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                                          item.action === "withdrawn"
+                                            ? "bg-orange-100 text-orange-700"
+                                            : "bg-green-100 text-green-700",
+                                        )}
+                                      >
+                                        {item.action === "withdrawn"
+                                          ? "Retirado"
+                                          : "Devuelto"}
+                                      </span>
+                                    </td>
+                                    <td className="py-2 text-right text-muted-foreground tabular-nums">
+                                      {fmtTime(item.created_at)}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No se encontraron resultados.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-      {/* pagination */}
-      {filtered.length > 0 && (
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            Página {page + 1} de {pageCount} · {page * SESSIONS_PAGE_SIZE + 1}–
-            {page * SESSIONS_PAGE_SIZE + paged.length} de {filtered.length}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => p - 1)}
-              disabled={page === 0}
-            >
-              Anterior
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={page >= pageCount - 1}
-            >
-              Siguiente
-            </Button>
-          </div>
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-2">
+        <div className="text-sm text-muted-foreground">
+          Página {table.getState().pagination.pageIndex + 1} de{" "}
+          {table.getPageCount() || 1}
         </div>
-      )}
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Siguiente
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -436,8 +558,7 @@ function AccessLogsPanel({ accessLogs }: { accessLogs: AccessLogEntry[] }) {
   const [globalFilter, setGlobalFilter] = React.useState("")
   const [dateFrom, setDateFrom] = React.useState("")
   const [dateTo, setDateTo] = React.useState("")
-  const [actionFilter, setActionFilter] =
-    React.useState<ActionFilter>("all")
+  const [actionFilter, setActionFilter] = React.useState<ActionFilter>("all")
 
   const preFiltered = accessLogs.filter((log) => {
     const d = log.created_at.slice(0, 10)
@@ -590,48 +711,35 @@ function AccessLogsPanel({ accessLogs }: { accessLogs: AccessLogEntry[] }) {
 interface LogsViewProps {
   sessions: SessionWithItems[]
   accessLogs: AccessLogEntry[]
+  reservations: ItemReservation[]
 }
 
-type Tab = "sesiones" | "accesos"
-
-export function LogsView({ sessions, accessLogs }: LogsViewProps) {
-  const [tab, setTab] = React.useState<Tab>("sesiones")
-
-  const tabs: { id: Tab; label: string; count: number }[] = [
-    { id: "sesiones", label: "Sesiones", count: sessions.length },
-    { id: "accesos", label: "Accesos", count: accessLogs.length },
-  ]
-
+export function LogsView({
+  sessions,
+  accessLogs,
+  reservations,
+}: LogsViewProps) {
   return (
-    <div className="space-y-4">
-      {/* tab bar */}
-      <div className="flex w-fit gap-1 rounded-lg border border-gray-200 bg-white p-1">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
-              tab === t.id
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-gray-100 hover:text-gray-900",
-            )}
-          >
-            {t.label}
-            <span
-              className={cn(
-                "rounded-full px-1.5 py-0 text-xs",
-                tab === t.id ? "bg-white/20" : "bg-gray-100 text-gray-500",
-              )}
-            >
-              {t.count}
-            </span>
-          </button>
-        ))}
-      </div>
+    <Tabs defaultValue="sesiones">
+      <TabsList className="mb-4">
+        <TabsTrigger value="sesiones">Sesiones ({sessions.length})</TabsTrigger>
+        <TabsTrigger value="accesos">Accesos ({accessLogs.length})</TabsTrigger>
+        <TabsTrigger value="reservas">
+          Reservas ({reservations.length})
+        </TabsTrigger>
+      </TabsList>
 
-      {tab === "sesiones" && <SessionsPanel sessions={sessions} />}
-      {tab === "accesos" && <AccessLogsPanel accessLogs={accessLogs} />}
-    </div>
+      <TabsContent value="sesiones">
+        <SessionsPanel sessions={sessions} />
+      </TabsContent>
+
+      <TabsContent value="accesos">
+        <AccessLogsPanel accessLogs={accessLogs} />
+      </TabsContent>
+
+      <TabsContent value="reservas">
+        <ReservationsTable reservations={reservations} />
+      </TabsContent>
+    </Tabs>
   )
 }

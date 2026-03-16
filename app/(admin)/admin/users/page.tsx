@@ -25,8 +25,7 @@ export default async function AdminUsersPage() {
             {users.length !== 1 ? "s" : ""}
             {pending > 0 && (
               <span className="ml-2 font-medium text-amber-600">
-                · {pending} pendiente{pending !== 1 ? "s" : ""} de
-                autorización
+                · {pending} pendiente{pending !== 1 ? "s" : ""} de autorización
               </span>
             )}
           </p>
