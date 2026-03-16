@@ -1,9 +1,9 @@
 "use server"
 
 import {
-    assertAdmin,
-    collectFieldErrors,
-    type AdminFormState,
+  assertAdmin,
+  collectFieldErrors,
+  type AdminFormState,
 } from "@/lib/actions/shared"
 import { categoryNameSchema } from "@/lib/schemas/categories"
 import { revalidatePath } from "next/cache"

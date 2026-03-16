@@ -1,9 +1,9 @@
 "use server"
 
 import {
-    assertAdmin,
-    collectFieldErrors,
-    type AdminFormState,
+  assertAdmin,
+  collectFieldErrors,
+  type AdminFormState,
 } from "@/lib/actions/shared"
 import { inventoryItemSchema } from "@/lib/schemas/items"
 import { revalidatePath } from "next/cache"
