@@ -1,6 +1,29 @@
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+<!-- BEGIN:nextjs-agent-rules -->
+
+## Next.js: ALWAYS read docs before coding
+
+Before any Next.js work, consult the official Next.js documentation at https://nextjs.org/docs. Your training data may be outdated — the official docs are the source of truth.
+
+**Current version**: Next.js 16.1.6 (App Router)
+
+Key documentation areas:
+
+- App Router fundamentals: https://nextjs.org/docs/app/building-your-application/routing
+- Server Components: https://nextjs.org/docs/app/building-your-application/rendering/server-components
+- Server Actions: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations
+- Metadata API: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+- Image Optimization: https://nextjs.org/docs/app/building-your-application/optimizing/images
+- Font Optimization: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
+
+**When upgrading to Next.js 16.2.0-canary.37 or later**: Bundled documentation will be available at `node_modules/next/dist/docs/` and should be consulted before any code changes.
+
+<!-- END:nextjs-agent-rules -->
+
+---
+
+This file provides guidance to AI coding agents when working with code in this repository.
 
 ## Development Commands
 
@@ -50,6 +73,7 @@ Visit http://localhost:3000 after running `npm run dev`.
 ### Type System — Single Source of Truth
 
 All domain types live in `lib/types/` organized by domain:
+
 - `cabinets.ts` — Cabinet, InventoryItem, WithdrawnItem, CabinetAdmin, etc.
 - `categories.ts` — Category
 - `users.ts` — AdminUser, DashboardKpis
@@ -60,6 +84,7 @@ All domain types live in `lib/types/` organized by domain:
 ### Schemas — Validation at System Boundaries
 
 Zod schemas in `lib/schemas/` organized by domain:
+
 - `auth.ts` — loginSchema, registerSchema, updatePasswordSchema
 - `cabinets.ts` — withdrawSchema, returnSchema, cabinetSchema
 - `items.ts` — inventoryItemSchema
@@ -70,6 +95,7 @@ Zod schemas in `lib/schemas/` organized by domain:
 ### Server Actions — Two Patterns
 
 **1. Form Actions** (used with `useActionState`)
+
 ```typescript
 // lib/actions/cabinets/manage.ts
 export async function createCabinet(
@@ -79,27 +105,33 @@ export async function createCabinet(
   // Validate → Transform → Execute → Return { fieldErrors?, error?, success? }
 }
 ```
+
 Returns `AdminFormState` with field-level errors or success flag.
 
 **2. Imperative Actions** (used with onClick handlers)
+
 ```typescript
 export async function deleteCabinet(id: string): Promise<{ error?: string }>
 ```
+
 Simple error-only return type for mutations without form state.
 
 **Shared utilities** in `lib/actions/shared.ts`:
+
 - `assertAdmin()` — Checks auth + admin role, throws on failure
 - `collectFieldErrors()` — Normalizes Zod validation errors to field map
 
 ### Data Functions — Supabase-First
 
 Located in `lib/data/` organized by domain:
+
 - Each function accepts a `SupabaseClient` (passed from page/layout)
 - Use `lib/supabase/get-current-user.ts` (React.cache wrapped) for auth+profile
 - Cabinet mutations use Supabase RPCs; admin CRUD uses direct table queries
 - Data functions are NOT cached — pages/components pass the client and handle caching
 
 Example pattern:
+
 ```typescript
 // lib/data/cabinets/get-cabinets.ts
 export async function getCabinetsWithCounts(
@@ -110,17 +142,20 @@ export async function getCabinetsWithCounts(
 ### Component Architecture
 
 **Shared UI** in `components/ui/`:
+
 - `date-range-picker.tsx` — shadcn Popover+Calendar, ISO "YYYY-MM-DD" strings
 - `skeleton.tsx` — Loading states
 - Filter toolbar pattern: `flex flex-col gap-2` outer container
 
 **Form dialogs**:
+
 - Dialog shell owns `open` state (useState)
 - Inner form component uses `useActionState` — auto-resets on remount
 - useEffect listens to `state.success`, closes dialog, shows toast
 - Select fields use `<Select name="field">` for native Radix integration
 
 **Data tables** (TanStack Table):
+
 - `columns` as module-level array when no state closure
 - Use `useMemo` for columns when they close over state
 - Pre-filter data with `useMemo` before passing to table (combining date range, pills, etc.)
@@ -146,6 +181,7 @@ app/
 ```
 
 **Admin layout** (`app/(admin)/layout.tsx`):
+
 - Renders AppNav + AdminSubNav + `min-h-screen bg-gray-50`
 - Handles auth/role redirects
 - Admin pages return only `<main>` content (not nav/nav boilerplate)
@@ -154,23 +190,24 @@ app/
 ### React Compiler Behavior
 
 React Compiler is enabled (`reactCompiler: true` in next.config.mjs).
+
 - **Do NOT** use `useMemo`/`useCallback` manually — let the compiler handle it
 - Write simple, dataflow-focused code; compiler optimizes
 - Exception: `useMemo` for expensive transforms BEFORE passing to TanStack Table (needed to avoid re-filters)
 
 ## Key Files & When to Touch Them
 
-| File | Purpose | When to Edit |
-|------|---------|--------------|
-| `lib/types/*` | Domain types | Adding new entities or fields to existing types |
-| `lib/schemas/*` | Zod validation | Updating form validation rules |
-| `lib/actions/*/manage.ts` | Form + imperative actions | New mutations (CRUD operations) |
-| `lib/data/*` | Data fetching | Adding new queries or transforming data shapes |
-| `lib/supabase/server.ts` | Server Supabase client | Rarely — use createClient() everywhere |
-| `app/(admin)/layout.tsx` | Admin shell | Route guarding, layout structure |
-| `components/ui/*` | Shared UI components | Extending existing shadcn components |
-| `app/globals.css` | Tailwind config + CSS vars | Color/spacing system changes |
-| `next.config.mjs` | Next.js config | Rarely — already has reactCompiler enabled |
+| File                      | Purpose                    | When to Edit                                    |
+| ------------------------- | -------------------------- | ----------------------------------------------- |
+| `lib/types/*`             | Domain types               | Adding new entities or fields to existing types |
+| `lib/schemas/*`           | Zod validation             | Updating form validation rules                  |
+| `lib/actions/*/manage.ts` | Form + imperative actions  | New mutations (CRUD operations)                 |
+| `lib/data/*`              | Data fetching              | Adding new queries or transforming data shapes  |
+| `lib/supabase/server.ts`  | Server Supabase client     | Rarely — use createClient() everywhere          |
+| `app/(admin)/layout.tsx`  | Admin shell                | Route guarding, layout structure                |
+| `components/ui/*`         | Shared UI components       | Extending existing shadcn components            |
+| `app/globals.css`         | Tailwind config + CSS vars | Color/spacing system changes                    |
+| `next.config.mjs`         | Next.js config             | Rarely — already has reactCompiler enabled      |
 
 ## Database
 
@@ -183,30 +220,36 @@ React Compiler is enabled (`reactCompiler: true` in next.config.mjs).
 ## Code Style & Conventions
 
 ### Imports & Exports
+
 - Path aliases: `@/*` → repo root
 - Group imports: React/Next → external libs → local lib → local components
 - Types imported from `lib/types/` (single source of truth)
 
 ### Naming
+
 - Server actions: camelCase functions (createCabinet, updateCabinet)
 - Components: PascalCase
 - Utilities: camelCase
 - Database fields: snake_case (auto-handled by Supabase)
 
 ### Tailwind + Prettier
+
 - `prettier-plugin-tailwindcss` auto-sorts class names
 - CSS variables in `app/globals.css` for theme consistency
 - Use `cn()` utility (from `lib/utils.ts`) to merge Tailwind classes with CVA variants
 
 ### Error Handling
+
 - Server actions return `{ error?: string }` or `AdminFormState`
 - Client calls to actions wrapped in try-catch, toast errors to user
 - Don't throw from server actions — return error state instead
 
 ### FormData Patterns
+
 In server actions:
+
 ```typescript
-const name = formData.get("name")           // string | null
+const name = formData.get("name") // string | null
 const value = formData.get("field") || null // explicit null coercion
 ```
 
@@ -220,6 +263,7 @@ const value = formData.get("field") || null // explicit null coercion
 ## Common Workflows
 
 ### Add a New User-Facing Feature
+
 1. Create type in `lib/types/domain.ts`
 2. Create schema in `lib/schemas/domain.ts`
 3. Create server action in `lib/actions/domain/manage.ts`
@@ -228,17 +272,20 @@ const value = formData.get("field") || null // explicit null coercion
 6. Wire in routes under `app/` or `app/(admin)/`
 
 ### Modify Existing Form
+
 1. Update schema in `lib/schemas/domain.ts`
 2. Check server action in `lib/actions/domain/manage.ts`
 3. Update form component in `components/domain/` (field names must match FormData keys)
 
 ### Add Admin Feature
+
 1. Add to `lib/actions/users/manage.ts` → call `assertAdmin()`
 2. Create data function in `lib/data/*/get-*.ts`
 3. Add route under `app/(admin)/` (layout auto-handles auth check)
 4. Add menu item to `components/layout/admin-sub-nav.tsx`
 
 ### Debug Data Flow
+
 1. Check browser DevTools Network tab (server action calls)
 2. Inspect FormData keys in action (use console.log on formData.get keys)
 3. Use `npm run typecheck` to catch type mismatches early
@@ -252,6 +299,7 @@ const value = formData.get("field") || null // explicit null coercion
 - **Database Types**: `lib/supabase/database.types.ts` (auto-generated from Supabase schema)
 
 To regenerate types:
+
 ```bash
 npx supabase gen types typescript --project-id=<your-project-id> > lib/supabase/database.types.ts
 ```
