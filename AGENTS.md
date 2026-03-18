@@ -1,315 +1,225 @@
 # AGENTS.md
 
-<!-- BEGIN:nextjs-agent-rules -->
+Operational guide for agentic coding assistants in this repository.
 
-## Next.js: ALWAYS read docs before coding
+## Scope and Priority
 
-Before any Next.js work, consult the official Next.js documentation at https://nextjs.org/docs. Your training data may be outdated — the official docs are the source of truth.
+- This file is the primary source of repo-specific agent behavior.
+- If conflicts exist, follow system/developer instructions first, then this file.
+- Keep changes minimal, typed, and consistent with existing architecture.
 
-**Current version**: Next.js 16.1.6 (App Router)
+## Project Snapshot
 
-Key documentation areas:
+- Framework: Next.js 16.1.6 (App Router) with React 19.
+- Styling/UI: Tailwind CSS v4, shadcn/ui, Radix.
+- Backend/data: Supabase (Postgres + Auth + RPC).
+- Validation: Zod v4.
+- Tables/UI state: TanStack Table, `useActionState`.
+- TypeScript: strict mode enabled.
 
-- App Router fundamentals: https://nextjs.org/docs/app/building-your-application/routing
-- Server Components: https://nextjs.org/docs/app/building-your-application/rendering/server-components
-- Server Actions: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations
-- Metadata API: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
-- Image Optimization: https://nextjs.org/docs/app/building-your-application/optimizing/images
-- Font Optimization: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
-
-**When upgrading to Next.js 16.2.0-canary.37 or later**: Bundled documentation will be available at `node_modules/next/dist/docs/` and should be consulted before any code changes.
-
-<!-- END:nextjs-agent-rules -->
-
----
-
-This file provides guidance to AI coding agents when working with code in this repository.
-
-## Development Commands
+## Commands (Build/Lint/Test)
 
 ```bash
-# Install dependencies
+# install
 npm install
 
-# Start development server with Turbopack
+# local development
 npm run dev
 
-# Build for production
-npm build
-
-# Start production server
+# production
+npm run build
 npm start
 
-# Lint code (with auto-fix available)
+# static quality
+npm run typecheck
 npm run lint
 npm run lint:fix
-
-# Format code with Prettier
-npm run format
 npm run format:write
-
-# Type check without emitting
-npm run typecheck
 ```
 
-Visit http://localhost:3000 after running `npm run dev`.
+### Test Commands
 
-## Stack Overview
+- There is currently no test runner configured in `package.json`.
+- If tests are added later, prefer these conventions:
+  - Run all tests: `npm test`
+  - Run one file: `npm test -- path/to/file.test.ts`
+  - Run one test name: `npm test -- -t "test name"`
+- Suggested test file patterns: `*.test.ts`, `*.test.tsx`, `*.spec.ts`, `*.spec.tsx`.
 
-- **Framework**: Next.js 16 (App Router)
-- **UI Library**: React 19 with React Compiler enabled (babel-plugin-react-compiler)
-- **Components**: shadcn/ui + Radix UI + Tailwind v4
-- **Database**: Supabase (PostgreSQL + Auth)
-- **Data Fetching**: Supabase JS SDK (server/browser clients)
-- **State Management**: TanStack React Table, useActionState (React 19)
-- **Validation**: Zod v4
-- **Tables**: @tanstack/react-table
-- **Notifications**: sonner toasts
-- **Dates**: date-fns
-- **Styling**: Tailwind CSS v4, CSS-in-JS with CVA
+## Required Agent Workflow
 
-## Architecture Patterns
+1. Read relevant files before editing.
+2. Make focused changes only in impacted areas.
+3. Run, at minimum, `npm run typecheck` after non-trivial changes.
+4. Run lint/format when touching multiple files or UI-heavy code.
+5. Do not rewrite unrelated architecture or conventions.
 
-### Type System — Single Source of Truth
+## Code Style Guidelines
 
-All domain types live in `lib/types/` organized by domain:
+### Imports and Module Boundaries
 
-- `cabinets.ts` — Cabinet, InventoryItem, WithdrawnItem, CabinetAdmin, etc.
-- `categories.ts` — Category
-- `users.ts` — AdminUser, DashboardKpis
-- `logs.ts` — AccessLogEntry, SessionItemSummary
+- Use path alias `@/*` from repo root.
+- Import order: React/Next → external libs → `@/lib/*` → `@/components/*`
+- Prefer named exports for shared utilities and types.
+- Keep server-only logic in server files/actions; avoid leaking to client components.
 
-**Rule**: Data functions and components always import from `lib/types/`, never define types inline.
+### Formatting
 
-### Schemas — Validation at System Boundaries
+- Prettier: no semicolons, double quotes, Tailwind class sorting via `prettier-plugin-tailwindcss`
+- Use `npm run format:write` instead of manual style edits.
 
-Zod schemas in `lib/schemas/` organized by domain:
+### TypeScript and Types
 
-- `auth.ts` — loginSchema, registerSchema, updatePasswordSchema
-- `cabinets.ts` — withdrawSchema, returnSchema, cabinetSchema
-- `items.ts` — inventoryItemSchema
-- `categories.ts` — categoryNameSchema
-
-**Rule**: Validate FormData in server actions, never skip validation.
-
-### Server Actions — Two Patterns
-
-**1. Form Actions** (used with `useActionState`)
-
-```typescript
-// lib/actions/cabinets/manage.ts
-export async function createCabinet(
-  _prevState: AdminFormState,
-  formData: FormData,
-): Promise<AdminFormState> {
-  // Validate → Transform → Execute → Return { fieldErrors?, error?, success? }
-}
-```
-
-Returns `AdminFormState` with field-level errors or success flag.
-
-**2. Imperative Actions** (used with onClick handlers)
-
-```typescript
-export async function deleteCabinet(id: string): Promise<{ error?: string }>
-```
-
-Simple error-only return type for mutations without form state.
-
-**Shared utilities** in `lib/actions/shared.ts`:
-
-- `assertAdmin()` — Checks auth + admin role, throws on failure
-- `collectFieldErrors()` — Normalizes Zod validation errors to field map
-
-### Data Functions — Supabase-First
-
-Located in `lib/data/` organized by domain:
-
-- Each function accepts a `SupabaseClient` (passed from page/layout)
-- Use `lib/supabase/get-current-user.ts` (React.cache wrapped) for auth+profile
-- Cabinet mutations use Supabase RPCs; admin CRUD uses direct table queries
-- Data functions are NOT cached — pages/components pass the client and handle caching
-
-Example pattern:
-
-```typescript
-// lib/data/cabinets/get-cabinets.ts
-export async function getCabinetsWithCounts(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<Cabinet[]>
-```
-
-### Component Architecture
-
-**Shared UI** in `components/ui/`:
-
-- `date-range-picker.tsx` — shadcn Popover+Calendar, ISO "YYYY-MM-DD" strings
-- `skeleton.tsx` — Loading states
-- Filter toolbar pattern: `flex flex-col gap-2` outer container
-
-**Form dialogs**:
-
-- Dialog shell owns `open` state (useState)
-- Inner form component uses `useActionState` — auto-resets on remount
-- useEffect listens to `state.success`, closes dialog, shows toast
-- Select fields use `<Select name="field">` for native Radix integration
-
-**Data tables** (TanStack Table):
-
-- `columns` as module-level array when no state closure
-- Use `useMemo` for columns when they close over state
-- Pre-filter data with `useMemo` before passing to table (combining date range, pills, etc.)
-- Pass `globalFilterFn` as function reference directly (avoids TS type error vs string key)
-
-### Routing Structure
-
-```
-app/
-├── (auth)/               # Login, register, password reset (no auth required)
-├── (admin)/              # Admin routes with auth + role checks
-│   ├── layout.tsx        # AppNav + AdminSubNav + min-h-screen wrapper
-│   ├── admin/
-│   │   ├── dashboard/    # Admin KPI overview
-│   │   ├── users/        # User management
-│   │   ├── cabinets/     # Cabinet CRUD + per-cabinet item management
-│   │   └── logs/         # Access & session logs
-│   └── [protected pages with loading.tsx]
-├── cabinets/             # Cabinet grid (all authed non-pending users)
-├── profile/              # Update name + password
-├── history/              # Session history
-└── page.tsx              # Root redirect
-```
-
-**Admin layout** (`app/(admin)/layout.tsx`):
-
-- Renders AppNav + AdminSubNav + `min-h-screen bg-gray-50`
-- Handles auth/role redirects
-- Admin pages return only `<main>` content (not nav/nav boilerplate)
-- All 6 admin routes have corresponding `loading.tsx` with Skeleton components
-
-### React Compiler Behavior
-
-React Compiler is enabled (`reactCompiler: true` in next.config.mjs).
-
-- **Do NOT** use `useMemo`/`useCallback` manually — let the compiler handle it
-- Write simple, dataflow-focused code; compiler optimizes
-- Exception: `useMemo` for expensive transforms BEFORE passing to TanStack Table (needed to avoid re-filters)
-
-## Key Files & When to Touch Them
-
-| File                      | Purpose                    | When to Edit                                    |
-| ------------------------- | -------------------------- | ----------------------------------------------- |
-| `lib/types/*`             | Domain types               | Adding new entities or fields to existing types |
-| `lib/schemas/*`           | Zod validation             | Updating form validation rules                  |
-| `lib/actions/*/manage.ts` | Form + imperative actions  | New mutations (CRUD operations)                 |
-| `lib/data/*`              | Data fetching              | Adding new queries or transforming data shapes  |
-| `lib/supabase/server.ts`  | Server Supabase client     | Rarely — use createClient() everywhere          |
-| `app/(admin)/layout.tsx`  | Admin shell                | Route guarding, layout structure                |
-| `components/ui/*`         | Shared UI components       | Extending existing shadcn components            |
-| `app/globals.css`         | Tailwind config + CSS vars | Color/spacing system changes                    |
-| `next.config.mjs`         | Next.js config             | Rarely — already has reactCompiler enabled      |
-
-## Database
-
-- **Tables**: profiles, cabinets, inventory_categories, inventory_items, cabinet_sessions, session_items, access_logs
-- **RPC Functions**: is_admin (auth check), withdraw (cabinet operation), return (session closing)
-- **Roles**: pending → user → admin → root (checked with `is_admin` RPC)
-
-**Supabase MCP Available**: HTTP endpoint configured in `.vscode/mcp.json` for Supabase schema inspection.
-
-## Code Style & Conventions
-
-### Imports & Exports
-
-- Path aliases: `@/*` → repo root
-- Group imports: React/Next → external libs → local lib → local components
-- Types imported from `lib/types/` (single source of truth)
+- Preserve strict typing; avoid `any` unless unavoidable.
+- Domain types belong in `lib/types/*` (single source of truth).
+- Import types from `lib/types/*` instead of redefining inline.
+- Keep function return types explicit in shared/data/action layers.
 
 ### Naming
 
-- Server actions: camelCase functions (createCabinet, updateCabinet)
-- Components: PascalCase
-- Utilities: camelCase
-- Database fields: snake_case (auto-handled by Supabase)
+- Components: PascalCase (`CabinetDialog`).
+- Functions/variables: camelCase (`getCabinetsWithCounts`).
+- Constants: UPPER_SNAKE_CASE only for true constants.
+- Database columns and payload keys follow snake_case.
 
-### Tailwind + Prettier
+### Validation and Forms
 
-- `prettier-plugin-tailwindcss` auto-sorts class names
-- CSS variables in `app/globals.css` for theme consistency
-- Use `cn()` utility (from `lib/utils.ts`) to merge Tailwind classes with CVA variants
+- Validate all external input with Zod schemas in `lib/schemas/*`.
+- In server actions, parse `FormData` and return structured error states.
+- Use shared helpers (e.g. `collectFieldErrors`) for consistency.
 
 ### Error Handling
 
-- Server actions return `{ error?: string }` or `AdminFormState`
-- Client calls to actions wrapped in try-catch, toast errors to user
-- Don't throw from server actions — return error state instead
+- Server actions should return error objects/states, not crash flows.
+- Use `try/catch` around Supabase mutations and RPC calls.
+- Keep user-facing messages concise; log details only when useful.
 
-### FormData Patterns
+## Architecture Conventions
 
-In server actions:
+### Data Fetching
 
-```typescript
-const name = formData.get("name") // string | null
-const value = formData.get("field") || null // explicit null coercion
-```
+- Fetch data in Server Components and server-side data functions.
+- **Always pass Supabase clients into `lib/data/*` functions as parameters** (never create clients inside data functions).
+- Use `unstable_cache` from Next.js for caching expensive queries (see Cache Strategy below).
+- Use server actions for mutations and call `revalidateTag` after mutations (not `revalidatePath`).
+- Avoid direct DB writes from client components.
+- **Client components calling data functions**: Client components must create a browser client using `createClient()` from `@/lib/supabase/client` and pass it to data functions.
+- **Server components/actions calling data functions**: Use `await createClient()` from `@/lib/supabase/server`.
 
-## Testing & Debugging
+### Cache Strategy
 
-- No test files in the current setup — add tests in `__tests__/` or `.test.ts` alongside source
-- Use TypeScript strict mode (`tsconfig.json` has `strict: true`)
-- Linter: ESLint with Next.js + Prettier integration; run `npm run lint:fix`
-- Type check: `npm run typecheck` (tsc --noEmit)
+- Use centralized cache tags from `lib/cache/tags.ts` (never hardcode tag strings).
+- Cache revalidation times:
+  - Static data (categories): 300s (5 min) - `CACHE_REVALIDATE.static`
+  - Semi-static (cabinets, items): 30s - `CACHE_REVALIDATE.semiStatic`
+  - Dynamic (sessions, reservations): 10s or rely on tag invalidation - `CACHE_REVALIDATE.dynamic`
+  - Dashboard stats: 60s - `CACHE_REVALIDATE.dashboard`
+- Always use `revalidateTag(CACHE_TAGS.xxx)` in server actions after mutations.
+- Example:
 
-## Common Workflows
+  ```ts
+  import { unstable_cache } from "next/cache"
+  import { CACHE_TAGS, CACHE_REVALIDATE } from "@/lib/cache/tags"
 
-### Add a New User-Facing Feature
+  export const getCategories = unstable_cache(
+    async (supabase) => {
+      /* query */
+    },
+    ["categories-list"],
+    { revalidate: CACHE_REVALIDATE.static, tags: [CACHE_TAGS.categories] },
+  )
+  ```
 
-1. Create type in `lib/types/domain.ts`
-2. Create schema in `lib/schemas/domain.ts`
-3. Create server action in `lib/actions/domain/manage.ts`
-4. Create data function in `lib/data/domain/get-*.ts`
-5. Build UI component in `components/domain/`
-6. Wire in routes under `app/` or `app/(admin)/`
+### Pagination
 
-### Modify Existing Form
+- **Use cursor-based pagination** for all tables (not offset-based).
+- Import helpers from `lib/data/pagination.ts`:
+  ```ts
+  import { applyCursorPagination, type CursorPage } from "@/lib/data/pagination"
+  ```
+- Cursor pagination uses keyset (created_at + id) for efficiency.
+- Page sizes: [10, 25, 50] (default: 25).
+- Always return `CursorPage<T>` with `hasNextPage`, `hasPrevPage`, `nextCursor`, `prevCursor`.
 
-1. Update schema in `lib/schemas/domain.ts`
-2. Check server action in `lib/actions/domain/manage.ts`
-3. Update form component in `components/domain/` (field names must match FormData keys)
+### Table Components
 
-### Add Admin Feature
+- **Use reusable table components** from `components/ui/`:
+  - `<DataTable>` - Generic TanStack Table wrapper with sorting, column visibility, loading states
+  - `<TableToolbar>` - Search input (300ms debounce), column visibility dropdown, custom filter slot
+  - `<TablePagination>` - Cursor-based navigation with page size selector
+  - `<TableSkeleton>` - Loading skeleton for Suspense boundaries
+- **Suspense pattern**: Wrap tables in `<Suspense fallback={<TableSkeleton />}>` for loading states.
+- **Column visibility**: Stored in localStorage with key `table-columns-visibility-{tableName}`.
+- **Search**: Case-insensitive, debounced (300ms), searches only essential columns.
 
-1. Add to `lib/actions/users/manage.ts` → call `assertAdmin()`
-2. Create data function in `lib/data/*/get-*.ts`
-3. Add route under `app/(admin)/` (layout auto-handles auth check)
-4. Add menu item to `components/layout/admin-sub-nav.tsx`
+### Auth and Authorization
 
-### Debug Data Flow
+- Use Supabase auth helpers from `lib/supabase/*`.
+- Admin-sensitive mutations should go through explicit guards (e.g. `assertAdmin`).
+- Respect role model in `profiles.role`: `pending`, `user`, `admin`, `root`.
 
-1. Check browser DevTools Network tab (server action calls)
-2. Inspect FormData keys in action (use console.log on formData.get keys)
-3. Use `npm run typecheck` to catch type mismatches early
-4. Check Supabase RPC responses in server logs
+### UI Patterns
 
-## Environment & Config
+- Reuse `components/ui/*` building blocks.
+- Keep dialogs/forms predictable: controlled open state + action state handling.
+- Keep tables deterministic and typed.
 
-- **Environment**: `.env.local` (Supabase URL + API keys)
-- **Client**: `lib/supabase/client.ts` for browser
-- **Server**: `lib/supabase/server.ts` for Server Components + Actions
-- **Database Types**: `lib/supabase/database.types.ts` (auto-generated from Supabase schema)
+## Skills and Documentation Policy
 
-To regenerate types:
+### Context7 CLI + Skills (Installed)
 
-```bash
-npx supabase gen types typescript --project-id=<your-project-id> > lib/supabase/database.types.ts
-```
+This project uses **Context7 CLI with agent skills** for specialized guidance:
 
-## Formatting & Linting
+**Installed skills** (in `.agents/skills/`):
 
-- **Prettier**: No semicolons, single quotes (sorted by prettier-plugin-tailwindcss)
-- **ESLint**: react/self-closing-comp enforced; react-in-jsx-scope off (Next.js 13+)
-- Run `npm run format:write` before committing to auto-format
+- `shadcn` — shadcn/ui component management (source: shadcn/ui)
+- `supabase-postgres-best-practices` — Postgres optimization (source: supabase/agent-skills)
+- `vercel-react-best-practices` — React/Next.js performance (source: vercel-labs/agent-skills)
+- `vercel-composition-patterns` — Component architecture patterns (source: vercel-labs/agent-skills)
+- `senior-frontend` — Frontend scaffolding and bundle analysis
+- `nextjs-server-components`, `nextjs-data-fetching`, `next-best-practices` — Next.js patterns
+- `find-docs` — Documentation lookup
 
----
+**How to use**:
 
-**Last updated**: Current architecture as of March 2026. For future changes, update this file to reflect new patterns discovered across multiple files.
+- Skills auto-load based on context (e.g., "optimize component" → vercel-react-best-practices)
+- Explicit load: use the `skill` tool when specialized workflow is needed
+- Check `skills-lock.json` for installed skills and versions
+
+### Supabase MCP (Database Inspection)
+
+- Remote Supabase MCP configured in `opencode.json` for:
+  - Schema/table inspection via `supabase_list_tables`
+  - SQL/RPC validation
+  - Debugging database issues
+  - Migration planning
+- Use MCP tools over assumptions about current schema
+
+## Rule Files Check
+
+- No `.cursor/rules/*`, `.cursorrules`, or `.github/copilot-instructions.md` were found in this repo at the time of writing.
+- If added later, update this file and treat those rules as additional constraints.
+
+## Key Paths
+
+- `app/` - routes, layouts, server components
+- `components/` - UI and feature components
+- `components/ui/` - Reusable UI components (shadcn + custom):
+  - `data-table.tsx` - Generic table wrapper with TanStack Table
+  - `table-toolbar.tsx` - Search and filter toolbar
+  - `table-pagination.tsx` - Cursor-based pagination controls
+  - `table-skeleton.tsx` - Loading skeleton for tables
+- `lib/actions/` - server actions (must use `"use server"`)
+- `lib/data/` - data access/query composition
+  - `pagination.ts` - Cursor pagination helpers
+- `lib/cache/` - Caching infrastructure
+  - `tags.ts` - Centralized cache tags and revalidation times
+- `lib/schemas/` - Zod schemas
+- `lib/types/` - domain types
+- `lib/supabase/` - Supabase clients and helpers
+
+## Maintenance
+
+- Keep this document around 150 lines and practical.
+- Update commands/rules when tooling changes.
+- Last updated: 2026-03-18.
