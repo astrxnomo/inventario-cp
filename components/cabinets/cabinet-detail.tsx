@@ -87,8 +87,7 @@ export function CabinetDetail({
     }
 
     load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, cabinet?.id])
+  }, [open, cabinet?.id, userId])
 
   async function handleStartAddMore() {
     setAddingMore(true)

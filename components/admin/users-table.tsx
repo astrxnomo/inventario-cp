@@ -102,114 +102,117 @@ export function UsersTable({ users, callerRole }: UsersTableProps) {
     })
   }
 
-  const columns: ColumnDef<AdminUser>[] = [
-    {
-      accessorKey: "full_name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Nombre
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) =>
-        row.original.full_name ? (
-          <span className="font-medium">{row.original.full_name}</span>
-        ) : (
-          <span className="text-muted-foreground italic">Sin nombre</span>
+  const columns = React.useMemo<ColumnDef<AdminUser>[]>(
+    () => [
+      {
+        accessorKey: "full_name",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Nombre
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
         ),
-    },
-    {
-      accessorKey: "email",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">{row.original.email}</span>
-      ),
-    },
-    {
-      accessorKey: "role",
-      header: "Rol",
-      cell: ({ row }) => (
-        <Badge variant={ROLE_BADGE_VARIANT[row.original.role] ?? "outline"}>
-          {ROLE_LABELS[row.original.role] ?? row.original.role}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "created_at",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Registrado
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) =>
-        new Date(row.original.created_at).toLocaleDateString("es-MX", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const user = row.original
-        const isLoading = loadingId === user.id && isPending
-
-        return (
-          <div className="flex items-center justify-end gap-2">
-            {user.role === "pending" && (
-              <Button
-                size="sm"
-                disabled={isLoading}
-                onClick={() => handleAuthorize(user.id)}
-              >
-                {isLoading ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <CheckCircle className="mr-1 h-3.5 w-3.5" />
-                )}
-                Autorizar
-              </Button>
-            )}
-            {isRoot && user.role !== "root" && (
-              <Select
-                defaultValue={user.role}
-                disabled={isLoading}
-                onValueChange={(val) => handleChangeRole(user.id, val)}
-              >
-                <SelectTrigger className="h-8 w-36">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pendiente</SelectItem>
-                  <SelectItem value="user">Usuario</SelectItem>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-        )
+        cell: ({ row }) =>
+          row.original.full_name ? (
+            <span className="font-medium">{row.original.full_name}</span>
+          ) : (
+            <span className="text-muted-foreground italic">Sin nombre</span>
+          ),
       },
-    },
-  ]
+      {
+        accessorKey: "email",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Email
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">{row.original.email}</span>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: "Rol",
+        cell: ({ row }) => (
+          <Badge variant={ROLE_BADGE_VARIANT[row.original.role] ?? "outline"}>
+            {ROLE_LABELS[row.original.role] ?? row.original.role}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "created_at",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Registrado
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) =>
+          new Date(row.original.created_at).toLocaleDateString("es-MX", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const user = row.original
+          const isLoading = loadingId === user.id && isPending
+
+          return (
+            <div className="flex items-center justify-end gap-2">
+              {user.role === "pending" && (
+                <Button
+                  size="sm"
+                  disabled={isLoading}
+                  onClick={() => handleAuthorize(user.id)}
+                >
+                  {isLoading ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <CheckCircle className="mr-1 h-3.5 w-3.5" />
+                  )}
+                  Autorizar
+                </Button>
+              )}
+              {isRoot && user.role !== "root" && (
+                <Select
+                  defaultValue={user.role}
+                  disabled={isLoading}
+                  onValueChange={(val) => handleChangeRole(user.id, val)}
+                >
+                  <SelectTrigger className="h-8 w-36">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pendiente</SelectItem>
+                    <SelectItem value="user">Usuario</SelectItem>
+                    <SelectItem value="admin">Administrador</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          )
+        },
+      },
+    ],
+    [isPending, isRoot, loadingId],
+  )
 
   const table = useReactTable({
     data: users,

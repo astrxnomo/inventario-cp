@@ -55,6 +55,7 @@ function ItemFormBody({
       toast.success(item ? "Artículo actualizado" : "Artículo creado")
       onClose()
     }
+    // onClose and toast are stable functions and don't need to be in deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.success])
 

@@ -14,6 +14,7 @@ function ThemeProvider({
       disableTransitionOnChange
       {...props}
     >
+      <ThemeHotkey />
       {children}
     </NextThemesProvider>
   )

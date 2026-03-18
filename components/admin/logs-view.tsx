@@ -6,35 +6,35 @@ import { Button } from "@/components/ui/button"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Input } from "@/components/ui/input"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { AccessLogEntry, SessionWithItems } from "@/lib/types/logs"
 import type { ItemReservation } from "@/lib/types/reservations"
 import { cn } from "@/lib/utils"
 import {
-    flexRender,
-    getCoreRowModel,
-    getExpandedRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
-    type ColumnDef,
-    type FilterFn,
-    type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type FilterFn,
+  type SortingState,
 } from "@tanstack/react-table"
 import {
-    ArrowUpDown,
-    ChevronDown,
-    ChevronRight,
-    Clock,
-    Package,
+  ArrowUpDown,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Package,
 } from "lucide-react"
 import * as React from "react"
 
@@ -165,6 +165,9 @@ function SessionsPanel({ sessions }: { sessions: SessionWithItems[] }) {
                 style: { cursor: "pointer" },
                 className: "p-1 rounded-sm hover:bg-gray-100",
               }}
+              aria-label={
+                row.getIsExpanded() ? "Contraer detalles" : "Expandir detalles"
+              }
             >
               {row.getIsExpanded() ? (
                 <ChevronDown className="h-4 w-4 text-gray-500" />

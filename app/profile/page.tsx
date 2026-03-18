@@ -1,21 +1,13 @@
 import { AppNav } from "@/components/layout/app-nav"
 import { ProfileForm } from "@/components/profile/profile-form"
-import { createClient } from "@/lib/supabase/server"
+import { getCurrentUser } from "@/lib/supabase/get-current-user"
 import { redirect } from "next/navigation"
 
 export default async function ProfilePage() {
-  const supabase = await createClient()
+  const current = await getCurrentUser()
+  if (!current) redirect("/login")
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, full_name")
-    .eq("id", user.id)
-    .single()
+  const { user, profile } = current
 
   if (!profile || profile.role === "pending") redirect("/cabinets")
 
@@ -27,7 +19,7 @@ export default async function ProfilePage() {
         userName={profile.full_name}
       />
 
-      <main className="mx-auto max-w-xl px-4 py-8 sm:px-6">
+      <main id="main-content" className="mx-auto max-w-xl px-4 py-8 sm:px-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Mi perfil

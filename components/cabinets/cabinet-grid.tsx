@@ -30,9 +30,11 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
   const [search, setSearch] = React.useState("")
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all")
 
-  const selectedCabinet = selectedId
-    ? (cabinets.find((c) => c.id === selectedId) ?? null)
-    : null
+  const selectedCabinet = React.useMemo(
+    () =>
+      selectedId ? (cabinets.find((c) => c.id === selectedId) ?? null) : null,
+    [cabinets, selectedId],
+  )
 
   function handleCardClick(cabinet: Cabinet) {
     setSelectedId(cabinet.id)
@@ -41,15 +43,28 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
 
   const q = search.toLowerCase().trim()
 
-  const filtered = cabinets.filter((c) => {
-    const matchSearch =
-      !q ||
-      c.name.toLowerCase().includes(q) ||
-      (c.location ?? "").toLowerCase().includes(q) ||
-      c.item_names.some((n) => n.toLowerCase().includes(q))
-    const matchStatus = statusFilter === "all" || c.status === statusFilter
-    return matchSearch && matchStatus
-  })
+  const filteredWithMatches = React.useMemo(() => {
+    return cabinets
+      .filter((c) => {
+        const matchSearch =
+          !q ||
+          c.name.toLowerCase().includes(q) ||
+          (c.location ?? "").toLowerCase().includes(q) ||
+          c.item_names.some((n) => n.toLowerCase().includes(q))
+        const matchStatus = statusFilter === "all" || c.status === statusFilter
+        return matchSearch && matchStatus
+      })
+      .map((cabinet) => ({
+        cabinet,
+        matchedItems: q
+          ? [
+              ...new Set(
+                cabinet.item_names.filter((n) => n.toLowerCase().includes(q)),
+              ),
+            ]
+          : undefined,
+      }))
+  }, [cabinets, q, statusFilter])
 
   if (cabinets.length === 0) {
     return (
@@ -112,13 +127,13 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
             ))}
           </div>
           <span className="text-xs text-muted-foreground">
-            {filtered.length} de {cabinets.length}
+            {filteredWithMatches.length} de {cabinets.length}
           </span>
         </div>
       </div>
 
       {/* Grid */}
-      {filtered.length === 0 ? (
+      {filteredWithMatches.length === 0 ? (
         <div className="px-4 sm:px-6">
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <p className="text-sm text-gray-500">
@@ -128,16 +143,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
         </div>
       ) : (
         <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {filtered.map((cabinet) => {
-            const matchedItems = q
-              ? [
-                  ...new Set(
-                    cabinet.item_names.filter((n) =>
-                      n.toLowerCase().includes(q),
-                    ),
-                  ),
-                ]
-              : undefined
+          {filteredWithMatches.map(({ cabinet, matchedItems }) => {
             return (
               <CabinetCard
                 key={cabinet.id}

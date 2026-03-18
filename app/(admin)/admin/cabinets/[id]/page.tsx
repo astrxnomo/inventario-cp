@@ -30,7 +30,7 @@ export default async function AdminCabinetDetailPage({ params }: Props) {
   ])
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">

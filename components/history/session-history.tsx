@@ -5,32 +5,32 @@ import { Button } from "@/components/ui/button"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Input } from "@/components/ui/input"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 import type { HistorySession } from "@/lib/types/cabinets"
 import {
-    type ColumnDef,
-    type FilterFn,
-    type SortingState,
-    flexRender,
-    getCoreRowModel,
-    getExpandedRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
+  type ColumnDef,
+  type FilterFn,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table"
 import {
-    ArrowUpDown,
-    ChevronDown,
-    ChevronRight,
-    Package,
-    Search
+  ArrowUpDown,
+  ChevronDown,
+  ChevronRight,
+  Package,
+  Search,
 } from "lucide-react"
 import React, { useMemo, useState } from "react"
 
@@ -87,6 +87,9 @@ export function SessionHistory({ sessions }: { sessions: HistorySession[] }) {
                 style: { cursor: "pointer" },
                 className: "p-1 rounded-sm hover:bg-gray-100",
               }}
+              aria-label={
+                row.getIsExpanded() ? "Contraer detalles" : "Expandir detalles"
+              }
             >
               {row.getIsExpanded() ? (
                 <ChevronDown className="h-4 w-4 text-gray-500" />

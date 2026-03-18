@@ -57,99 +57,103 @@ export function ItemsTable({ cabinetId, items, categories }: Props) {
     })
   }
 
-  const columns: ColumnDef<CabinetItemAdmin>[] = [
-    {
-      accessorKey: "name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Nombre
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="font-medium">{row.original.name}</span>
-      ),
-    },
-    {
-      accessorKey: "category_name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Categoría
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {row.original.category_name}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "quantity",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Cantidad
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">{row.original.quantity}</span>
-      ),
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original
-        const isLoading = loadingId === item.id && isPending
-        const isConfirm = deleteConfirmId === item.id
-
-        return (
-          <div className="flex items-center justify-end gap-1.5">
-            <ItemFormDialog
-              cabinetId={cabinetId}
-              categories={categories}
-              item={item}
-            />
-            {isConfirm ? (
-              <Button
-                size="sm"
-                variant="destructive"
-                disabled={isLoading}
-                onClick={() => handleDelete(item.id)}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  "¿Confirmar?"
-                )}
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setDeleteConfirmId(item.id)}
-              >
-                <Trash2 className="h-3.5 w-3.5 text-destructive" />
-              </Button>
-            )}
-          </div>
-        )
+  const columns = React.useMemo<ColumnDef<CabinetItemAdmin>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Nombre
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <span className="font-medium">{row.original.name}</span>
+        ),
       },
-    },
-  ]
+      {
+        accessorKey: "category_name",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Categoría
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.category_name}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "quantity",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Cantidad
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">{row.original.quantity}</span>
+        ),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const item = row.original
+          const isLoading = loadingId === item.id && isPending
+          const isConfirm = deleteConfirmId === item.id
+
+          return (
+            <div className="flex items-center justify-end gap-1.5">
+              <ItemFormDialog
+                cabinetId={cabinetId}
+                categories={categories}
+                item={item}
+              />
+              {isConfirm ? (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  disabled={isLoading}
+                  onClick={() => handleDelete(item.id)}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    "¿Confirmar?"
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setDeleteConfirmId(item.id)}
+                  aria-label="Eliminar artículo"
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                </Button>
+              )}
+            </div>
+          )
+        },
+      },
+    ],
+    [cabinetId, categories, deleteConfirmId, isPending, loadingId],
+  )
 
   const table = useReactTable({
     data: items,

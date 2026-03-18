@@ -3,21 +3,14 @@ import { PendingAccessScreen } from "@/components/cabinets/pending-access-screen
 import { AppNav } from "@/components/layout/app-nav"
 import { getCabinetsWithCounts } from "@/lib/data/cabinets/get-cabinets"
 import { createClient } from "@/lib/supabase/server"
+import { getCurrentUser } from "@/lib/supabase/get-current-user"
 import { redirect } from "next/navigation"
 
 export default async function CabinetsPage() {
-  const supabase = await createClient()
+  const current = await getCurrentUser()
+  if (!current) redirect("/login")
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, full_name")
-    .eq("id", user.id)
-    .single()
+  const { user, profile } = current
 
   if (!profile || profile.role === "pending") {
     return (
@@ -28,6 +21,7 @@ export default async function CabinetsPage() {
     )
   }
 
+  const supabase = await createClient()
   const cabinets = await getCabinetsWithCounts(supabase)
 
   return (
@@ -38,7 +32,7 @@ export default async function CabinetsPage() {
         userName={profile.full_name}
       />
 
-      <main className="pb-8">
+      <main id="main-content" className="pb-8">
         <div className="mx-auto max-w-7xl px-4 pt-8 pb-5 sm:px-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Gabinetes

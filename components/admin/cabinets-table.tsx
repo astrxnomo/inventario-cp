@@ -95,127 +95,136 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
     })
   }
 
-  const columns: ColumnDef<CabinetAdmin>[] = [
-    {
-      accessorKey: "name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Nombre
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div>
-          <div className="font-medium">{row.original.name}</div>
-          {row.original.description && (
-            <div className="text-xs text-muted-foreground">
-              {row.original.description}
-            </div>
-          )}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "location",
-      header: "Ubicación",
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">
-          {row.original.location || "—"}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => (
-        <Badge variant={STATUS_VARIANT[row.original.status] ?? "outline"}>
-          {STATUS_LABEL[row.original.status] ?? row.original.status}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "item_count",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="-ml-3"
-        >
-          Artículos
-          <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">{row.original.item_count}</span>
-      ),
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const cabinet = row.original
-        const isLockLoading = loadingId === cabinet.id + "-lock" && isPending
-        const isDelLoading = loadingId === cabinet.id + "-del" && isPending
-        const isDelConfirm = deleteConfirmId === cabinet.id
+  const columns = React.useMemo<ColumnDef<CabinetAdmin>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Nombre
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium">{row.original.name}</div>
+            {row.original.description && (
+              <div className="text-xs text-muted-foreground">
+                {row.original.description}
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "location",
+        header: "Ubicación",
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.location || "—"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Estado",
+        cell: ({ row }) => (
+          <Badge variant={STATUS_VARIANT[row.original.status] ?? "outline"}>
+            {STATUS_LABEL[row.original.status] ?? row.original.status}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "item_count",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="-ml-3"
+          >
+            Artículos
+            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground">
+            {row.original.item_count}
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const cabinet = row.original
+          const isLockLoading = loadingId === cabinet.id + "-lock" && isPending
+          const isDelLoading = loadingId === cabinet.id + "-del" && isPending
+          const isDelConfirm = deleteConfirmId === cabinet.id
 
-        return (
-          <div className="flex items-center justify-end gap-1.5">
-            <Button asChild size="sm" variant="outline">
-              <Link href={`/admin/cabinets/${cabinet.id}`}>
-                <Package className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:ml-1">
-                  Artículos
-                </span>
-              </Link>
-            </Button>
-            <CabinetFormDialog cabinet={cabinet} />
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={isLockLoading || cabinet.status === "in_use"}
-              onClick={() => handleLockToggle(cabinet)}
-              title={cabinet.status === "locked" ? "Desbloquear" : "Bloquear"}
-            >
-              {isLockLoading ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : cabinet.status === "locked" ? (
-                <LockOpen className="h-3.5 w-3.5" />
-              ) : (
-                <Lock className="h-3.5 w-3.5" />
-              )}
-            </Button>
-            {isDelConfirm ? (
-              <Button
-                size="sm"
-                variant="destructive"
-                disabled={isDelLoading}
-                onClick={() => handleDelete(cabinet.id)}
-              >
-                {isDelLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  "¿Confirmar?"
-                )}
+          return (
+            <div className="flex items-center justify-end gap-1.5">
+              <Button asChild size="sm" variant="outline">
+                <Link href={`/admin/cabinets/${cabinet.id}`}>
+                  <Package className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:ml-1">
+                    Artículos
+                  </span>
+                </Link>
               </Button>
-            ) : (
+              <CabinetFormDialog cabinet={cabinet} />
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => setDeleteConfirmId(cabinet.id)}
-                title="Eliminar"
+                disabled={isLockLoading || cabinet.status === "in_use"}
+                onClick={() => handleLockToggle(cabinet)}
+                aria-label={
+                  cabinet.status === "locked"
+                    ? "Desbloquear gabinete"
+                    : "Bloquear gabinete"
+                }
               >
-                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                {isLockLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : cabinet.status === "locked" ? (
+                  <LockOpen className="h-3.5 w-3.5" />
+                ) : (
+                  <Lock className="h-3.5 w-3.5" />
+                )}
               </Button>
-            )}
-          </div>
-        )
+              {isDelConfirm ? (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  disabled={isDelLoading}
+                  onClick={() => handleDelete(cabinet.id)}
+                >
+                  {isDelLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    "¿Confirmar?"
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setDeleteConfirmId(cabinet.id)}
+                  aria-label="Eliminar gabinete"
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                </Button>
+              )}
+            </div>
+          )
+        },
       },
-    },
-  ]
+    ],
+    [deleteConfirmId, isPending, loadingId],
+  )
 
   const table = useReactTable({
     data: cabinets,

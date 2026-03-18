@@ -13,7 +13,7 @@ export default async function AdminCabinetsPage() {
   ])
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">

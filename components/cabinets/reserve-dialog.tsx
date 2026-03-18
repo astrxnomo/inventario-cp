@@ -2,18 +2,18 @@
 
 import { Button } from "@/components/ui/button"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-    createGroupReservation,
-    getReservationAvailability,
+  createGroupReservation,
+  getReservationAvailability,
 } from "@/lib/actions/reservations/manage"
 import type { InventoryItem, Selections } from "@/lib/types/cabinets"
 import { AlertCircle, CalendarClock, Loader2 } from "lucide-react"
@@ -104,8 +104,7 @@ export function ReserveDialog({
     }, 400)
 
     return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, startsAt, endsAt])
+  }, [open, startsAt, endsAt, selectedItems])
 
   const overLimit = selectedItems.filter((item) => {
     const avail = availability[item.id]
