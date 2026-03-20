@@ -116,8 +116,8 @@ export function CabinetFormDialog({ cabinet, trigger }: Props) {
       <Pencil className="h-3.5 w-3.5" />
     </Button>
   ) : (
-    <Button size="sm">
-      <Plus className="mr-1.5 h-4 w-4" />
+    <Button>
+      <Plus className="h-4 w-4" />
       Crear gabinete
     </Button>
   )

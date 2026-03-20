@@ -47,13 +47,17 @@ export function DashboardKpis({ kpis }: { kpis: DashboardKpis }) {
         return (
           <div
             key={card.label}
-            className="rounded-lg border border-gray-200 bg-white p-5"
+            className="rounded-lg border border-border bg-card p-5"
           >
             <div className={`mb-3 inline-flex rounded-lg p-2 ${card.bg}`}>
               <Icon className={`h-5 w-5 ${card.color}`} />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{card.value}</div>
-            <div className="mt-0.5 text-sm text-gray-500">{card.label}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {card.value}
+            </div>
+            <div className="mt-0.5 text-sm text-muted-foreground">
+              {card.label}
+            </div>
           </div>
         )
       })}

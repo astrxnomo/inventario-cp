@@ -12,7 +12,7 @@ export default async function ProfilePage() {
   if (!profile || profile.role === "pending") redirect("/cabinets")
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AppNav
         userEmail={user.email}
         userRole={profile.role}
@@ -21,10 +21,10 @@ export default async function ProfilePage() {
 
       <main id="main-content" className="mx-auto max-w-xl px-4 py-8 sm:px-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Mi perfil
           </h1>
-          <p className="mt-1 text-sm text-gray-500">{user.email}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
         </div>
 
         <ProfileForm currentName={profile.full_name} />

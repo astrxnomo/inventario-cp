@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { createCategory, deleteCategory } from "@/lib/actions/categories/manage"
@@ -105,7 +105,7 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
             {categories.map((cat) => (
               <li
                 key={cat.id}
-                className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-gray-50"
+                className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-muted"
               >
                 <span className="text-sm">{cat.name}</span>
                 <CategoryDeleteButton id={cat.id} />

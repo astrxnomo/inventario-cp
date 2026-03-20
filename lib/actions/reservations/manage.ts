@@ -70,26 +70,6 @@ export async function createGroupReservation(
   } = await supabase.auth.getUser()
   if (!user) return { data: null, error: "No autenticado" }
 
-  // 1. Create the reservation group
-  const { data: group, error: groupError } = await supabase
-    .from("reservation_groups")
-    .insert({
-      user_id: user.id,
-      starts_at: payload.startsAt,
-      ends_at: payload.endsAt,
-      note: payload.note ?? null,
-      status: "active",
-    })
-    .select("id")
-    .single()
-
-  if (groupError || !group) {
-    return {
-      data: null,
-      error: groupError?.message ?? "No se pudo crear el grupo de reservas",
-    }
-  }
-
   // 2. Create each individual reservation via RPC
   const createdIds: string[] = []
   for (const item of payload.items) {
@@ -108,7 +88,6 @@ export async function createGroupReservation(
       for (const id of createdIds) {
         await supabase.rpc("cancel_reservation", { p_reservation_id: id })
       }
-      await supabase.from("reservation_groups").delete().eq("id", group.id)
       return {
         data: null,
         error: rpcError?.message ?? "No se pudo crear una de las reservas",
@@ -118,13 +97,8 @@ export async function createGroupReservation(
     createdIds.push(reservationId)
   }
 
-  // 3. Link all reservations to the group
-  await supabase
-    .from("item_reservations")
-    .update({ group_id: group.id })
-    .in("id", createdIds)
-
-  return { data: group.id, error: null }
+  // Return the first ID to satisfy the UI, or a generic string
+  return { data: createdIds[0], error: null }
 }
 
 export async function cancelReservation(

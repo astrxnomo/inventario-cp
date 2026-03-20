@@ -2,25 +2,12 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { DataTable } from "@/components/ui/data-table"
+import { DataTableColumnHeader } from "@/components/ui/data-table-column-header"
+import { DataTableToolbar } from "@/components/ui/data-table-toolbar"
 import { deleteCabinet, toggleCabinetLock } from "@/lib/actions/cabinets/manage"
 import type { CabinetAdmin } from "@/lib/types/cabinets"
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -28,18 +15,11 @@ import {
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
+  type PaginationState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
-import {
-  ArrowUpDown,
-  ChevronDown,
-  Loader2,
-  Lock,
-  LockOpen,
-  Package,
-  Trash2,
-} from "lucide-react"
+import { Loader2, Lock, LockOpen, Package, Trash2 } from "lucide-react"
 import Link from "next/link"
 import * as React from "react"
 import { useState, useTransition } from "react"
@@ -72,6 +52,10 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
   )
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 15,
+  })
 
   function handleLockToggle(cabinet: CabinetAdmin) {
     const lock = cabinet.status !== "locked"
@@ -100,14 +84,7 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-3"
-          >
-            Nombre
-            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-          </Button>
+          <DataTableColumnHeader column={column} title="Nombre" />
         ),
         cell: ({ row }) => (
           <div>
@@ -122,7 +99,9 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
       },
       {
         accessorKey: "location",
-        header: "Ubicación",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Ubicación" />
+        ),
         cell: ({ row }) => (
           <span className="text-muted-foreground">
             {row.original.location || "—"}
@@ -131,7 +110,9 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
       },
       {
         accessorKey: "status",
-        header: "Estado",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Estado" />
+        ),
         cell: ({ row }) => (
           <Badge variant={STATUS_VARIANT[row.original.status] ?? "outline"}>
             {STATUS_LABEL[row.original.status] ?? row.original.status}
@@ -141,14 +122,7 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
       {
         accessorKey: "item_count",
         header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-3"
-          >
-            Artículos
-            <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
-          </Button>
+          <DataTableColumnHeader column={column} title="Artículos" />
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground">
@@ -232,137 +206,33 @@ export function CabinetsTable({ cabinets }: { cabinets: CabinetAdmin[] }) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { sorting, columnFilters, columnVisibility },
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      pagination,
+    },
   })
 
   return (
     <div className="space-y-4">
-      {/* toolbar */}
-      <div className="flex items-center gap-2">
-        <Input
-          placeholder="Buscar gabinetes..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(e) =>
-            table.getColumn("name")?.setFilterValue(e.target.value)
-          }
-          className="max-w-xs"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columnas <ChevronDown className="ml-1.5 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((col) => col.getCanHide())
-              .map((col) => (
-                <DropdownMenuCheckboxItem
-                  key={col.id}
-                  checked={col.getIsVisible()}
-                  onCheckedChange={(val) => col.toggleVisibility(!!val)}
-                  className="capitalize"
-                >
-                  {col.id === "name"
-                    ? "Nombre"
-                    : col.id === "location"
-                      ? "Ubicación"
-                      : col.id === "status"
-                        ? "Estado"
-                        : col.id === "item_count"
-                          ? "Artículos"
-                          : col.id}
-                </DropdownMenuCheckboxItem>
-              ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <DataTableToolbar
+        table={table}
+        searchKey="name"
+        searchPlaceholder="Buscar gabinete..."
+      >
         <CabinetFormDialog />
-      </div>
-
-      {/* table */}
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id}>
-                {hg.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No hay gabinetes registrados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* pagination */}
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">
-          {(() => {
-            const pi = table.getState().pagination.pageIndex
-            const ps = table.getState().pagination.pageSize
-            const total = table.getFilteredRowModel().rows.length
-            if (total === 0) return "Sin resultados"
-            const from = pi * ps + 1
-            const to = Math.min((pi + 1) * ps, total)
-            return `Página ${pi + 1} de ${Math.max(table.getPageCount(), 1)} · ${from}–${to} de ${total}`
-          })()}
-        </span>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
-        </div>
-      </div>
+      </DataTableToolbar>
+      <DataTable
+        table={table}
+        columnsLength={columns.length}
+        emptyMessage="No hay gabinetes registrados."
+      />
     </div>
   )
 }

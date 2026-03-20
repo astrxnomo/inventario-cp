@@ -1,16 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { DataTable } from "@/components/ui/data-table"
+import { DataTableToolbar } from "@/components/ui/data-table-toolbar"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
-import { Input } from "@/components/ui/input"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import { cancelReservation } from "@/lib/actions/reservations/manage"
 import type {
     ItemReservation,
@@ -19,21 +12,18 @@ import type {
 import { cn } from "@/lib/utils"
 import {
     type ColumnDef,
+    type ColumnFiltersState,
     type FilterFn,
-    flexRender,
+    type PaginationState,
+    type SortingState,
+    type VisibilityState,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    type SortingState,
     useReactTable,
 } from "@tanstack/react-table"
-import {
-    ArrowUpDown,
-    CalendarClock,
-    Loader2,
-    Search
-} from "lucide-react"
+import { ArrowUpDown, CalendarClock, Loader2 } from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
@@ -98,13 +88,17 @@ export function MyReservations({
 }) {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [local, setLocal] = useState(reservations)
-  const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "starts_at", desc: true },
-  ])
+  const [globalFilter, setGlobalFilter] = useState("")
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   async function handleCancel(id: string) {
     setBusyId(id)
@@ -141,6 +135,17 @@ export function MyReservations({
     })
   }, [local, statusFilter, dateFrom, dateTo])
 
+  function handleStatusFilterChange(nextStatus: StatusFilter) {
+    setStatusFilter(nextStatus)
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+  }
+
+  function handleDateRangeChange(from: string, to: string) {
+    setDateFrom(from)
+    setDateTo(to)
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+  }
+
   const columns = useMemo<ColumnDef<ItemReservation>[]>(
     () => [
       {
@@ -148,7 +153,7 @@ export function MyReservations({
         header: "Artículo",
         cell: ({ row }) => (
           <div>
-            <p className="font-medium text-gray-900">
+            <p className="font-medium text-foreground">
               {row.original.item_name}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -161,7 +166,7 @@ export function MyReservations({
         accessorKey: "cabinet_name",
         header: "Gabinete",
         cell: ({ getValue }) => (
-          <span className="text-gray-700">{getValue<string>()}</span>
+          <span className="text-foreground">{getValue<string>()}</span>
         ),
       },
       {
@@ -179,7 +184,7 @@ export function MyReservations({
           const r = row.original
           return (
             <div className="flex flex-col">
-              <span className="text-sm text-gray-700 tabular-nums">
+              <span className="text-sm text-muted-foreground tabular-nums">
                 {fmtRange(r.starts_at, r.ends_at)}
               </span>
               {r.note && (
@@ -195,7 +200,7 @@ export function MyReservations({
         accessorKey: "quantity",
         header: "Cant.",
         cell: ({ getValue }) => (
-          <span className="text-gray-700 tabular-nums">
+          <span className="text-muted-foreground tabular-nums">
             {getValue<number>()}
           </span>
         ),
@@ -235,26 +240,29 @@ export function MyReservations({
   const table = useReactTable({
     data: byFilters,
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     globalFilterFn: reservationGlobalFilter,
-    onGlobalFilterChange: setSearch,
-    onSortingChange: setSorting,
     state: {
-      globalFilter: search,
       sorting,
-    },
-    initialState: {
-      pagination: { pageSize: 8 },
+      columnFilters,
+      columnVisibility,
+      globalFilter,
+      pagination,
     },
   })
 
   if (reservations.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 bg-white py-10 text-center">
-        <CalendarClock className="mx-auto mb-2 h-8 w-8 text-gray-300" />
+      <div className="rounded-lg border border-dashed border-border bg-card py-10 text-center">
+        <CalendarClock className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">No tienes reservas aún.</p>
       </div>
     )
@@ -263,114 +271,44 @@ export function MyReservations({
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-col gap-2">
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Buscar reserva..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+      <DataTableToolbar
+        table={table}
+        useGlobalFilter={true}
+        searchPlaceholder="Buscar reserva..."
+      >
+        <div className="flex flex-wrap gap-1 rounded-lg border border-border bg-muted/30 p-1">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => handleStatusFilterChange(f.id)}
+              className={cn(
+                "rounded-md px-3 py-1 text-xs font-medium transition-colors",
+                statusFilter === f.id
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap gap-1 rounded-lg border border-gray-200 bg-white p-1">
-            {STATUS_FILTERS.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setStatusFilter(f.id)}
-                className={cn(
-                  "rounded-md px-3 py-1 text-xs font-medium transition-colors",
-                  statusFilter === f.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-gray-100",
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          <DateRangePicker
-            from={dateFrom}
-            to={dateTo}
-            onChange={(f, t) => {
-              setDateFrom(f)
-              setDateTo(t)
-            }}
-          />
-          <span className="ml-auto text-xs text-muted-foreground">
-            {table.getFilteredRowModel().rows.length} reserva
-            {table.getFilteredRowModel().rows.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-      </div>
+        <DateRangePicker
+          from={dateFrom}
+          to={dateTo}
+          onChange={handleDateRangeChange}
+        />
+        <span className="ml-auto hidden text-xs text-muted-foreground sm:inline-flex">
+          {table.getFilteredRowModel().rows.length} reserva
+          {table.getFilteredRowModel().rows.length !== 1 ? "s" : ""}
+        </span>
+      </DataTableToolbar>
 
       {/* Table */}
-      <div className="rounded-md border bg-white">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id}>
-                {hg.headers.map((h) => (
-                  <TableHead key={h.id}>
-                    {h.isPlaceholder
-                      ? null
-                      : flexRender(h.column.columnDef.header, h.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((c) => (
-                    <TableCell key={c.id}>
-                      {flexRender(c.column.columnDef.cell, c.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No se encontraron resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-2">
-        <div className="text-sm text-muted-foreground">
-          Página {table.getState().pagination.pageIndex + 1} de{" "}
-          {table.getPageCount() || 1}
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
-        </div>
-      </div>
+      <DataTable
+        table={table}
+        columnsLength={columns.length}
+        emptyMessage="No se encontraron resultados."
+      />
     </div>
   )
 }

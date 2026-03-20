@@ -12,8 +12,10 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <Package className="mb-2 h-8 w-8 text-gray-200" />
-        <p className="text-sm text-gray-400">Sin artículos registrados</p>
+        <Package className="mb-2 h-8 w-8 text-muted-foreground/40" />
+        <p className="text-sm text-muted-foreground">
+          Sin artículos registrados
+        </p>
       </div>
     )
   }
@@ -31,22 +33,22 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
             className={cn(
               "flex items-center justify-between rounded-lg border px-4 py-3 transition-colors",
               outOfStock
-                ? "border-gray-100 bg-gray-50 opacity-50"
+                ? "border-border bg-muted/40 opacity-50"
                 : qty > 0
                   ? "border-primary/20 bg-primary/5"
-                  : "border-gray-100 bg-gray-50",
+                  : "border-border bg-muted/40",
             )}
           >
             {/* Left: name + stock info */}
             <div className="mr-3 min-w-0 flex-1 space-y-1">
-              <span className="block truncate text-sm font-medium text-gray-800">
+              <span className="block truncate text-sm font-medium text-foreground">
                 {item.name}
               </span>
               <div className="mt-1 flex flex-wrap items-center gap-1.5">
                 <span
                   className={cn(
                     "text-[11px] tabular-nums",
-                    outOfStock ? "text-amber-600" : "text-gray-400",
+                    outOfStock ? "text-amber-600" : "text-muted-foreground",
                   )}
                 >
                   {Math.max(0, availableMax)} disponible
@@ -72,7 +74,7 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
                   </span>
                 )}
 
-                <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 uppercase">
+                <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground uppercase">
                   {item.category}
                 </span>
               </div>
@@ -88,14 +90,14 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-full border transition-colors",
                   qty > 0
-                    ? "border-primary/30 bg-white text-primary hover:bg-primary/10"
-                    : "cursor-not-allowed border-gray-200 text-gray-300",
+                    ? "border-primary/30 bg-background text-primary hover:bg-primary/10"
+                    : "cursor-not-allowed border-border text-muted-foreground/50",
                 )}
               >
                 <Minus className="h-3.5 w-3.5" />
               </button>
 
-              <span className="w-5 text-center text-sm font-semibold text-gray-900 tabular-nums">
+              <span className="w-5 text-center text-sm font-semibold text-foreground tabular-nums">
                 {qty}
               </span>
 
@@ -107,8 +109,8 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-full border transition-colors",
                   qty < availableMax && !outOfStock
-                    ? "border-primary/30 bg-white text-primary hover:bg-primary/10"
-                    : "cursor-not-allowed border-gray-200 text-gray-300",
+                    ? "border-primary/30 bg-background text-primary hover:bg-primary/10"
+                    : "cursor-not-allowed border-border text-muted-foreground/50",
                 )}
               >
                 <Plus className="h-3.5 w-3.5" />

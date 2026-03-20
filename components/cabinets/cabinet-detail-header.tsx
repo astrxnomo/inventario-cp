@@ -5,17 +5,17 @@ import { Archive, Users } from "lucide-react"
 
 export function CabinetDetailHeader({ cabinet }: { cabinet: Cabinet }) {
   return (
-    <DrawerHeader className="shrink-0 border-b border-gray-100 px-5 pt-4 pb-3 text-left">
+    <DrawerHeader className="shrink-0 border-b border-border px-5 pt-4 pb-3 text-left">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <DrawerTitle className="text-base leading-tight font-semibold text-gray-900">
+          <DrawerTitle className="text-base leading-tight font-semibold text-foreground">
             {cabinet.name}
           </DrawerTitle>
         </div>
       </div>
 
       <div className="mt-3 flex items-center gap-4">
-        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Archive className="h-3.5 w-3.5" />
           <span>{cabinet._count.inventory_items} artículos</span>
         </div>
