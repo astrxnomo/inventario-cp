@@ -1,38 +1,32 @@
-import { ReservationsTable } from "@/components/admin/reservations-table"
+import { ActivityTable } from "@/components/admin/activity-table"
 import { RefreshButton } from "@/components/ui/refresh-button"
-import { getAllReservations } from "@/lib/data/reservations/get-reservations"
+import { getAccessLogs } from "@/lib/data/logs/get-logs"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
-export default async function AdminReservationsPage() {
+export default async function AdminActivityPage() {
   const current = await getCurrentUser()
   if (!current) redirect("/login")
 
   const supabase = await createClient()
-  const reservations = await getAllReservations(supabase, current.user.id)
-
-  const counts = {
-    total: reservations.length,
-    active: reservations.filter((r) => r.status === "active").length,
-  }
+  const accessLogs = await getAccessLogs(supabase)
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Reservas
+            Actividad
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {counts.total} total · {counts.active} activa
-            {counts.active !== 1 ? "s" : ""}
+            Registro de accesos físicos a los gabinetes
           </p>
         </div>
         <RefreshButton />
       </div>
 
-      <ReservationsTable reservations={reservations} />
+      <ActivityTable accessLogs={accessLogs} />
     </main>
   )
 }

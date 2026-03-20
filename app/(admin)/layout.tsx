@@ -1,5 +1,10 @@
-import { AdminSubNav } from "@/components/admin/admin-sub-nav"
-import { AppNav } from "@/components/layout/app-nav"
+import { AppSidebar } from "@/components/app-sidebar"
+import { ThemeToggle } from "@/components/theme-toggle"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
 import { redirect } from "next/navigation"
 
@@ -18,14 +23,25 @@ export default async function AdminLayout({
   const { user, profile } = current
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppNav
+    <SidebarProvider>
+      <AppSidebar
+        variant="sidebar"
         userEmail={user.email}
         userRole={profile.role}
         userName={profile.full_name}
       />
-      <AdminSubNav />
-      {children}
-    </div>
+      <SidebarInset>
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
+          <SidebarTrigger />
+          <span className="text-sm font-medium text-muted-foreground">
+            Inventario Inteligente · Admin
+          </span>
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
+        </header>
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

@@ -13,18 +13,18 @@ export default async function AdminCabinetsPage() {
   ])
 
   return (
-    <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex items-start justify-between gap-4">
+    <main id="main-content" className="w-full px-4 py-6 lg:px-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Gestión de gabinetes
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {cabinets.length} gabinete{cabinets.length !== 1 ? "s" : ""}{" "}
             registrado{cabinets.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <CategoryManager categories={categories} />
           <RefreshButton />
         </div>

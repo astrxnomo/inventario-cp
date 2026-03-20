@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function CabinetsLoading() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="sticky top-0 z-40 border-b border-gray-100 bg-white">
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Skeleton className="h-7 w-40" />
           <Skeleton className="h-8 w-8 rounded-full" />

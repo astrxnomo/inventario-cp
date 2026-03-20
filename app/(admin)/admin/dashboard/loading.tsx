@@ -2,18 +2,24 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function DashboardLoading() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex items-start justify-between gap-4">
+    <main className="w-full px-4 py-6 lg:px-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <Skeleton className="h-8 w-36" />
           <Skeleton className="h-4 w-56" />
         </div>
-        <Skeleton className="h-9 w-20" />
+        <Skeleton className="h-9 w-24 self-start sm:self-auto" />
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-28 rounded-lg" />
         ))}
+      </div>
+
+      <div className="mt-6 rounded-xl border bg-card p-4 sm:p-6">
+        <Skeleton className="mb-3 h-5 w-56" />
+        <Skeleton className="mb-5 h-4 w-72" />
+        <Skeleton className="h-64 w-full rounded-lg" />
       </div>
     </main>
   )

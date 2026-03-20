@@ -2,8 +2,8 @@ import { CabinetGrid } from "@/components/cabinets/cabinet-grid"
 import { PendingAccessScreen } from "@/components/cabinets/pending-access-screen"
 import { AppNav } from "@/components/layout/app-nav"
 import { getCabinetsWithCounts } from "@/lib/data/cabinets/get-cabinets"
-import { createClient } from "@/lib/supabase/server"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
+import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
 export default async function CabinetsPage() {
@@ -25,7 +25,7 @@ export default async function CabinetsPage() {
   const cabinets = await getCabinetsWithCounts(supabase)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AppNav
         userEmail={user.email}
         userRole={profile.role}
@@ -34,10 +34,10 @@ export default async function CabinetsPage() {
 
       <main id="main-content" className="pb-8">
         <div className="mx-auto max-w-7xl px-4 pt-8 pb-5 sm:px-6">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Gabinetes
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {cabinets.length === 0
               ? "No hay gabinetes registrados aún."
               : `${cabinets.length} gabinete${cabinets.length !== 1 ? "s" : ""} en el sistema`}

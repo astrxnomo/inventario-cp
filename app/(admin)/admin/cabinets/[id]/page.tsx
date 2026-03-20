@@ -30,8 +30,8 @@ export default async function AdminCabinetDetailPage({ params }: Props) {
   ])
 
   return (
-    <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex items-start justify-between gap-4">
+    <main id="main-content" className="w-full px-4 py-6 lg:px-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">
             <Link href="/admin/cabinets">
@@ -39,13 +39,15 @@ export default async function AdminCabinetDetailPage({ params }: Props) {
               Gabinetes
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             {cabinet.name}
           </h1>
           {cabinet.location && (
-            <p className="mt-1 text-sm text-gray-500">{cabinet.location}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {cabinet.location}
+            </p>
           )}
-          <p className="mt-0.5 text-sm text-gray-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {items.length} artículo{items.length !== 1 ? "s" : ""}
           </p>
         </div>

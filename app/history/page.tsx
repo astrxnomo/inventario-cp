@@ -24,7 +24,7 @@ export default async function HistoryPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AppNav
         userEmail={user.email}
         userRole={profile.role}
@@ -34,7 +34,7 @@ export default async function HistoryPage() {
       <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Mi historial
             </h1>
           </div>
