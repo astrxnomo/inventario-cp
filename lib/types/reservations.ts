@@ -2,7 +2,6 @@ import type { Enums, Tables } from "@/lib/supabase/types"
 
 export type ReservationStatus = Enums<"reservation_status">
 export type ItemReservationRow = Tables<"item_reservations">
-export type ReservationGroupRow = Tables<"reservation_groups">
 
 export interface ItemReservation extends ItemReservationRow {
   item_name: string

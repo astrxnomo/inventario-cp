@@ -192,7 +192,6 @@ export type Database = {
           cancelled_at: string | null
           created_at: string
           ends_at: string
-          group_id: string | null
           id: string
           item_id: string
           note: string | null
@@ -207,7 +206,6 @@ export type Database = {
           cancelled_at?: string | null
           created_at?: string
           ends_at: string
-          group_id?: string | null
           id?: string
           item_id: string
           note?: string | null
@@ -222,7 +220,6 @@ export type Database = {
           cancelled_at?: string | null
           created_at?: string
           ends_at?: string
-          group_id?: string | null
           id?: string
           item_id?: string
           note?: string | null
@@ -245,13 +242,6 @@ export type Database = {
             columns: ["cabinet_id"]
             isOneToOne: false
             referencedRelation: "cabinets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "item_reservations_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "reservation_groups"
             referencedColumns: ["id"]
           },
           {
@@ -286,47 +276,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      reservation_groups: {
-        Row: {
-          created_at: string
-          ends_at: string
-          id: string
-          note: string | null
-          starts_at: string
-          status: Database["public"]["Enums"]["reservation_status"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          ends_at: string
-          id?: string
-          note?: string | null
-          starts_at: string
-          status?: Database["public"]["Enums"]["reservation_status"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          ends_at?: string
-          id?: string
-          note?: string | null
-          starts_at?: string
-          status?: Database["public"]["Enums"]["reservation_status"]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reservation_groups_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       session_items: {
         Row: {

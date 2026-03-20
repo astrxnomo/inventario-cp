@@ -7,7 +7,6 @@ type ReservationJoinRow = {
   cabinet_id: string
   item_id: string
   user_id: string
-  group_id: string | null
   quantity: number
   starts_at: string
   ends_at: string
@@ -29,7 +28,6 @@ const SELECT_FIELDS = [
   "cabinet_id",
   "item_id",
   "user_id",
-  "group_id",
   "quantity",
   "starts_at",
   "ends_at",
@@ -56,7 +54,6 @@ function mapReservation(
     cabinet_id: row.cabinet_id,
     item_id: row.item_id,
     user_id: row.user_id,
-    group_id: row.group_id,
     quantity: row.quantity,
     starts_at: row.starts_at,
     ends_at: row.ends_at,
