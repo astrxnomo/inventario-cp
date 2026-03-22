@@ -16,9 +16,8 @@ export type AdminReservation = {
   category_name?: string
 }
 
-export async function getAllReservations(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<AdminReservation[]> {
+export async function getAllReservations(): Promise<AdminReservation[]> {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("item_reservations")
     .select(
@@ -31,11 +30,10 @@ export async function getAllReservations(
       starts_at,
       ends_at,
       status,
-      notes,
+      note,
       profiles!inner(full_name),
-      inventory_items!inner(name, category_id),
-      cabinets!inner(name),
-      inventory_categories(name)
+      inventory_items!inner(name, category_id, inventory_categories(name)),
+      cabinets!inner(name)
     `,
     )
     .order("starts_at", { ascending: false })
@@ -55,10 +53,11 @@ export async function getAllReservations(
     starts_at: reservation.starts_at,
     ends_at: reservation.ends_at,
     status: reservation.status as AdminReservation["status"],
-    notes: reservation.notes,
+    notes: reservation.note,
     user_name: (reservation.profiles as any)?.full_name ?? "Sin nombre",
     item_name: (reservation.inventory_items as any)?.name ?? "Sin item",
     cabinet_name: (reservation.cabinets as any)?.name ?? "Sin gabinete",
-    category_name: (reservation.inventory_categories as any)?.name ?? null,
+    category_name:
+      (reservation.inventory_items as any)?.inventory_categories?.name ?? null,
   }))
 }

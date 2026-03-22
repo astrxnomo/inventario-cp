@@ -1,6 +1,6 @@
-import type { Database } from "@/lib/supabase/types"
+import { createClient } from "@/lib/supabase/server"
+
 import type { ItemReservation } from "@/lib/types/reservations"
-import type { SupabaseClient } from "@supabase/supabase-js"
 
 type ReservationJoinRow = {
   id: string
@@ -71,9 +71,9 @@ function mapReservation(
 }
 
 export async function getUserReservations(
-  supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<ItemReservation[]> {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("item_reservations")
     .select(SELECT_FIELDS)
@@ -88,9 +88,9 @@ export async function getUserReservations(
 }
 
 export async function getAllReservations(
-  supabase: SupabaseClient<Database>,
   currentUserId: string,
 ): Promise<ItemReservation[]> {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("item_reservations")
     .select(SELECT_FIELDS)
