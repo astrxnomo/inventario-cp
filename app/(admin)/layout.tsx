@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import {
   SidebarInset,
   SidebarProvider,
@@ -17,7 +17,7 @@ export default async function AdminLayout({
 
   if (!current) redirect("/login")
   if (!current.profile || !["admin", "root"].includes(current.profile.role)) {
-    redirect("/cabinets")
+    redirect("/")
   }
 
   const { user, profile } = current

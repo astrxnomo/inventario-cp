@@ -1,11 +1,8 @@
-import { ReservationsTable } from "@/components/admin/reservations-table"
-import { RefreshButton } from "@/components/ui/refresh-button"
+import { ReservationsTable } from "@/components/admin/reservations/table"
 import { getAllReservations } from "@/lib/data/reservations/get-all-reservations"
-import { createClient } from "@/lib/supabase/server"
 
 export default async function AdminReservationsPage() {
-  const supabase = await createClient()
-  const reservations = await getAllReservations(supabase)
+  const reservations = await getAllReservations()
 
   const counts = {
     total: reservations.length,
@@ -29,7 +26,6 @@ export default async function AdminReservationsPage() {
             )}
           </p>
         </div>
-        <RefreshButton />
       </div>
 
       <ReservationsTable reservations={reservations} />

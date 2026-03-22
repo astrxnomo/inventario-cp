@@ -1,11 +1,8 @@
-import { SessionsTable } from "@/components/admin/sessions-table"
-import { RefreshButton } from "@/components/ui/refresh-button"
+import { SessionsTable } from "@/components/admin/sessions/table"
 import { getAllSessions } from "@/lib/data/sessions/get-all-sessions"
-import { createClient } from "@/lib/supabase/server"
 
 export default async function AdminSessionsPage() {
-  const supabase = await createClient()
-  const sessions = await getAllSessions(supabase)
+  const sessions = await getAllSessions()
 
   const activeSessions = sessions.filter((s) => !s.closed_at).length
 
@@ -26,7 +23,6 @@ export default async function AdminSessionsPage() {
             )}
           </p>
         </div>
-        <RefreshButton />
       </div>
 
       <SessionsTable sessions={sessions} />

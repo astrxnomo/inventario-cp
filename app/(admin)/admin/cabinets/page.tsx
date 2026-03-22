@@ -1,16 +1,8 @@
-import { CabinetGrid } from "@/components/cabinets/cabinet-grid"
-import { RefreshButton } from "@/components/ui/refresh-button"
+import { CabinetsTable } from "@/components/admin/cabinets/table"
 import { getCabinetsWithCounts } from "@/lib/data/cabinets/get-cabinets"
-import { getCurrentUser } from "@/lib/supabase/get-current-user"
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
 
 export default async function AdminCabinetsPage() {
-  const current = await getCurrentUser()
-  if (!current) redirect("/login")
-
-  const supabase = await createClient()
-  const cabinets = await getCabinetsWithCounts(supabase)
+  const cabinets = await getCabinetsWithCounts()
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
@@ -24,11 +16,10 @@ export default async function AdminCabinetsPage() {
             sistema
           </p>
         </div>
-        <RefreshButton />
       </div>
 
       <div className="mx-auto">
-        <CabinetGrid initialCabinets={cabinets} userId={current.user.id} />
+        <CabinetsTable data={cabinets} />
       </div>
     </main>
   )

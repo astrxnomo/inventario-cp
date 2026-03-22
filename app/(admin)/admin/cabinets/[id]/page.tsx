@@ -23,10 +23,7 @@ export default async function AdminCabinetDetailPage({ params }: Props) {
 
   if (!cabinet) notFound()
 
-  const [items] = await Promise.all([
-    getCabinetItemsAdmin(supabase, id),
-    getCategories(supabase),
-  ])
+  const [items] = await Promise.all([getCabinetItemsAdmin(id), getCategories()])
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
