@@ -1,9 +1,8 @@
 import { DashboardKpis } from "@/components/admin/dashboard-kpis"
-import { DataTable as DashboardExampleTable } from "@/components/data-table"
+
 import { RefreshButton } from "@/components/ui/refresh-button"
 import { getDashboardKpis } from "@/lib/data/dashboard/get-dashboard"
 import { createClient } from "@/lib/supabase/server"
-import data from "./data.json"
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
@@ -32,7 +31,6 @@ export default async function AdminDashboardPage() {
             Vista tipo dashboard-01 con tabla interactiva
           </p>
         </div>
-        <DashboardExampleTable data={data} />
       </section>
     </main>
   )

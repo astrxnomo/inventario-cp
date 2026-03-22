@@ -3,16 +3,16 @@
 import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
 import {
-  adminReservationColumns,
-  reservationStatusOptions,
-  type AdminReservation,
-} from "./reservations-table-columns"
+  activityLogColumns,
+  actionOptions,
+  type AccessLog,
+} from "./activity-logs-table-columns"
 
-interface ReservationsTableProps {
-  reservations: AdminReservation[]
+interface ActivityLogsTableProps {
+  logs: AccessLog[]
 }
 
-export function ReservationsTable({ reservations }: ReservationsTableProps) {
+export function ActivityLogsTable({ logs }: ActivityLogsTableProps) {
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
 
@@ -22,33 +22,33 @@ export function ReservationsTable({ reservations }: ReservationsTableProps) {
   }
 
   // Filtrar por rango de fechas
-  const filteredReservations = reservations.filter((reservation) => {
+  const filteredLogs = logs.filter((log) => {
     if (!dateFrom && !dateTo) return true
 
-    const startsAt = new Date(reservation.starts_at)
+    const timestamp = new Date(log.timestamp)
     const from = dateFrom ? new Date(`${dateFrom}T00:00:00`) : null
     const to = dateTo ? new Date(`${dateTo}T23:59:59`) : null
 
-    if (from && startsAt < from) return false
-    if (to && startsAt > to) return false
+    if (from && timestamp < from) return false
+    if (to && timestamp > to) return false
     return true
   })
 
   return (
     <DataTable
-      columns={adminReservationColumns}
-      data={filteredReservations}
+      columns={activityLogColumns}
+      data={filteredLogs}
       searchColumn="user_name"
       searchPlaceholder="Buscar por usuario..."
       filterFields={[
         {
-          id: "status",
-          label: "Estado",
-          options: reservationStatusOptions,
+          id: "action",
+          label: "Acción",
+          options: actionOptions,
         },
       ]}
       showDateFilter
-      dateFilterColumn="starts_at"
+      dateFilterColumn="timestamp"
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}

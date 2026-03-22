@@ -1,16 +1,13 @@
 import { SessionsTable } from "@/components/admin/sessions-table"
 import { RefreshButton } from "@/components/ui/refresh-button"
-import { getSessionsWithItems } from "@/lib/data/logs/get-logs"
-import { getCurrentUser } from "@/lib/supabase/get-current-user"
+import { getAllSessions } from "@/lib/data/sessions/get-all-sessions"
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
 
 export default async function AdminSessionsPage() {
-  const current = await getCurrentUser()
-  if (!current) redirect("/login")
-
   const supabase = await createClient()
-  const sessions = await getSessionsWithItems(supabase)
+  const sessions = await getAllSessions(supabase)
+
+  const activeSessions = sessions.filter((s) => !s.closed_at).length
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
@@ -20,7 +17,13 @@ export default async function AdminSessionsPage() {
             Sesiones
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Registro de sesiones de inventario (retiros y devoluciones)
+            {sessions.length} sesión{sessions.length !== 1 ? "es" : ""}{" "}
+            registrada{sessions.length !== 1 ? "s" : ""}
+            {activeSessions > 0 && (
+              <span className="ml-2 font-medium text-green-600">
+                · {activeSessions} activa{activeSessions !== 1 ? "s" : ""}
+              </span>
+            )}
           </p>
         </div>
         <RefreshButton />

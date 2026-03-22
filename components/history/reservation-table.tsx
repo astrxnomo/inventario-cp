@@ -3,16 +3,16 @@
 import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
 import {
-  adminReservationColumns,
+  reservationColumns,
   reservationStatusOptions,
-  type AdminReservation,
-} from "./reservations-table-columns"
+  type ItemReservation,
+} from "./reservation-table-columns"
 
-interface ReservationsTableProps {
-  reservations: AdminReservation[]
+interface ReservationTableProps {
+  reservations: ItemReservation[]
 }
 
-export function ReservationsTable({ reservations }: ReservationsTableProps) {
+export function ReservationTable({ reservations }: ReservationTableProps) {
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
 
@@ -21,7 +21,7 @@ export function ReservationsTable({ reservations }: ReservationsTableProps) {
     setDateTo(to)
   }
 
-  // Filtrar por rango de fechas
+  // Filtrar por rango de fechas (fecha de inicio de reserva)
   const filteredReservations = reservations.filter((reservation) => {
     if (!dateFrom && !dateTo) return true
 
@@ -36,10 +36,10 @@ export function ReservationsTable({ reservations }: ReservationsTableProps) {
 
   return (
     <DataTable
-      columns={adminReservationColumns}
+      columns={reservationColumns}
       data={filteredReservations}
-      searchColumn="user_name"
-      searchPlaceholder="Buscar por usuario..."
+      searchColumn="item_name"
+      searchPlaceholder="Buscar por item..."
       filterFields={[
         {
           id: "status",
@@ -52,7 +52,7 @@ export function ReservationsTable({ reservations }: ReservationsTableProps) {
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}
-      pageSize={20}
+      pageSize={10}
     />
   )
 }

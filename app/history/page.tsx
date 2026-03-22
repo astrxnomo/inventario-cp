@@ -1,8 +1,8 @@
-import { MyReservations } from "@/components/history/my-reservations"
-import { SessionHistory } from "@/components/history/session-history"
 import { AppNav } from "@/components/layout/app-nav"
 import { RefreshButton } from "@/components/ui/refresh-button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SessionHistoryTable } from "@/components/history/session-history-table"
+import { ReservationTable } from "@/components/history/reservation-table"
 import { getUserSessionHistory } from "@/lib/data/cabinets/get-user-history"
 import { getUserReservations } from "@/lib/data/reservations/get-reservations"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
@@ -37,12 +37,15 @@ export default async function HistoryPage() {
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Mi historial
             </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Consulta tus sesiones de gabinete y reservas de items
+            </p>
           </div>
           <RefreshButton />
         </div>
 
-        <Tabs defaultValue="sessions">
-          <TabsList className="mb-4">
+        <Tabs defaultValue="sessions" className="w-full">
+          <TabsList className="mb-6">
             <TabsTrigger value="sessions">
               Sesiones ({sessions.length})
             </TabsTrigger>
@@ -50,11 +53,11 @@ export default async function HistoryPage() {
               Reservas ({reservations.length})
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="sessions">
-            <SessionHistory sessions={sessions} />
+          <TabsContent value="sessions" className="mt-0">
+            <SessionHistoryTable sessions={sessions} />
           </TabsContent>
-          <TabsContent value="reservations">
-            <MyReservations reservations={reservations} />
+          <TabsContent value="reservations" className="mt-0">
+            <ReservationTable reservations={reservations} />
           </TabsContent>
         </Tabs>
       </main>

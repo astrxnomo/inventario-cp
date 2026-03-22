@@ -3,15 +3,15 @@
 import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
 import {
-  adminSessionColumns,
-  type AdminSession,
-} from "./sessions-table-columns"
+  sessionHistoryColumns,
+  type HistorySession,
+} from "./session-history-table-columns"
 
-interface SessionsTableProps {
-  sessions: AdminSession[]
+interface SessionHistoryTableProps {
+  sessions: HistorySession[]
 }
 
-export function SessionsTable({ sessions }: SessionsTableProps) {
+export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
 
@@ -35,16 +35,16 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
 
   return (
     <DataTable
-      columns={adminSessionColumns}
+      columns={sessionHistoryColumns}
       data={filteredSessions}
-      searchColumn="user_name"
-      searchPlaceholder="Buscar por usuario..."
+      searchColumn="cabinet_name"
+      searchPlaceholder="Buscar por gabinete..."
       showDateFilter
       dateFilterColumn="opened_at"
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}
-      pageSize={20}
+      pageSize={10}
     />
   )
 }

@@ -21,6 +21,7 @@ import {
   History,
   LayoutDashboard,
   Package,
+  PackageOpen,
   Shield,
   Users,
 } from "lucide-react"
@@ -28,6 +29,7 @@ import {
 const adminLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/cabinets", label: "Gabinetes", icon: Package },
+  { href: "/admin/inventory", label: "Inventario", icon: PackageOpen },
   { href: "/admin/users", label: "Usuarios", icon: Users },
 ]
 

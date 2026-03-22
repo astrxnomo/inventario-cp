@@ -1,4 +1,3 @@
-import { ItemsTable } from "@/components/admin/items-table"
 import { Button } from "@/components/ui/button"
 import { RefreshButton } from "@/components/ui/refresh-button"
 import { getCabinetItemsAdmin } from "@/lib/data/cabinets/get-cabinets-admin"
@@ -24,7 +23,7 @@ export default async function AdminCabinetDetailPage({ params }: Props) {
 
   if (!cabinet) notFound()
 
-  const [items, categories] = await Promise.all([
+  const [items] = await Promise.all([
     getCabinetItemsAdmin(supabase, id),
     getCategories(supabase),
   ])
@@ -53,8 +52,6 @@ export default async function AdminCabinetDetailPage({ params }: Props) {
         </div>
         <RefreshButton />
       </div>
-
-      <ItemsTable cabinetId={id} items={items} categories={categories} />
     </main>
   )
 }

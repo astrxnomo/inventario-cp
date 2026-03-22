@@ -1,16 +1,11 @@
 import { ReservationsTable } from "@/components/admin/reservations-table"
 import { RefreshButton } from "@/components/ui/refresh-button"
-import { getAllReservations } from "@/lib/data/reservations/get-reservations"
-import { getCurrentUser } from "@/lib/supabase/get-current-user"
+import { getAllReservations } from "@/lib/data/reservations/get-all-reservations"
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
 
 export default async function AdminReservationsPage() {
-  const current = await getCurrentUser()
-  if (!current) redirect("/login")
-
   const supabase = await createClient()
-  const reservations = await getAllReservations(supabase, current.user.id)
+  const reservations = await getAllReservations(supabase)
 
   const counts = {
     total: reservations.length,
@@ -25,8 +20,13 @@ export default async function AdminReservationsPage() {
             Reservas
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {counts.total} total · {counts.active} activa
-            {counts.active !== 1 ? "s" : ""}
+            {counts.total} reserva{counts.total !== 1 ? "s" : ""} registrada
+            {counts.total !== 1 ? "s" : ""}
+            {counts.active > 0 && (
+              <span className="ml-2 font-medium text-green-600">
+                · {counts.active} activa{counts.active !== 1 ? "s" : ""}
+              </span>
+            )}
           </p>
         </div>
         <RefreshButton />
