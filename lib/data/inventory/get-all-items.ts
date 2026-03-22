@@ -1,20 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
+import { InventoryItem } from "@/lib/types/inventory"
+import "server-only"
 
-export type InventoryItem = {
-  id: string
-  cabinet_id: string
-  name: string
-  quantity: number
-  category_id: string | null
-  created_at: string
-  updated_at: string
-  cabinet_name?: string
-  category_name?: string
-}
-
-export async function getInventoryItems(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<InventoryItem[]> {
+export async function getAllItems(): Promise<InventoryItem[]> {
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("inventory_items")
     .select(
