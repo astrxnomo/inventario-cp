@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import type { Cabinet } from "@/lib/types/cabinets"
 
-export async function getCabinetsWithCounts(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<Cabinet[]> {
+export async function getCabinetsWithCounts(): Promise<Cabinet[]> {
+  const supabase = await createClient()
   const [cabinetsRes, itemsRes, activeSessionsRes] = await Promise.all([
     supabase.from("cabinets").select("*").order("name"),
     supabase.from("inventory_items").select("cabinet_id, name").order("name"),
