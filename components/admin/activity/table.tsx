@@ -1,12 +1,9 @@
 "use client"
 
-import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
-import {
-  activityLogColumns,
-  actionOptions,
-  type AccessLog,
-} from "./activity-logs-table-columns"
+import { useState } from "react"
+import { actionOptions, activityLogColumns, type AccessLog } from "./columns"
+import { RefreshButton } from "@/components/ui/refresh-button"
 
 interface ActivityLogsTableProps {
   logs: AccessLog[]
@@ -25,7 +22,7 @@ export function ActivityLogsTable({ logs }: ActivityLogsTableProps) {
   const filteredLogs = logs.filter((log) => {
     if (!dateFrom && !dateTo) return true
 
-    const timestamp = new Date(log.timestamp)
+    const timestamp = new Date(log.created_at)
     const from = dateFrom ? new Date(`${dateFrom}T00:00:00`) : null
     const to = dateTo ? new Date(`${dateTo}T23:59:59`) : null
 
@@ -48,11 +45,12 @@ export function ActivityLogsTable({ logs }: ActivityLogsTableProps) {
         },
       ]}
       showDateFilter
-      dateFilterColumn="timestamp"
+      dateFilterColumn="created_at"
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}
-      pageSize={20}
+      pageSize={10}
+      actions={<RefreshButton />}
     />
   )
 }

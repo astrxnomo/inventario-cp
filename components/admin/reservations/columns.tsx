@@ -1,11 +1,10 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
-import { format, isPast, isFuture } from "date-fns"
-import { es } from "date-fns/locale"
-import { Package, User, Calendar, AlertCircle } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { formatDate, isFuture, isPast } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
+import { AlertCircle, Archive, Box, Calendar, User } from "lucide-react"
 
 export type AdminReservation = {
   id: string
@@ -72,7 +71,7 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
     cell: ({ row }) => (
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
-          <Package className="size-4 text-muted-foreground" />
+          <Box className="size-4 text-muted-foreground" />
           <span className="font-medium">{row.getValue("item_name")}</span>
         </div>
         {row.original.category_name && (
@@ -90,7 +89,10 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
       <DataTableColumnHeader column={column} title="Gabinete" />
     ),
     cell: ({ row }) => (
-      <span className="text-sm">{row.getValue("cabinet_name")}</span>
+      <Badge variant="outline">
+        <Archive className="size-2" />
+        {row.getValue("cabinet_name") || "Sin gabinete"}
+      </Badge>
     ),
     enableSorting: true,
   },
@@ -100,7 +102,7 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
       <DataTableColumnHeader column={column} title="Cantidad" />
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-medium">{row.getValue("quantity")}</span>
+      <Badge variant="outline">{row.getValue("quantity")}</Badge>
     ),
     enableSorting: true,
   },
@@ -117,10 +119,10 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
           <span
             className={`text-sm ${isUpcoming ? "text-blue-600 dark:text-blue-400" : ""}`}
           >
-            {format(date, "d MMM yyyy", { locale: es })}
+            {formatDate(date, "d MMM yyyy")}
           </span>
           <span className="text-xs text-muted-foreground">
-            {format(date, "HH:mm", { locale: es })}
+            {formatDate(date, "h:mm a")}
           </span>
         </div>
       )
@@ -141,10 +143,10 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
           <span
             className={`text-sm ${isExpired ? "text-red-600 dark:text-red-400" : ""}`}
           >
-            {format(date, "d MMM yyyy", { locale: es })}
+            {formatDate(date, "d MMM yyyy")}
           </span>
           <span className="text-xs text-muted-foreground">
-            {format(date, "HH:mm", { locale: es })}
+            {formatDate(date, "h:mm a")}
           </span>
         </div>
       )

@@ -1,27 +1,14 @@
 "use client"
 
-import type { Table } from "@tanstack/react-table"
 import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { DatePicker } from "@/components/ui/date-picker"
+import type { DataTableToolbarProps } from "@/lib/types/data-table"
+import { format } from "@/lib/utils/date"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
-import type { DataTableFilterField } from "./types"
-
-interface DataTableToolbarProps<TData> {
-  table: Table<TData>
-  filterFields?: DataTableFilterField<TData>[]
-  searchPlaceholder?: string
-  searchColumn?: keyof TData
-  showDateFilter?: boolean
-  dateFilterColumn?: keyof TData
-  onDateRangeChange?: (from: string, to: string) => void
-  dateFrom?: string
-  dateTo?: string
-  children?: React.ReactNode
-}
 
 export function DataTableToolbar<TData>({
   table,
@@ -33,20 +20,27 @@ export function DataTableToolbar<TData>({
   dateFrom = "",
   dateTo = "",
   children,
+  columnFilters,
+  actions,
 }: DataTableToolbarProps<TData>) {
   const isFiltered =
-    table.getState().columnFilters.length > 0 || dateFrom || dateTo
+    (columnFilters ?? table.getState().columnFilters).length > 0 ||
+    dateFrom ||
+    dateTo
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col-reverse justify-between gap-4 md:flex-row md:items-center">
       <div className="flex flex-1 flex-wrap items-center gap-2">
         {searchColumn && (
           <Input
             placeholder={searchPlaceholder}
             value={
-              (table
-                .getColumn(String(searchColumn))
-                ?.getFilterValue() as string) ?? ""
+              (columnFilters
+                ? (columnFilters.find((f) => f.id === String(searchColumn))
+                    ?.value as string)
+                : (table
+                    .getColumn(String(searchColumn))
+                    ?.getFilterValue() as string)) ?? ""
             }
             onChange={(event) =>
               table
@@ -67,6 +61,10 @@ export function DataTableToolbar<TData>({
                 column={column}
                 title={field.label}
                 options={field.options}
+                filterValues={
+                  columnFilters?.find((f) => f.id === String(field.id))
+                    ?.value as string[]
+                }
               />
             )
           }
@@ -74,10 +72,18 @@ export function DataTableToolbar<TData>({
           return null
         })}
         {showDateFilter && onDateRangeChange && (
-          <DateRangePicker
-            from={dateFrom}
-            to={dateTo}
-            onChange={onDateRangeChange}
+          <DatePicker
+            value={dateFrom ? new Date(`${dateFrom}T00:00:00`) : undefined}
+            onChange={(date) => {
+              if (date) {
+                const str = format(date, "yyyy-MM-dd")
+                onDateRangeChange(str, str)
+              } else {
+                onDateRangeChange("", "")
+              }
+            }}
+            placeholder="Fecha"
+            className="h-8 w-auto"
           />
         )}
         {isFiltered && (
@@ -85,6 +91,8 @@ export function DataTableToolbar<TData>({
             variant="ghost"
             onClick={() => {
               table.resetColumnFilters()
+              table.resetGlobalFilter()
+              table.setPageIndex(0)
               if (onDateRangeChange) {
                 onDateRangeChange("", "")
               }
@@ -97,6 +105,7 @@ export function DataTableToolbar<TData>({
         )}
         {children}
       </div>
+      {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>
   )
 }

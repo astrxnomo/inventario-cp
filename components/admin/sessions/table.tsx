@@ -1,11 +1,9 @@
 "use client"
 
-import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
-import {
-  adminSessionColumns,
-  type AdminSession,
-} from "./sessions-table-columns"
+import { useState } from "react"
+import { adminSessionColumns, type AdminSession } from "./columns"
+import { RefreshButton } from "@/components/ui/refresh-button"
 
 interface SessionsTableProps {
   sessions: AdminSession[]
@@ -44,7 +42,8 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}
-      pageSize={20}
+      pageSize={10}
+      actions={<RefreshButton />}
     />
   )
 }

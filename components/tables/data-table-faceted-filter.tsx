@@ -1,7 +1,7 @@
 "use client"
 
 import type { Column } from "@tanstack/react-table"
-import { CheckIcon, PlusCircleIcon } from "lucide-react"
+import { CheckIcon, TableProperties } from "lucide-react"
 import * as React from "react"
 
 import { Badge } from "@/components/ui/badge"
@@ -31,21 +31,29 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     value: string
     icon?: React.ComponentType<{ className?: string }>
   }[]
+  /**
+   * Optional filter values to force re-render when the column instance is stable
+   * but internal state changes
+   */
+  filterValues?: string[]
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  filterValues,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues()
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  const selectedValues = new Set(
+    (filterValues ?? column?.getFilterValue()) as string[],
+  )
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircleIcon className="mr-2 size-4" />
+          <TableProperties />
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -82,7 +90,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className="w-[250px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
@@ -116,14 +124,21 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <CheckIcon className={cn("size-4")} />
                     </div>
                     {option.icon && (
-                      <option.icon className="mr-2 size-4 text-muted-foreground" />
+                      <option.icon className="mr-1 size-4 text-muted-foreground" />
                     )}
-                    <span>{option.label}</span>
-                    {facets?.get(option.value) && (
-                      <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
-                      </span>
-                    )}
+                    <div className="flex flex-1 items-center justify-between">
+                      <span>{option.label}</span>
+                      {facets?.get(option.value) && (
+                        <div className="flex items-center">
+                          <Badge
+                            variant="secondary"
+                            className="rounded-sm px-1 font-normal"
+                          >
+                            {facets.get(option.value)}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
                   </CommandItem>
                 )
               })}

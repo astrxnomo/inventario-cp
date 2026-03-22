@@ -1,18 +1,17 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { LogIn, LogOut, Lock, Unlock, AlertCircle, User } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { formatDate } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
+import { AlertCircle, Archive, Lock, LogIn, Unlock, User } from "lucide-react"
 
 export type AccessLog = {
   id: string
   user_id: string
   cabinet_id: string
-  action: "open" | "close" | "lock" | "unlock" | "error"
-  timestamp: string
+  action: "open_requested" | "open_granted" | "open_denied" | "closed"
+  created_at: string
   metadata: Record<string, any> | null
   // Joins
   user_name?: string
@@ -21,53 +20,50 @@ export type AccessLog = {
 }
 
 export const actionOptions = [
-  { label: "Abrir", value: "open", icon: Unlock },
-  { label: "Cerrar", value: "close", icon: Lock },
-  { label: "Bloquear", value: "lock", icon: Lock },
-  { label: "Desbloquear", value: "unlock", icon: Unlock },
-  { label: "Error", value: "error", icon: AlertCircle },
+  { label: "Apertura solicitada", value: "open_requested", icon: LogIn },
+  { label: "Apertura concedida", value: "open_granted", icon: Unlock },
+  { label: "Apertura denegada", value: "open_denied", icon: AlertCircle },
+  { label: "Cerrado", value: "closed", icon: Lock },
 ]
 
 const actionColors = {
-  open: "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20",
-  close: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
-  lock: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
-  unlock:
+  open_requested:
+    "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+  open_granted:
     "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
-  error: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
+  open_denied: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
+  closed: "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20",
 }
 
 const actionIcons = {
-  open: Unlock,
-  close: Lock,
-  lock: Lock,
-  unlock: Unlock,
-  error: AlertCircle,
+  open_requested: LogIn,
+  open_granted: Unlock,
+  open_denied: AlertCircle,
+  closed: Lock,
 }
 
 const actionLabels = {
-  open: "Abrir",
-  close: "Cerrar",
-  lock: "Bloquear",
-  unlock: "Desbloquear",
-  error: "Error",
+  open_requested: "Apertura solicitada",
+  open_granted: "Apertura concedida",
+  open_denied: "Apertura denegada",
+  closed: "Cerrado",
 }
 
 export const activityLogColumns: ColumnDef<AccessLog>[] = [
   {
-    accessorKey: "timestamp",
+    accessorKey: "created_at",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Fecha y hora" />
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("timestamp"))
+      const date = new Date(row.getValue("created_at"))
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium">
-            {format(date, "d MMM yyyy", { locale: es })}
+            {formatDate(date, "d MMM yyyy")}
           </span>
           <span className="text-xs text-muted-foreground">
-            {format(date, "HH:mm:ss", { locale: es })}
+            {formatDate(date, "h:mm:ss a")}
           </span>
         </div>
       )
@@ -103,7 +99,10 @@ export const activityLogColumns: ColumnDef<AccessLog>[] = [
       <DataTableColumnHeader column={column} title="Gabinete" />
     ),
     cell: ({ row }) => (
-      <span className="text-sm">{row.getValue("cabinet_name")}</span>
+      <Badge variant="outline">
+        <Archive className="size-2" />
+        {row.getValue("cabinet_name") || "Sin gabinete"}
+      </Badge>
     ),
     enableSorting: true,
   },

@@ -11,11 +11,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  createGroupReservation,
-  getReservationAvailability,
-} from "@/lib/actions/reservations/manage"
-import type { InventoryItem, Selections } from "@/lib/types/cabinets"
+import { createGroupReservation } from "@/lib/actions/reservations/create-group-reservation"
+import { getReservationAvailability } from "@/lib/data/reservations/get-availability"
+import type { CabinetInventoryItem, Selections } from "@/lib/types/cabinets"
 import { AlertCircle, CalendarClock, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -23,7 +21,7 @@ import { toast } from "sonner"
 interface ReserveDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  items: InventoryItem[]
+  items: CabinetInventoryItem[]
   selections: Selections
   onReserved?: () => void
 }
@@ -268,7 +266,7 @@ export function ReserveDialog({
           >
             {submitting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
                 Reservando...
               </>
             ) : (

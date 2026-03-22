@@ -1,17 +1,11 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
-import { format, formatDistance } from "date-fns"
-import { es } from "date-fns/locale"
-import {
-  ClockIcon,
-  DoorOpenIcon,
-  DoorClosedIcon,
-  PackageIcon,
-} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import type { HistorySession } from "@/lib/types/cabinets"
+import { es, formatDate, formatDistance } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
+import { Archive, ClockIcon, DoorClosedIcon, DoorOpenIcon } from "lucide-react"
 
 export type { HistorySession }
 
@@ -42,10 +36,10 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
           <DoorOpenIcon className="size-4 text-green-600" />
           <div>
             <div className="text-sm font-medium">
-              {format(date, "d MMM yyyy", { locale: es })}
+              {formatDate(date, "d MMM yyyy")}
             </div>
             <div className="text-xs text-muted-foreground">
-              {format(date, "HH:mm", { locale: es })}
+              {formatDate(date, "h:mm a")}
             </div>
           </div>
         </div>
@@ -75,10 +69,10 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
           <DoorClosedIcon className="size-4 text-muted-foreground" />
           <div>
             <div className="text-sm font-medium">
-              {format(date, "d MMM yyyy", { locale: es })}
+              {formatDate(date, "d MMM yyyy")}
             </div>
             <div className="text-xs text-muted-foreground">
-              {format(date, "HH:mm", { locale: es })}
+              {formatDate(date, "h:mm a")}
             </div>
           </div>
         </div>
@@ -105,7 +99,7 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
   },
   {
     id: "items",
-    header: "Items",
+    header: "Objetos",
     cell: ({ row }) => {
       const items = row.original.items
       if (!items || items.length === 0) {
@@ -114,7 +108,7 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          <PackageIcon className="size-4 text-muted-foreground" />
+          <Archive className="size-4 text-muted-foreground" />
           <Badge variant="secondary" className="font-mono">
             {items.length}
           </Badge>

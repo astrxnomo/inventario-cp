@@ -1,11 +1,10 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
-import { format, formatDistance } from "date-fns"
-import { es } from "date-fns/locale"
-import { Package, User, Clock } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { formatDate, formatDistance } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
+import { Archive, Clock, User } from "lucide-react"
 
 export type AdminSession = {
   id: string
@@ -47,10 +46,10 @@ export const adminSessionColumns: ColumnDef<AdminSession>[] = [
       <DataTableColumnHeader column={column} title="Gabinete" />
     ),
     cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Package className="size-4 text-muted-foreground" />
-        <span>{row.getValue("cabinet_name")}</span>
-      </div>
+      <Badge variant="outline">
+        <Archive className="size-2" />
+        {row.getValue("cabinet_name") || "Sin gabinete"}
+      </Badge>
     ),
     enableSorting: true,
   },
@@ -63,11 +62,9 @@ export const adminSessionColumns: ColumnDef<AdminSession>[] = [
       const date = new Date(row.getValue("opened_at"))
       return (
         <div className="flex flex-col">
-          <span className="text-sm">
-            {format(date, "d MMM yyyy", { locale: es })}
-          </span>
+          <span className="text-sm">{formatDate(date, "d MMM yyyy")}</span>
           <span className="text-xs text-muted-foreground">
-            {format(date, "HH:mm", { locale: es })}
+            {formatDate(date, "h:mm a")}
           </span>
         </div>
       )
@@ -96,11 +93,9 @@ export const adminSessionColumns: ColumnDef<AdminSession>[] = [
       const date = new Date(closedAt)
       return (
         <div className="flex flex-col">
-          <span className="text-sm">
-            {format(date, "d MMM yyyy", { locale: es })}
-          </span>
+          <span className="text-sm">{formatDate(date, "d MMM yyyy")}</span>
           <span className="text-xs text-muted-foreground">
-            {format(date, "HH:mm", { locale: es })}
+            {formatDate(date, "h:mm a")}
           </span>
         </div>
       )
@@ -121,7 +116,7 @@ export const adminSessionColumns: ColumnDef<AdminSession>[] = [
 
       return (
         <span className="text-sm text-muted-foreground">
-          {formatDistance(openedAt, closedAt, { locale: es })}
+          {formatDistance(openedAt, closedAt)}
         </span>
       )
     },
@@ -134,7 +129,7 @@ export const adminSessionColumns: ColumnDef<AdminSession>[] = [
     ),
     cell: ({ row }) => {
       const count = row.getValue("items_count") as number
-      return <span className="text-sm font-medium">{count || 0}</span>
+      return <Badge variant="outline">{count || 0}</Badge>
     },
     enableSorting: true,
   },

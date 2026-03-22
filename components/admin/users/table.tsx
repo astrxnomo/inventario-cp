@@ -2,17 +2,20 @@
 
 import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
-import {
-  userColumns,
-  userRoleOptions,
-  type UserProfile,
-} from "./users-table-columns"
+import { userColumns, userRoleOptions, type UserProfile } from "./columns"
+import { RefreshButton } from "@/components/ui/refresh-button"
 
 interface UsersTableProps {
   users: UserProfile[]
+  currentUserRole?: string
+  currentUserId?: string
 }
 
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({
+  users,
+  currentUserRole,
+  currentUserId,
+}: UsersTableProps) {
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
 
@@ -53,6 +56,12 @@ export function UsersTable({ users }: UsersTableProps) {
       dateFrom={dateFrom}
       dateTo={dateTo}
       pageSize={10}
+      actions={
+        <div className="flex items-center gap-2">
+          <RefreshButton />
+        </div>
+      }
+      meta={{ currentUserRole, currentUserId }}
     />
   )
 }

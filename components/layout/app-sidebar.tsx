@@ -17,26 +17,27 @@ import {
 } from "@/components/ui/sidebar"
 import {
   ActivitySquare,
+  Archive,
+  Box,
   Calendar,
   History,
-  LayoutDashboard,
-  Package,
-  PackageOpen,
   Shield,
+  Tags,
   Users,
 } from "lucide-react"
 
-const adminLinks = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/cabinets", label: "Gabinetes", icon: Package },
-  { href: "/admin/inventory", label: "Inventario", icon: PackageOpen },
-  { href: "/admin/users", label: "Usuarios", icon: Users },
+const adminLinks = [{ href: "/admin/users", label: "Usuarios", icon: Users }]
+
+const inventoryLinks = [
+  { href: "/admin/inventory", label: "Objetos", icon: Box },
+  { href: "/admin/cabinets", label: "Gabinetes", icon: Archive },
+  { href: "/admin/categories", label: "Categorías", icon: Tags },
 ]
 
 const logsLinks = [
-  { href: "/admin/reservations", label: "Reservas", icon: Calendar },
-  { href: "/admin/sessions", label: "Sesiones", icon: History },
   { href: "/admin/activity", label: "Actividad", icon: ActivitySquare },
+  { href: "/admin/sessions", label: "Sesiones", icon: History },
+  { href: "/admin/reservations", label: "Reservas", icon: Calendar },
 ]
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -70,19 +71,15 @@ export function AppSidebar({
                   <span className="text-[11px] font-medium text-sidebar-foreground/70">
                     Inventario Inteligente
                   </span>
-                  <span className="text-sm font-semibold">Panel Admin</span>
+                  <span className="text-sm font-semibold">Administración</span>
                 </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <SidebarSeparator className="mt-2" />
       </SidebarHeader>
 
       <SidebarContent className="px-3 pb-2">
-        <p className="px-2 pb-2 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 uppercase">
-          Navegacion
-        </p>
         <SidebarMenu className="gap-1">
           {adminLinks.map((link) => {
             const Icon = link.icon
@@ -106,6 +103,39 @@ export function AppSidebar({
             )
           })}
         </SidebarMenu>
+
+        <SidebarSeparator className="my-3" />
+
+        {inventoryLinks.length > 0 && (
+          <>
+            <p className="px-2 pb-2 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 uppercase">
+              Inventario
+            </p>
+            <SidebarMenu className="gap-1">
+              {inventoryLinks.map((link) => {
+                const Icon = link.icon
+                const isActive = pathname.startsWith(link.href)
+
+                return (
+                  <SidebarMenuItem key={link.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
+                    >
+                      <Link href={link.href}>
+                        <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
+                          <Icon className="size-4" />
+                        </span>
+                        <span>{link.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </>
+        )}
 
         <SidebarSeparator className="my-3" />
 

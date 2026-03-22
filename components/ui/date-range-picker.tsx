@@ -1,7 +1,6 @@
 "use client"
 
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { formatDate, cn, es } from "@/lib/utils"
 import { CalendarIcon, X } from "lucide-react"
 import * as React from "react"
 import type { DateRange } from "react-day-picker"
@@ -13,7 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
 
 interface DateRangePickerProps {
   /** ISO "YYYY-MM-DD" string or empty string */
@@ -41,8 +39,8 @@ export function DateRangePicker({
 
   function handleSelect(r: DateRange | undefined) {
     onChange(
-      r?.from ? format(r.from, "yyyy-MM-dd") : "",
-      r?.to ? format(r.to, "yyyy-MM-dd") : "",
+      r?.from ? formatDate(r.from, "yyyy-MM-dd") : "",
+      r?.to ? formatDate(r.to, "yyyy-MM-dd") : "",
     )
   }
 
@@ -54,8 +52,8 @@ export function DateRangePicker({
   const hasRange = from || to
   const label = range?.from
     ? range.to
-      ? `${format(range.from, "d MMM", { locale: es })} – ${format(range.to, "d MMM yyyy", { locale: es })}`
-      : format(range.from, "d MMM yyyy", { locale: es })
+      ? `${formatDate(range.from, "d MMM")} – ${formatDate(range.to, "d MMM yyyy")}`
+      : formatDate(range.from, "d MMM yyyy")
     : "Rango de fechas"
 
   return (

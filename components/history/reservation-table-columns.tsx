@@ -1,18 +1,17 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
-import { format, isAfter, isBefore } from "date-fns"
-import { es } from "date-fns/locale"
-import {
-  CalendarIcon,
-  CalendarCheckIcon,
-  CalendarXIcon,
-  CalendarClockIcon,
-  PackageIcon,
-} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import type { ItemReservation } from "@/lib/types/reservations"
+import { formatDate, isAfter, isBefore } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
+import {
+  Box,
+  CalendarCheckIcon,
+  CalendarClockIcon,
+  CalendarIcon,
+  CalendarXIcon,
+} from "lucide-react"
 
 export type { ItemReservation }
 
@@ -49,7 +48,7 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
       return (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <PackageIcon className="size-4 text-muted-foreground" />
+            <Box className="size-4 text-muted-foreground" />
             <span className="font-medium">{row.getValue("item_name")}</span>
           </div>
           <div className="text-xs text-muted-foreground">
@@ -104,10 +103,10 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
           />
           <div>
             <div className="text-sm font-medium">
-              {format(date, "d MMM yyyy", { locale: es })}
+              {formatDate(date, "d MMM yyyy")}
             </div>
             <div className="text-xs text-muted-foreground">
-              {format(date, "HH:mm", { locale: es })}
+              {formatDate(date, "h:mm a")}
             </div>
           </div>
         </div>
@@ -130,10 +129,10 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
           />
           <div>
             <div className="text-sm font-medium">
-              {format(date, "d MMM yyyy", { locale: es })}
+              {formatDate(date, "d MMM yyyy")}
             </div>
             <div className="text-xs text-muted-foreground">
-              {format(date, "HH:mm", { locale: es })}
+              {formatDate(date, "h:mm a")}
             </div>
           </div>
         </div>

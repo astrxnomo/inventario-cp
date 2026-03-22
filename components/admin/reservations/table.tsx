@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
+import { useState } from "react"
 import {
   adminReservationColumns,
   reservationStatusOptions,
   type AdminReservation,
-} from "./reservations-table-columns"
+} from "./columns"
+import { RefreshButton } from "@/components/ui/refresh-button"
 
 interface ReservationsTableProps {
   reservations: AdminReservation[]
@@ -52,7 +53,8 @@ export function ReservationsTable({ reservations }: ReservationsTableProps) {
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}
-      pageSize={20}
+      pageSize={10}
+      actions={<RefreshButton />}
     />
   )
 }

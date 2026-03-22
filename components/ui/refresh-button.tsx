@@ -28,11 +28,9 @@ export function RefreshButton({
       size={size}
       disabled={pending}
       onClick={() => startTransition(() => router.refresh())}
-      className={className}
+      className={cn("h-8", className)}
     >
-      <RefreshCw
-        className={cn("mr-2 h-3.5 w-3.5", pending && "animate-spin")}
-      />
+      <RefreshCw className={cn("size-4", pending && "animate-spin")} />
       {label}
     </Button>
   )
