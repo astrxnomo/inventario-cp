@@ -1,6 +1,6 @@
 import { LayoutGrid, Shield } from "lucide-react"
 import Link from "next/link"
-import { ThemeToggle } from "../theme-toggle"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Button } from "../ui/button"
 import { UserMenu } from "./user-menu"
 
@@ -16,7 +16,7 @@ export function AppNav({ userEmail, userRole, userName }: AppNavProps) {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/cabinets" className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
             <LayoutGrid className="h-4 w-4 text-white" />
           </div>

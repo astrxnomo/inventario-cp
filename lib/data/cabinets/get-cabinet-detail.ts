@@ -1,14 +1,16 @@
-import { createClient } from "@/lib/supabase/client"
+"use server"
+
+import { createClient } from "@/lib/supabase/server"
 import type {
   ActionResult,
-  InventoryItem,
+  CabinetInventoryItem,
   WithdrawnItem,
 } from "@/lib/types/cabinets"
-import { fetchInventoryItems } from "./get-inventory-items"
+import { getItemsByCabinet } from "@/lib/data/inventory/get-items-by-cabinet"
 
 export interface CabinetDetailState {
   sessionId: string | null
-  items: InventoryItem[]
+  items: CabinetInventoryItem[]
   withdrawnItems: WithdrawnItem[]
 }
 
@@ -16,7 +18,7 @@ export async function fetchCabinetDetailState(
   cabinetId: string,
   userId: string,
 ): Promise<ActionResult<CabinetDetailState>> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const { data: session } = await supabase
     .from("cabinet_sessions")
@@ -85,7 +87,7 @@ export async function fetchCabinetDetailState(
     }
   }
 
-  const itemsResult = await fetchInventoryItems(cabinetId, userId)
+  const itemsResult = await getItemsByCabinet(cabinetId, userId)
   if (itemsResult.error) return { data: null, error: itemsResult.error }
 
   return {

@@ -12,9 +12,8 @@ export type AdminSession = {
   items_count?: number
 }
 
-export async function getAllSessions(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<AdminSession[]> {
+export async function getAllSessions(): Promise<AdminSession[]> {
+  const supabase = await createClient()
   // Fetch sessions with user, cabinet, and items count
   const { data, error } = await supabase
     .from("cabinet_sessions")
@@ -26,7 +25,6 @@ export async function getAllSessions(
       opened_at,
       closed_at,
       notes,
-      profiles!inner(full_name),
       cabinets!inner(name)
     `,
     )
@@ -37,6 +35,20 @@ export async function getAllSessions(
     console.error("Error fetching sessions:", error)
     return []
   }
+
+  // cabinet_sessions.user_id referencia auth.users, no profiles directamente.
+  // Resolver nombres desde profiles por id = user_id.
+  const userIds = Array.from(
+    new Set((data ?? []).map((s) => s.user_id)),
+  ).filter(Boolean)
+
+  const { data: profilesData } = userIds.length
+    ? await supabase.from("profiles").select("id, full_name").in("id", userIds)
+    : { data: [] as Array<{ id: string; full_name: string | null }> }
+
+  const profilesMap = new Map(
+    (profilesData ?? []).map((p) => [p.id, p.full_name]),
+  )
 
   // Fetch session items count separately
   const sessionIds = (data ?? []).map((s) => s.id)
@@ -57,7 +69,7 @@ export async function getAllSessions(
     opened_at: session.opened_at,
     closed_at: session.closed_at,
     notes: session.notes,
-    user_name: (session.profiles as any)?.full_name ?? "Sin nombre",
+    user_name: profilesMap.get(session.user_id) ?? "Sin nombre",
     cabinet_name: (session.cabinets as any)?.name ?? "Sin gabinete",
     items_count: itemsCountMap[session.id] ?? 0,
   }))

@@ -1,11 +1,16 @@
-import { InventoryItemsTable } from "@/components/admin/inventory-items-table"
-import { RefreshButton } from "@/components/ui/refresh-button"
-import { getInventoryItems } from "@/lib/data/inventory/get-inventory-items"
+import { InventoryItemsTable } from "@/components/admin/inventory/table"
+import { getAllItems } from "@/lib/data/inventory/get-all-items"
 import { createClient } from "@/lib/supabase/server"
 
 export default async function AdminInventoryPage() {
   const supabase = await createClient()
-  const items = await getInventoryItems(supabase)
+
+  // Parallel fetching
+  const [items, { data: categories }, { data: cabinets }] = await Promise.all([
+    getAllItems(),
+    supabase.from("inventory_categories").select("*"),
+    supabase.from("cabinets").select("*"),
+  ])
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
@@ -20,10 +25,13 @@ export default async function AdminInventoryPage() {
               : `${items.length} item${items.length !== 1 ? "s" : ""} registrados`}
           </p>
         </div>
-        <RefreshButton />
       </div>
 
-      <InventoryItemsTable items={items} />
+      <InventoryItemsTable
+        items={items}
+        categories={categories || []}
+        cabinets={cabinets || []}
+      />
     </main>
   )
 }

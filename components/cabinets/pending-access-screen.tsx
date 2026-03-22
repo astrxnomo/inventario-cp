@@ -65,7 +65,7 @@ export function PendingAccessScreen({
               disabled={pending}
               onClick={() => startTransition(() => router.refresh())}
             >
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className="size-4" />
               Verificar acceso
             </Button>
             <Button
@@ -73,7 +73,7 @@ export function PendingAccessScreen({
               className="w-full"
               onClick={() => signOut()}
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="size-4" />
               Cerrar sesión
             </Button>
           </div>

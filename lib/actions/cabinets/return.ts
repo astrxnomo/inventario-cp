@@ -1,5 +1,7 @@
+"use server"
+
 import { returnSchema, returnSingleItemSchema } from "@/lib/schemas/cabinets"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/server"
 import type {
   ActionResult,
   ReturnPayload,
@@ -17,7 +19,7 @@ export async function returnCabinetItems(
     }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.rpc("return_items", {
     p_session_id: payload.sessionId,
     p_user_id: payload.userId,
@@ -38,7 +40,7 @@ export async function returnSingleItem(
     }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.rpc("return_single_item", {
     p_session_id: payload.sessionId,
     p_user_id: payload.userId,

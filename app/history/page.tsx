@@ -1,12 +1,11 @@
+import { ReservationTable } from "@/components/history/reservation-table"
+import { SessionHistoryTable } from "@/components/history/session-history-table"
 import { AppNav } from "@/components/layout/app-nav"
 import { RefreshButton } from "@/components/ui/refresh-button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { SessionHistoryTable } from "@/components/history/session-history-table"
-import { ReservationTable } from "@/components/history/reservation-table"
 import { getUserSessionHistory } from "@/lib/data/cabinets/get-user-history"
-import { getUserReservations } from "@/lib/data/reservations/get-reservations"
+import { getUserReservations } from "@/lib/data/reservations/get-user-reservations"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
-import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
 export default async function HistoryPage() {
@@ -15,12 +14,11 @@ export default async function HistoryPage() {
 
   const { user, profile } = current
 
-  if (!profile || profile.role === "pending") redirect("/cabinets")
+  if (!profile || profile.role === "pending") redirect("/")
 
-  const supabase = await createClient()
   const [sessions, reservations] = await Promise.all([
-    getUserSessionHistory(supabase, user.id),
-    getUserReservations(supabase, user.id),
+    getUserSessionHistory(user.id),
+    getUserReservations(user.id),
   ])
 
   return (

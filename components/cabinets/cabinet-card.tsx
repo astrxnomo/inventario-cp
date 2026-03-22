@@ -2,7 +2,7 @@
 
 import type { Cabinet } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
-import { Lock, LockOpen, Package, Users } from "lucide-react"
+import { Archive, Lock, LockOpen, Users } from "lucide-react"
 
 interface CabinetCardProps {
   cabinet: Cabinet
@@ -99,7 +99,7 @@ export function CabinetCard({
             )}
           >
             <span className="flex items-center gap-1">
-              <Package className="h-3 w-3" />
+              <Archive className="h-3 w-3" />
               {inventoryCount} articulo{inventoryCount !== 1 ? "s" : ""}
             </span>
             {activeSessions > 0 && (

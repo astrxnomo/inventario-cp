@@ -1,11 +1,14 @@
 // ─── Log entries ──────────────────────────────────────────────────────────────
-export interface AccessLogEntry {
+export interface AccessLog {
   id: string
-  created_at: string
-  action: string
-  cabinet_name: string | null
+  user_id: string
   cabinet_id: string
-  user_name: string | null
+  action: "open_requested" | "open_granted" | "open_denied" | "closed"
+  created_at: string
+  metadata: Record<string, any> | null
+  user_name?: string
+  user_email?: string
+  cabinet_name?: string
 }
 
 // ─── Unified session view (session + embedded items) ──────────────────────────

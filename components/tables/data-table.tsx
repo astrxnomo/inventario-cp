@@ -12,6 +12,7 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type FilterFn,
+  type OnChangeFn,
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table"
@@ -27,7 +28,7 @@ import {
 } from "@/components/ui/table"
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
-import type { DataTableFilterField } from "./types"
+import type { DataTableFilterField } from "@/lib/types/data-table"
 
 // Función de filtrado personalizada para búsqueda flexible
 const fuzzyFilter: FilterFn<any> = (row, columnId, value) => {
@@ -61,6 +62,17 @@ interface DataTableProps<TData, TValue> {
   onDateRangeChange?: (from: string, to: string) => void
   dateFrom?: string
   dateTo?: string
+  pageCount?: number
+  manualPagination?: boolean
+  // Controlled state props
+  pagination?: PaginationState
+  onPaginationChange?: OnChangeFn<PaginationState>
+  sorting?: SortingState
+  onSortingChange?: OnChangeFn<SortingState>
+  columnFilters?: ColumnFiltersState
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>
+  meta?: any
+  actions?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -78,34 +90,111 @@ export function DataTable<TData, TValue>({
   onDateRangeChange,
   dateFrom,
   dateTo,
+  pageCount,
+  manualPagination = false,
+  // Controlled state destructuring
+  pagination: controlledPagination,
+  onPaginationChange: controlledOnPaginationChange,
+  sorting: controlledSorting,
+  onSortingChange: controlledOnSortingChange,
+  columnFilters: controlledColumnFilters,
+  onColumnFiltersChange: controlledOnColumnFiltersChange,
+  meta,
+  actions,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+
+  // Internal state
+  const [internalColumnFilters, setInternalColumnFilters] =
+    React.useState<ColumnFiltersState>([])
+  const [internalSorting, setInternalSorting] = React.useState<SortingState>([])
+  const [internalPagination, setInternalPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize,
+    })
+
+  // Derived state (controlled or internal)
+  const pagination = controlledPagination ?? internalPagination
+  const sorting = controlledSorting ?? internalSorting
+  const columnFilters = controlledColumnFilters ?? internalColumnFilters
+
+  // Sincronizar pageSize si cambia desde props (solo si no es controlado)
+  React.useEffect(() => {
+    if (!controlledPagination) {
+      setInternalPagination((prev) => ({ ...prev, pageSize }))
+    }
+  }, [pageSize, controlledPagination])
+
+  // Handlers
+  const onPaginationChange: OnChangeFn<PaginationState> = React.useCallback(
+    (updater) => {
+      if (controlledOnPaginationChange) {
+        controlledOnPaginationChange(updater)
+      } else {
+        setInternalPagination((old) => {
+          const newState =
+            typeof updater === "function" ? updater(old) : updater
+          return newState
+        })
+      }
+    },
+    [controlledOnPaginationChange],
   )
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  })
+
+  const onSortingChange: OnChangeFn<SortingState> = React.useCallback(
+    (updater) => {
+      if (controlledOnSortingChange) {
+        controlledOnSortingChange(updater)
+      } else {
+        setInternalSorting((old) => {
+          const newState =
+            typeof updater === "function" ? updater(old) : updater
+          return newState
+        })
+      }
+    },
+    [controlledOnSortingChange],
+  )
+
+  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> =
+    React.useCallback(
+      (updater) => {
+        if (controlledOnColumnFiltersChange) {
+          controlledOnColumnFiltersChange(updater)
+        } else {
+          setInternalColumnFilters((old) => {
+            const newState =
+              typeof updater === "function" ? updater(old) : updater
+            return newState
+          })
+        }
+      },
+      [controlledOnColumnFiltersChange],
+    )
 
   const table = useReactTable({
     data,
     columns,
+    pageCount: manualPagination ? pageCount : undefined,
     state: {
       sorting,
       rowSelection,
       columnFilters,
       pagination,
     },
+    meta,
     enableRowSelection: true,
+    manualPagination,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onPaginationChange: setPagination,
+    onSortingChange: onSortingChange,
+    onColumnFiltersChange: onColumnFiltersChange,
+    onPaginationChange: onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: !manualPagination
+      ? getPaginationRowModel()
+      : undefined,
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -114,6 +203,7 @@ export function DataTable<TData, TValue>({
     filterFns: {
       fuzzy: fuzzyFilter,
     },
+    autoResetPageIndex: false,
   })
 
   return (
@@ -133,6 +223,8 @@ export function DataTable<TData, TValue>({
               onDateRangeChange={onDateRangeChange}
               dateFrom={dateFrom}
               dateTo={dateTo}
+              columnFilters={columnFilters}
+              actions={actions}
             />
           )}
         </>
@@ -187,7 +279,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      {showPagination && <DataTablePagination table={table} />}
+      {showPagination && (
+        <DataTablePagination table={table} paginationState={pagination} />
+      )}
     </div>
   )
 }

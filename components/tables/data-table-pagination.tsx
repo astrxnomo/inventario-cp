@@ -1,6 +1,6 @@
 "use client"
 
-import type { Table } from "@tanstack/react-table"
+import { type PaginationState, type Table } from "@tanstack/react-table"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -20,12 +20,23 @@ import {
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
   pageSizeOptions?: number[]
+  /**
+   * Optional pagination state to force re-render when the table instance is stable
+   * but internal state changes (common with React Compiler / strict mode)
+   */
+  paginationState?: PaginationState
 }
 
 export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [10, 20, 30, 50, 100],
+  paginationState,
 }: DataTablePaginationProps<TData>) {
+  // Use passed pagination state or fallback to table state
+  // This ensures updates even if table instance is stable
+  const pagination = paginationState ?? table.getState().pagination
+  const { pageIndex, pageSize } = pagination
+
   return (
     <div className="flex items-center justify-between gap-4 px-2">
       <div className="hidden flex-1 text-sm text-muted-foreground sm:block">
@@ -40,13 +51,13 @@ export function DataTablePagination<TData>({
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium">Filas por página</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${pageSize}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value))
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
               {pageSizeOptions.map((pageSize) => (
@@ -58,15 +69,14 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Página {table.getState().pagination.pageIndex + 1} de{" "}
-          {table.getPageCount()}
+          Página {pageIndex + 1} de {table.getPageCount()}
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             className="hidden size-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
+            disabled={pageIndex === 0}
           >
             <span className="sr-only">Ir a la primera página</span>
             <ChevronsLeftIcon className="size-4" />
@@ -74,8 +84,8 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="size-8 p-0"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.setPageIndex(Math.max(0, pageIndex - 1))}
+            disabled={pageIndex === 0}
           >
             <span className="sr-only">Ir a la página anterior</span>
             <ChevronLeftIcon className="size-4" />
@@ -83,8 +93,12 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="size-8 p-0"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() =>
+              table.setPageIndex(
+                Math.min(Math.max(0, table.getPageCount() - 1), pageIndex + 1),
+              )
+            }
+            disabled={pageIndex >= Math.max(0, table.getPageCount() - 1)}
           >
             <span className="sr-only">Ir a la página siguiente</span>
             <ChevronRightIcon className="size-4" />
@@ -93,7 +107,7 @@ export function DataTablePagination<TData>({
             variant="outline"
             className="hidden size-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
+            disabled={pageIndex >= Math.max(0, table.getPageCount() - 1)}
           >
             <span className="sr-only">Ir a la última página</span>
             <ChevronsRightIcon className="size-4" />

@@ -1,11 +1,8 @@
-import { ActivityLogsTable } from "@/components/admin/activity-logs-table"
-import { RefreshButton } from "@/components/ui/refresh-button"
+import { ActivityLogsTable } from "@/components/admin/activity/table"
 import { getAccessLogs } from "@/lib/data/activity/get-access-logs"
-import { createClient } from "@/lib/supabase/server"
 
 export default async function AdminActivityPage() {
-  const supabase = await createClient()
-  const logs = await getAccessLogs(supabase)
+  const logs = await getAccessLogs()
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
@@ -19,7 +16,6 @@ export default async function AdminActivityPage() {
             gabinetes
           </p>
         </div>
-        <RefreshButton />
       </div>
 
       <ActivityLogsTable logs={logs} />

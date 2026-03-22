@@ -10,10 +10,10 @@ import {
 } from "@/lib/actions/cabinets/return"
 import { withdrawCabinetItems } from "@/lib/actions/cabinets/withdraw"
 import { fetchCabinetDetailState } from "@/lib/data/cabinets/get-cabinet-detail"
-import { fetchInventoryItems } from "@/lib/data/cabinets/get-inventory-items"
+import { getItemsByCabinet } from "@/lib/data/inventory/get-items-by-cabinet"
 import type {
   Cabinet,
-  InventoryItem,
+  CabinetInventoryItem,
   Selections,
   WithdrawnItem,
 } from "@/lib/types/cabinets"
@@ -49,7 +49,7 @@ export function CabinetDetail({
 }: CabinetDetailProps) {
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [items, setItems] = useState<InventoryItem[]>([])
+  const [items, setItems] = useState<CabinetInventoryItem[]>([])
   const [withdrawnItems, setWithdrawnItems] = useState<WithdrawnItem[]>([])
   const [selections, setSelections] = useState<Selections>({})
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -93,7 +93,7 @@ export function CabinetDetail({
     setAddingMore(true)
     if (items.length === 0) {
       setLoading(true)
-      const result = await fetchInventoryItems(cabinet!.id, userId)
+      const result = await getItemsByCabinet(cabinet!.id, userId)
       setLoading(false)
       setItems(result.data ?? [])
     }
@@ -164,7 +164,7 @@ export function CabinetDetail({
     if (!cabinet) return
     if (items.length === 0) {
       setLoading(true)
-      const result = await fetchInventoryItems(cabinet.id, userId)
+      const result = await getItemsByCabinet(cabinet.id, userId)
       setLoading(false)
       setItems(result.data ?? [])
     }
@@ -174,7 +174,7 @@ export function CabinetDetail({
   async function refreshItems() {
     if (!cabinet) return
     setLoading(true)
-    const result = await fetchInventoryItems(cabinet.id, userId)
+    const result = await getItemsByCabinet(cabinet.id, userId)
     setLoading(false)
     if (result.data) setItems(result.data)
   }
@@ -191,7 +191,7 @@ export function CabinetDetail({
 
     setSessionId(null)
     setWithdrawnItems([])
-    const itemsResult = await fetchInventoryItems(cabinet!.id, userId)
+    const itemsResult = await getItemsByCabinet(cabinet!.id, userId)
     setItems(itemsResult.data ?? [])
   }
 
@@ -214,7 +214,7 @@ export function CabinetDetail({
 
     if (remaining.length === 0) {
       setSessionId(null)
-      const itemsResult = await fetchInventoryItems(cabinet!.id, userId)
+      const itemsResult = await getItemsByCabinet(cabinet!.id, userId)
       setItems(itemsResult.data ?? [])
     }
   }

@@ -1,9 +1,9 @@
-import type { InventoryItem, Selections } from "@/lib/types/cabinets"
+import type { CabinetInventoryItem, Selections } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
-import { Minus, Package, Plus } from "lucide-react"
+import { Archive, Minus, Plus } from "lucide-react"
 
 interface BrowseListProps {
-  items: InventoryItem[]
+  items: CabinetInventoryItem[]
   selections: Selections
   setQty: (itemId: string, qty: number) => void
 }
@@ -12,7 +12,7 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <Package className="mb-2 h-8 w-8 text-muted-foreground/40" />
+        <Archive className="mb-2 h-8 w-8 text-muted-foreground/40" />
         <p className="text-sm text-muted-foreground">
           Sin artículos registrados
         </p>

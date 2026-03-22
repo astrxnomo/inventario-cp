@@ -1,11 +1,24 @@
-import { UsersTable } from "@/components/admin/users-table"
-import { RefreshButton } from "@/components/ui/refresh-button"
+import { UsersTable } from "@/components/admin/users/table"
 import { getAllUsers } from "@/lib/data/users/get-all-users"
 import { createClient } from "@/lib/supabase/server"
 
 export default async function AdminUsersPage() {
   const supabase = await createClient()
-  const users = await getAllUsers(supabase)
+  const users = await getAllUsers()
+
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser()
+
+  let currentUserRole = "user"
+  if (authUser) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", authUser.id)
+      .single()
+    currentUserRole = profile?.role || "user"
+  }
 
   const pending = users.filter((u) => u.role === "pending").length
 
@@ -26,10 +39,13 @@ export default async function AdminUsersPage() {
             )}
           </p>
         </div>
-        <RefreshButton />
       </div>
 
-      <UsersTable users={users} />
+      <UsersTable
+        users={users}
+        currentUserRole={currentUserRole}
+        currentUserId={authUser?.id}
+      />
     </main>
   )
 }
