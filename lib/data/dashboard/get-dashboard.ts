@@ -1,12 +1,11 @@
-import type { Database } from "@/lib/supabase/types"
+import { createClient } from "@/lib/supabase/server"
+
 import type { DashboardKpis } from "@/lib/types/users"
-import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type { DashboardKpis }
 
-export async function getDashboardKpis(
-  supabase: SupabaseClient<Database>,
-): Promise<DashboardKpis> {
+export async function getDashboardKpis(): Promise<DashboardKpis> {
+  const supabase = await createClient()
   const [cabinetsRes, itemsRes, sessionsRes, usersRes] = await Promise.all([
     supabase.from("cabinets").select("id, status"),
     supabase
