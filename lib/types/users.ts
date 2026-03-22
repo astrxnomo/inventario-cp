@@ -1,11 +1,7 @@
-// ─── Admin user list ─────────────────────────────────────────────────────────
-export interface AdminUser {
-  id: string
-  email: string
-  full_name: string | null
-  role: string
-  created_at: string
-}
+import { userProfileSchema } from "@/lib/schemas/users"
+import { z } from "zod"
+
+export type UserProfileRow = z.infer<typeof userProfileSchema>
 
 // ─── Dashboard KPIs ───────────────────────────────────────────────────────────
 export interface DashboardKpis {

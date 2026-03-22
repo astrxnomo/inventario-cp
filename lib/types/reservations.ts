@@ -1,7 +1,14 @@
-import type { Enums, Tables } from "@/lib/supabase/types"
+import {
+  itemReservationRowSchema,
+  type GroupReservationInput,
+  type ReservationAvailabilityInput,
+  type ReservationInput,
+} from "@/lib/schemas/reservations"
+import type { Enums } from "@/lib/supabase/types"
+import { z } from "zod"
 
 export type ReservationStatus = Enums<"reservation_status">
-export type ItemReservationRow = Tables<"item_reservations">
+export type ItemReservationRow = z.infer<typeof itemReservationRowSchema>
 
 export interface ItemReservation extends ItemReservationRow {
   item_name: string
@@ -18,23 +25,6 @@ export interface CartItem {
   maxAvailable: number
 }
 
-export interface CreateReservationPayload {
-  itemId: string
-  quantity: number
-  startsAt: string
-  endsAt: string
-  note?: string
-}
-
-export interface CreateGroupReservationPayload {
-  items: Array<{ itemId: string; quantity: number }>
-  startsAt: string
-  endsAt: string
-  note?: string
-}
-
-export interface ReservationAvailabilityPayload {
-  itemId: string
-  startsAt: string
-  endsAt: string
-}
+export type CreateReservationPayload = ReservationInput
+export type CreateGroupReservationPayload = GroupReservationInput
+export type ReservationAvailabilityPayload = ReservationAvailabilityInput

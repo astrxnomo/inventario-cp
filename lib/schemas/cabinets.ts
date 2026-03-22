@@ -37,3 +37,15 @@ export const cabinetSchema = z.object({
 })
 
 export type CabinetInput = z.infer<typeof cabinetSchema>
+
+// ─── Base Row Schema ──────────────────────────────────────────────────────────
+export const cabinetRowSchema = z.object({
+  id: z.string().uuid(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  name: z.string(),
+  description: z.string().nullable(),
+  location: z.string().nullable(),
+  status: z.enum(["available", "in_use", "locked"]),
+  is_open: z.boolean(),
+})

@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 function refineDateRange(
   value: { startsAt: string; endsAt: string },
@@ -86,3 +86,18 @@ export type GroupReservationInput = z.infer<typeof groupReservationSchema>
 export type ReservationAvailabilityInput = z.infer<
   typeof reservationAvailabilitySchema
 >
+
+export const itemReservationRowSchema = z.object({
+  id: z.string().uuid(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  cabinet_id: z.string().uuid(),
+  item_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  quantity: z.number().int(),
+  starts_at: z.string().datetime(),
+  ends_at: z.string().datetime(),
+  status: z.enum(["active", "cancelled", "completed", "expired"]),
+  note: z.string().nullable(),
+  cancelled_at: z.string().datetime().nullable(),
+})

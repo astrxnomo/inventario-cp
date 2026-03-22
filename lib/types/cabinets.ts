@@ -1,7 +1,14 @@
+import {
+  cabinetRowSchema,
+  returnSchema,
+  returnSingleItemSchema,
+  withdrawSchema,
+} from "@/lib/schemas/cabinets"
 import type { Database, Tables } from "@/lib/supabase/types"
+import { z } from "zod"
 
 // ─── Base DB row types ─────────────────────────────────────────────────────────
-export type CabinetRow = Tables<"cabinets">
+export type CabinetRow = z.infer<typeof cabinetRowSchema>
 export type InventoryItemRow = Tables<"inventory_items">
 export type CabinetSessionRow = Tables<"cabinet_sessions">
 export type CabinetStatus = Database["public"]["Enums"]["cabinet_status"]
@@ -16,7 +23,7 @@ export type Cabinet = CabinetRow & {
 }
 
 // Enriched with computed in-use count (items currently checked out across open sessions)
-export type InventoryItem = InventoryItemRow & {
+export type CabinetInventoryItem = InventoryItemRow & {
   category: string
   in_use: number
   reserved_by_me: number
@@ -37,22 +44,11 @@ export interface WithdrawnItem {
 }
 
 // ─── Action payloads ──────────────────────────────────────────────────────────
-export interface WithdrawPayload {
-  cabinetId: string
-  userId: string
-  items: Array<{ item_id: string; quantity: number }>
-}
+export type WithdrawPayload = z.infer<typeof withdrawSchema>
 
-export interface ReturnPayload {
-  sessionId: string
-  userId: string
-}
+export type ReturnPayload = z.infer<typeof returnSchema>
 
-export interface ReturnSingleItemPayload {
-  sessionId: string
-  userId: string
-  itemId: string
-}
+export type ReturnSingleItemPayload = z.infer<typeof returnSingleItemSchema>
 
 // ─── Generic typed action result ──────────────────────────────────────────────
 export type ActionResult<T> =
