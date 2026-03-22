@@ -1,5 +1,7 @@
+"use server"
+
 import { withdrawSchema } from "@/lib/schemas/cabinets"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/server"
 import type { ActionResult, WithdrawPayload } from "@/lib/types/cabinets"
 
 export async function withdrawCabinetItems(
@@ -13,13 +15,17 @@ export async function withdrawCabinetItems(
     }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Signal the physical cabinet (ESP32) to unlock.
   // Fire-and-forget: don't block the DB operation on the hardware signal.
   supabase
     .channel("esp32-commands")
-    .httpSend("open", { cabinet_id: payload.cabinetId })
+    .send({
+      type: "broadcast",
+      event: "open",
+      payload: { cabinet_id: payload.cabinetId },
+    })
     .catch(() => {
       // Ignore broadcast failures — cabinet may not be connected
     })
