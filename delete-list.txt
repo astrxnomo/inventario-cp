@@ -1,0 +1,9 @@
+Legacy skill folders and files (candidates for deletion once confirmed, see migration_plan.md):
+
+.agents/skills/next-best-practices
+.agents/skills/nextjs-server-components
+.agents/skills/senior-frontend
+.agents/skills/shadcn
+.agents/skills/supabase-postgres-best-practices
+.agents/skills/vercel-composition-patterns
+.agents/skills/vercel-react-best-practices

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "nextjs-16",
+    "name": "nextjs-16",
+    "path": ".agents/skills/nextjs-16/SKILL.md",
+    "description": "Project conventions for Next.js 16+ stack."
+  },
+  {
+    "id": "nextjs-server-actions",
+    "name": "nextjs-server-actions",
+    "path": ".agents/skills/nextjs-server-actions/SKILL.md",
+    "description": "Best practices for Next.js server actions."
+  },
+  {
+    "id": "nextjs-data-fetching",
+    "name": "nextjs-data-fetching",
+    "path": ".agents/skills/nextjs-data-fetching/SKILL.md",
+    "description": "Patterns for RSC, SSR, ISR and Next.js data fetching."
+  },
+  {
+    "id": "supabase-auth-rls",
+    "name": "supabase-auth-rls",
+    "path": ".agents/skills/supabase-auth-rls/SKILL.md",
+    "description": "Auth and Row Level Security with Supabase."
+  },
+  {
+    "id": "shadcn-usage",
+    "name": "shadcn-usage",
+    "path": ".agents/skills/shadcn-usage/SKILL.md",
+    "description": "Conventions for Shadcn UI components."
+  },
+  {
+    "id": "senior-frontend-guidelines",
+    "name": "senior-frontend-guidelines",
+    "path": ".agents/skills/senior-frontend-guidelines/SKILL.md",
+    "description": "Advanced frontend and React guidelines."
+  },
+  {
+    "id": "forms-zod",
+    "name": "forms-zod",
+    "path": ".agents/skills/forms-zod/SKILL.md",
+    "description": "Form validation and schema standards with Zod."
+  },
+  {
+    "id": "admin-tables",
+    "name": "admin-tables",
+    "path": ".agents/skills/admin-tables/SKILL.md",
+    "description": "Datatable and admin UI patterns."
+  }
+]
