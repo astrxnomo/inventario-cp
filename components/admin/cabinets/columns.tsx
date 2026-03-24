@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -48,7 +49,7 @@ function CabinetActions({ cabinet }: { cabinet: Cabinet }) {
             Esta acción no se puede deshacer. Eliminará el gabinete "
             {cabinet.name}" y todos sus datos asociados.
             {(cabinet._count?.inventory_items || 0) > 0 && (
-              <div className="mt-2 rounded-md bg-destructive/15 p-3 font-medium text-destructive">
+              <div className="mt-2 rounded-lg border border-amber-500/50 bg-amber-50 p-3 font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-400">
                 ⚠️ Advertencia: Este gabinete contiene items.
               </div>
             )}
@@ -56,9 +57,12 @@ function CabinetActions({ cabinet }: { cabinet: Cabinet }) {
         }
       />
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Editar gabinete</DialogTitle>
+            <DialogDescription>
+              Actualiza los detalles del gabinete.
+            </DialogDescription>
           </DialogHeader>
           <CabinetForm
             initialData={cabinet}
@@ -111,7 +115,7 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
         return (
           <Badge
             variant="outline"
-            className="border-green-500/20 bg-green-500/10 text-green-700 hover:bg-green-500/20"
+            className="border-green-500/20 bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:border-green-500/30 dark:bg-green-500/15 dark:text-green-400"
           >
             <Check className="mr-1 h-3 w-3" />
             Disponible
@@ -123,7 +127,7 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
         return (
           <Badge
             variant="outline"
-            className="border-amber-500/20 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20"
+            className="border-amber-500/20 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-400"
           >
             <AlertTriangle className="mr-1 h-3 w-3" />
             En uso
@@ -135,7 +139,7 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
         return (
           <Badge
             variant="outline"
-            className="border-red-500/20 bg-red-500/10 text-red-700 hover:bg-red-500/20"
+            className="border-red-500/20 bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-400"
           >
             <Lock className="mr-1 h-3 w-3" />
             Bloqueado
@@ -160,22 +164,6 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
       return <Badge variant="outline">{count}</Badge>
     },
     enableSorting: true,
-  },
-  {
-    accessorKey: "_count.active_sessions",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Sesiones Activas" />
-    ),
-    cell: ({ row }) => {
-      const count = row.original._count?.active_sessions || 0
-      return (
-        <div className="flex items-center">
-          <Badge variant="outline">{count}</Badge>
-        </div>
-      )
-    },
-    enableSorting: true,
-    enableHiding: true,
   },
   {
     accessorKey: "created_at",

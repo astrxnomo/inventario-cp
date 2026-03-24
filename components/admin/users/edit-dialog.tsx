@@ -48,11 +48,11 @@ export function EditUserDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div>
+          <div className="space-y-2">
             <Label>Nombre</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Email</Label>
             <Input value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>

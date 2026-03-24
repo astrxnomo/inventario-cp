@@ -4,7 +4,7 @@ import { DataTable } from "@/components/tables/data-table"
 import { RefreshButton } from "@/components/ui/refresh-button"
 import type { Category } from "@/lib/types/categories"
 import { categoryColumns } from "./columns"
-import { CategoryFormDialog } from "./dialog"
+import { CategoryFormDialog } from "./create-dialog"
 
 interface CategoriesTableProps {
   data: Category[]

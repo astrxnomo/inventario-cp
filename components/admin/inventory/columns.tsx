@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -17,7 +18,7 @@ import { ColumnDef, Row, Table } from "@tanstack/react-table"
 import { Archive, Box, Tag } from "lucide-react"
 import { useState } from "react"
 import { ActionButtonsRow } from "../action-buttons-row"
-import { InventoryForm } from "./inventory-form"
+import { InventoryForm } from "./form"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -45,9 +46,12 @@ function DataTableRowActions<TData extends InventoryItem>({
         deleteDescription={`Esta acción no se puede deshacer. Eliminará permanentemente el item "${item.name}".`}
       />
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Editar item</DialogTitle>
+            <DialogDescription>
+              Actualiza los detalles del artículo.
+            </DialogDescription>
           </DialogHeader>
           <InventoryForm
             initialData={item}
@@ -55,7 +59,6 @@ function DataTableRowActions<TData extends InventoryItem>({
             cabinets={cabinets}
             isDialog
             onSuccess={() => setShowEditDialog(false)}
-            onCancel={() => setShowEditDialog(false)}
           />
         </DialogContent>
       </Dialog>
@@ -78,7 +81,6 @@ export const inventoryItemColumns: ColumnDef<InventoryItem>[] = [
       )
     },
     enableSorting: true,
-    enableHiding: false,
   },
   {
     accessorKey: "quantity",

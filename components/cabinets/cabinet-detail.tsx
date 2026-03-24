@@ -246,9 +246,9 @@ export function CabinetDetail({
                 ) : isReturning ? (
                   <Plus className="h-3.5 w-3.5 text-primary" />
                 ) : (
-                  <ClipboardList className="h-3.5 w-3.5 text-gray-400" />
+                  <ClipboardList className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
                 )}
-                <span className="text-[11px] font-semibold tracking-wider text-gray-500 uppercase">
+                <span className="text-[11px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   {isReturning && !addingMore
                     ? "Artículos retirados"
                     : isReturning
@@ -256,12 +256,12 @@ export function CabinetDetail({
                       : "Inventario disponible"}
                 </span>
               </div>
-              <Separator className="shrink-0 bg-gray-100" />
+              <Separator className="shrink-0 bg-gray-100 dark:bg-gray-800" />
 
               <div className="flex-1 overflow-y-auto px-5 py-3">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="h-5 w-5 animate-spin text-gray-300" />
+                    <Loader2 className="h-5 w-5 animate-spin text-gray-300 dark:text-gray-600" />
                   </div>
                 ) : isReturning && !addingMore ? (
                   <ReturnList
@@ -279,7 +279,7 @@ export function CabinetDetail({
               </div>
             </div>
 
-            <DrawerFooter className="shrink-0 border-t border-gray-100 px-5 pt-2 pb-6">
+            <DrawerFooter className="shrink-0 border-t border-gray-100 px-5 pt-2 pb-6 dark:border-gray-800">
               {isReturning && addingMore ? (
                 <div className="flex gap-2">
                   <Button
@@ -302,7 +302,7 @@ export function CabinetDetail({
                       "h-12 flex-1 gap-2 text-base font-semibold transition-colors",
                       totalSelected > 0
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "cursor-not-allowed bg-gray-100 text-gray-400",
+                        : "cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600",
                     )}
                   >
                     {submitting ? (
@@ -360,7 +360,7 @@ export function CabinetDetail({
                       "h-12 flex-1 gap-2 text-base font-semibold transition-colors",
                       totalSelected > 0
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "cursor-not-allowed bg-gray-100 text-gray-400",
+                        : "cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600",
                     )}
                   >
                     {submitting ? (
@@ -371,16 +371,18 @@ export function CabinetDetail({
                     {totalSelected > 0 ? `Retirar ${totalSelected}` : "Retirar"}
                   </Button>
 
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    disabled={totalSelected === 0 || submitting || loading}
-                    onClick={handleReserve}
-                    className="h-12 gap-2 px-5 font-semibold"
-                  >
-                    <CalendarClock className="h-4 w-4" />
-                    Reservar
-                  </Button>
+                  {cabinet.location === "En sitio" && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      disabled={totalSelected === 0 || submitting || loading}
+                      onClick={handleReserve}
+                      className="h-12 gap-2 px-5 font-semibold"
+                    >
+                      <CalendarClock className="h-4 w-4" />
+                      Reservar
+                    </Button>
+                  )}
                 </div>
               )}
             </DrawerFooter>

@@ -31,12 +31,12 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
           <li
             key={item.id}
             className={cn(
-              "flex items-center justify-between rounded-lg border px-4 py-3 transition-colors",
+              "flex items-center justify-between rounded-lg border px-4 py-3 transition-all",
               outOfStock
                 ? "border-border bg-muted/40 opacity-50"
                 : qty > 0
-                  ? "border-primary/20 bg-primary/5"
-                  : "border-border bg-muted/40",
+                  ? "border-primary bg-primary/10 shadow-sm ring-1 ring-primary/20"
+                  : "border-border bg-muted/40 hover:border-primary/30 hover:bg-muted/60",
             )}
           >
             {/* Left: name + stock info */}
@@ -48,33 +48,35 @@ export function BrowseList({ items, selections, setQty }: BrowseListProps) {
                 <span
                   className={cn(
                     "text-[11px] tabular-nums",
-                    outOfStock ? "text-amber-600" : "text-muted-foreground",
+                    outOfStock
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-muted-foreground",
                   )}
                 >
                   {Math.max(0, availableMax)} disponible
                   {Math.max(0, availableMax) !== 1 ? "s" : ""}
                   {item.in_use > 0 && (
-                    <span className="ml-1.5 text-orange-400">
+                    <span className="ml-1.5 text-orange-500 dark:text-orange-400">
                       · {item.in_use} en uso
                     </span>
                   )}
                 </span>
 
                 {item.reserved_by_others > 0 && (
-                  <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+                  <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
                     {item.reserved_by_others} reservado
                     {item.reserved_by_others !== 1 ? "s" : ""} por otros
                   </span>
                 )}
 
                 {item.reserved_by_me > 0 && (
-                  <span className="rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700">
+                  <span className="rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900/50 dark:text-green-400">
                     {item.reserved_by_me} reservado
                     {item.reserved_by_me !== 1 ? "s" : ""} por ti
                   </span>
                 )}
 
-                <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground uppercase">
+                <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground uppercase dark:bg-muted/80">
                   {item.category}
                 </span>
               </div>

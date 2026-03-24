@@ -1,9 +1,7 @@
-"use client"
-
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -11,6 +9,7 @@ import {
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { CategoryForm } from "./form"
+import { Button } from "@/components/ui/button"
 
 export function CategoryFormDialog() {
   const [open, setOpen] = useState(false)
@@ -23,12 +22,14 @@ export function CategoryFormDialog() {
           Nueva Categoría
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Crear categoría</DialogTitle>
+          <DialogDescription>
+            Completa los detalles de la nueva categoría.
+          </DialogDescription>
         </DialogHeader>
         <CategoryForm
-          isDialog
           onSuccess={() => setOpen(false)}
           onCancel={() => setOpen(false)}
         />

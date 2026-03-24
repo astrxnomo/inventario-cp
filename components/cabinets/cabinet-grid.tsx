@@ -70,11 +70,13 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
     return (
       <div className="px-4 sm:px-6">
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
             <span className="text-3xl">🗄️</span>
           </div>
-          <p className="text-sm text-gray-500">No hay gabinetes registrados.</p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            No hay gabinetes registrados.
+          </p>
+          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
             Pide a un administrador que agregue gabinetes.
           </p>
         </div>
@@ -89,8 +91,8 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
         className={cn(
           "fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-all duration-500",
           isConnected
-            ? "border-primary/20 bg-primary/5 text-primary"
-            : "border-red-200 bg-red-50 text-red-700",
+            ? "border-primary/20 bg-primary/5 text-primary dark:border-primary/40 dark:bg-primary/10"
+            : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400",
         )}
       >
         {isConnected ? (
@@ -110,7 +112,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
           className="w-full sm:max-w-sm"
         />
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex gap-1 rounded-lg border border-gray-200 bg-white p-1">
+          <div className="flex gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-800 dark:bg-gray-950">
             {STATUS_FILTERS.map((f) => (
               <button
                 key={f.id}
@@ -119,7 +121,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
                   "rounded-md px-3 py-1 text-xs font-medium transition-colors",
                   statusFilter === f.id
                     ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-gray-100",
+                    : "text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800",
                 )}
               >
                 {f.label}
@@ -136,13 +138,13 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
       {filteredWithMatches.length === 0 ? (
         <div className="px-4 sm:px-6">
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Sin gabinetes con ese criterio.
             </p>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 dark:border-gray-800">
           {filteredWithMatches.map(({ cabinet, matchedItems }) => {
             return (
               <CabinetCard

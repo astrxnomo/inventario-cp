@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { DialogClose, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createCategory } from "@/lib/actions/categories/create-category"
@@ -31,8 +32,6 @@ export function CategoryForm({
     ? updateCategory.bind(null, initialData.id)
     : null
 
-  // We cast the action to any because TypeScript has trouble unifying the signatures
-  // even though they are compatible for useActionState
   const action = (initialData ? updateAction : createCategory) as any
 
   const [state, formAction, isPending] = useActionState<AdminFormState>(
@@ -46,41 +45,61 @@ export function CategoryForm({
       if (onSuccess) {
         onSuccess()
       } else if (!isDialog) {
-        // Redirect back to list if not in dialog
         router.push("/admin/categories")
         router.refresh()
       }
     }
   }, [state.success, initialData, onSuccess, isDialog, router])
 
-  return (
-    <form action={formAction} className="space-y-4">
+  const formContent = (
+    <>
       {state.error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           {state.error}
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="name">Nombre</Label>
-        <Input
-          id="name"
-          name="name"
-          defaultValue={initialData?.name}
-          placeholder="Ej: Herramientas manuales"
-          required
-        />
-        {state.fieldErrors?.name && (
-          <p className="text-sm text-destructive">{state.fieldErrors.name}</p>
-        )}
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Nombre</Label>
+          <Input
+            id="name"
+            name="name"
+            defaultValue={initialData?.name}
+            placeholder="Ej: Herramientas manuales"
+            required
+          />
+          {state.fieldErrors?.name && (
+            <p className="text-sm text-destructive">{state.fieldErrors.name}</p>
+          )}
+        </div>
       </div>
+    </>
+  )
 
-      <div className="flex justify-end gap-2">
-        {isDialog && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
+  if (isDialog) {
+    return (
+      <form action={formAction}>
+        {formContent}
+        <DialogFooter className="mt-4">
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Cancelar
+            </Button>
+          </DialogClose>
+          <Button type="submit" disabled={isPending}>
+            {isPending && <Loader2 className="size-4 animate-spin" />}
+            {initialData ? "Guardar cambios" : "Crear categoría"}
           </Button>
-        )}
+        </DialogFooter>
+      </form>
+    )
+  }
+
+  return (
+    <form action={formAction} className="space-y-4">
+      {formContent}
+      <div className="flex justify-end gap-2">
         <Button type="submit" disabled={isPending}>
           {isPending && <Loader2 className="size-4 animate-spin" />}
           {initialData ? "Guardar cambios" : "Crear categoría"}

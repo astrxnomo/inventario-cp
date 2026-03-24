@@ -2,9 +2,17 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { formatDate, formatDistance } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
 import { Archive, Clock, User } from "lucide-react"
+
+export type SessionItem = {
+  id: string
+  name: string
+  category?: string
+  added_at: string
+}
 
 export type AdminSession = {
   id: string
@@ -17,6 +25,7 @@ export type AdminSession = {
   user_name?: string
   cabinet_name?: string
   items_count?: number
+  items?: SessionItem[]
 }
 
 export const sessionStatusOptions = [
@@ -24,7 +33,9 @@ export const sessionStatusOptions = [
   { label: "Completada", value: "completed", icon: Clock },
 ]
 
-export const adminSessionColumns: ColumnDef<AdminSession>[] = [
+export const adminSessionColumns = (
+  onViewItems?: (session: AdminSession) => void,
+): ColumnDef<AdminSession>[] => [
   {
     accessorKey: "user_name",
     header: ({ column }) => (
@@ -129,7 +140,16 @@ export const adminSessionColumns: ColumnDef<AdminSession>[] = [
     ),
     cell: ({ row }) => {
       const count = row.getValue("items_count") as number
-      return <Badge variant="outline">{count || 0}</Badge>
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onViewItems?.(row.original)}
+          className="cursor-pointer"
+        >
+          {count || 0}
+        </Button>
+      )
     },
     enableSorting: true,
   },

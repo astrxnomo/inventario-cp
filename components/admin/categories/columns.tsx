@@ -4,7 +4,10 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -28,7 +31,7 @@ function CategoryActions({ category }: { category: Category }) {
           <>
             Esta acción eliminará la categoría "{category.name}".
             {(category._count?.inventory_items || 0) > 0 && (
-              <div className="mt-2 rounded-md bg-destructive/15 p-3 font-medium text-destructive">
+              <div className="mt-2 rounded-lg border border-amber-500/50 bg-amber-50 p-3 font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-400">
                 ⚠️ Advertencia: Esta categoría tiene{" "}
                 {category._count?.inventory_items} items asociados. No se podrá
                 eliminar hasta que se muevan o eliminen los items.
@@ -38,9 +41,12 @@ function CategoryActions({ category }: { category: Category }) {
         }
       />
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Editar categoría</DialogTitle>
+            <DialogDescription>
+              Actualiza los detalles de la categoría.
+            </DialogDescription>
           </DialogHeader>
           <CategoryForm
             initialData={category}

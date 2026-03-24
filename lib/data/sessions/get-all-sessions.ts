@@ -1,5 +1,12 @@
 import { createClient } from "@/lib/supabase/server"
 
+export type SessionItem = {
+  id: string
+  name: string
+  category?: string
+  added_at: string
+}
+
 export type AdminSession = {
   id: string
   user_id: string
@@ -10,6 +17,7 @@ export type AdminSession = {
   user_name?: string
   cabinet_name?: string
   items_count?: number
+  items?: SessionItem[]
 }
 
 export async function getAllSessions(): Promise<AdminSession[]> {
@@ -50,16 +58,35 @@ export async function getAllSessions(): Promise<AdminSession[]> {
     (profilesData ?? []).map((p) => [p.id, p.full_name]),
   )
 
-  // Fetch session items count separately
+  // Fetch session items with details
   const sessionIds = (data ?? []).map((s) => s.id)
   const { data: itemsData } = await supabase
     .from("session_items")
-    .select("session_id")
+    .select(
+      `
+      id,
+      session_id,
+      inventory_items!inner(id, name),
+      created_at
+    `,
+    )
     .in("session_id", sessionIds)
+    .order("created_at", { ascending: true })
 
+  const itemsMap: Record<string, SessionItem[]> = {}
   const itemsCountMap: Record<string, number> = {}
+
   for (const item of itemsData ?? []) {
-    itemsCountMap[item.session_id] = (itemsCountMap[item.session_id] ?? 0) + 1
+    const sessionId = item.session_id
+    if (!itemsMap[sessionId]) {
+      itemsMap[sessionId] = []
+    }
+    itemsMap[sessionId].push({
+      id: item.id,
+      name: (item.inventory_items as any)?.name ?? "Sin nombre",
+      added_at: item.created_at,
+    })
+    itemsCountMap[sessionId] = (itemsCountMap[sessionId] ?? 0) + 1
   }
 
   return (data ?? []).map((session) => ({
@@ -72,5 +99,6 @@ export async function getAllSessions(): Promise<AdminSession[]> {
     user_name: profilesMap.get(session.user_id) ?? "Sin nombre",
     cabinet_name: (session.cabinets as any)?.name ?? "Sin gabinete",
     items_count: itemsCountMap[session.id] ?? 0,
+    items: itemsMap[session.id] ?? [],
   }))
 }

@@ -158,8 +158,8 @@ export function ReserveDialog({
 
         <div className="max-h-[60dvh] space-y-4 overflow-y-auto py-1">
           {/* Selected items summary (read-only) */}
-          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5">
-            <p className="mb-1.5 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900/50">
+            <p className="mb-1.5 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
               Artículos a reservar
             </p>
             <ul className="space-y-1">
@@ -172,11 +172,13 @@ export function ReserveDialog({
                     key={item.id}
                     className="flex items-center justify-between text-sm"
                   >
-                    <span className="text-gray-800">{item.name}</span>
+                    <span className="text-gray-800 dark:text-gray-200">
+                      {item.name}
+                    </span>
                     <span
                       className={
                         over
-                          ? "font-semibold text-amber-600"
+                          ? "font-semibold text-amber-600 dark:text-amber-400"
                           : "text-muted-foreground"
                       }
                     >
@@ -220,14 +222,25 @@ export function ReserveDialog({
           </div>
 
           {dateError && (
-            <p className="flex items-center gap-1.5 text-sm text-destructive">
-              <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            <p className="flex items-start gap-2 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive dark:text-red-400">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               {dateError}
             </p>
           )}
 
+          {overLimit.length > 0 && (
+            <p className="flex items-start gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:bg-amber-950/30 dark:text-amber-400">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>
+                {overLimit.length === 1
+                  ? `${overLimit[0].name} excede la disponibilidad`
+                  : `${overLimit.length} artículos exceden la disponibilidad`}
+              </span>
+            </p>
+          )}
+
           {checking && (
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <p className="flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" />
               Verificando disponibilidad...
             </p>
@@ -243,7 +256,7 @@ export function ReserveDialog({
               placeholder="Motivo o contexto de la reserva"
               rows={2}
               maxLength={500}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring dark:bg-gray-950"
             />
           </div>
         </div>

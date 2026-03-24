@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -12,7 +13,7 @@ import type { CabinetRow } from "@/lib/types/cabinets"
 import type { Category } from "@/lib/types/categories"
 import { Plus } from "lucide-react"
 import { useState } from "react"
-import { InventoryForm } from "./inventory-form"
+import { InventoryForm } from "./form"
 
 interface CreateInventoryDialogProps {
   categories: Category[]
@@ -33,9 +34,12 @@ export function CreateInventoryDialog({
           Nuevo Item
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Crear nuevo item</DialogTitle>
+          <DialogDescription>
+            Completa los detalles del nuevo artículo.
+          </DialogDescription>
         </DialogHeader>
         <InventoryForm
           categories={categories}

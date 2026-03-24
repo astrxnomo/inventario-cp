@@ -18,6 +18,20 @@ export function ActivityLogsTable({ logs }: ActivityLogsTableProps) {
     setDateTo(to)
   }
 
+  // Extraer opciones de gabinetes únicos
+  const cabinetOptions = Array.from(
+    new Set(
+      logs
+        .map((log) => log.cabinet_name)
+        .filter((name): name is string => Boolean(name)),
+    ),
+  )
+    .sort()
+    .map((cabinet) => ({
+      label: cabinet,
+      value: cabinet,
+    }))
+
   // Filtrar por rango de fechas
   const filteredLogs = logs.filter((log) => {
     if (!dateFrom && !dateTo) return true
@@ -42,6 +56,11 @@ export function ActivityLogsTable({ logs }: ActivityLogsTableProps) {
           id: "action",
           label: "Acción",
           options: actionOptions,
+        },
+        {
+          id: "cabinet_name",
+          label: "Gabinete",
+          options: cabinetOptions,
         },
       ]}
       showDateFilter

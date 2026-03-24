@@ -1,9 +1,8 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,12 +22,14 @@ export function CreateCabinetDialog() {
           Nuevo Gabinete
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Crear nuevo gabinete</DialogTitle>
+          <DialogDescription>
+            Completa los detalles del nuevo gabinete.
+          </DialogDescription>
         </DialogHeader>
         <CabinetForm
-          isDialog
           onSuccess={() => setOpen(false)}
           onCancel={() => setOpen(false)}
         />
