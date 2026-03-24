@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": [
+    {
+      "name": "nextjs-16",
+      "path": ".agents/skills/nextjs-16/SKILL.md",
+      "description": "Next.js 16 App Router conventions: routing, layouts, server vs client components, async params, and path aliases.",
+      "tags": ["nextjs", "app-router", "routing", "server-components"]
+    },
+    {
+      "name": "nextjs-server-actions",
+      "path": ".agents/skills/nextjs-server-actions/SKILL.md",
+      "description": "How to write, structure, and consume Next.js Server Actions for all mutations in this project.",
+      "tags": ["nextjs", "server-actions", "mutations", "forms"]
+    },
+    {
+      "name": "nextjs-data-fetching",
+      "path": ".agents/skills/nextjs-data-fetching/SKILL.md",
+      "description": "Server-side data fetching with dedicated fetcher functions under lib/data/, parallel fetches, and cache revalidation.",
+      "tags": ["nextjs", "data-fetching", "supabase", "server-components"]
+    },
+    {
+      "name": "supabase-auth-rls",
+      "path": ".agents/skills/supabase-auth-rls/SKILL.md",
+      "description": "Supabase Auth setup, session management, admin auth guard (assertAdmin), and Row-Level Security conventions.",
+      "tags": ["supabase", "auth", "rls", "security"]
+    },
+    {
+      "name": "shadcn-usage",
+      "path": ".agents/skills/shadcn-usage/SKILL.md",
+      "description": "How to use Shadcn UI components (Button, Input, Badge, Card, Dialog), icons with lucide-react, and Tailwind CSS v4 design tokens.",
+      "tags": ["shadcn", "ui", "tailwind", "components"]
+    },
+    {
+      "name": "senior-frontend-guidelines",
+      "path": ".agents/skills/senior-frontend-guidelines/SKILL.md",
+      "description": "Senior-level conventions for component architecture, TypeScript, error handling, loading states, accessibility, and imports.",
+      "tags": ["architecture", "typescript", "conventions", "accessibility"]
+    },
+    {
+      "name": "forms-zod",
+      "path": ".agents/skills/forms-zod/SKILL.md",
+      "description": "Form validation with Zod: schema definitions, safeParse in server actions, useActionState in client forms, and cross-field validation.",
+      "tags": ["forms", "zod", "validation", "server-actions"]
+    },
+    {
+      "name": "admin-tables",
+      "path": ".agents/skills/admin-tables/SKILL.md",
+      "description": "Admin data tables with TanStack Table: column definitions, row actions with edit/delete dialogs, status badges, and filtering.",
+      "tags": ["tables", "tanstack-table", "admin", "data-table"]
+    }
+  ]
+}
