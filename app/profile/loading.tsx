@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function HistoryLoading() {
   return (
-    <PageLoadingShell className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageLoadingShell className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <div>
         <div className="mb-6 flex items-start justify-between gap-4">
           <div className="space-y-2">

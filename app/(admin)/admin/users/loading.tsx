@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataTableSkeleton } from "@/components/tables"
 
 export default function UsersLoading() {
   return (
@@ -8,9 +9,9 @@ export default function UsersLoading() {
           <Skeleton className="h-8 w-52" />
           <Skeleton className="h-4 w-44" />
         </div>
-        <Skeleton className="h-9 w-24 self-start sm:self-auto" />
+        <Skeleton className="h-9 w-24 self-start rounded-xl sm:self-auto" />
       </div>
-      <Skeleton className="h-96 rounded-lg" />
+      <DataTableSkeleton rowCount={10} columnCount={5} />
     </main>
   )
 }
