@@ -5,6 +5,8 @@ export type SessionItem = {
   name: string
   category?: string
   added_at: string
+  action: "withdrawn" | "returned"
+  quantity: number
 }
 
 export type AdminSession = {
@@ -66,6 +68,8 @@ export async function getAllSessions(): Promise<AdminSession[]> {
       `
       id,
       session_id,
+      action,
+      quantity,
       inventory_items!inner(id, name),
       created_at
     `,
@@ -85,6 +89,8 @@ export async function getAllSessions(): Promise<AdminSession[]> {
       id: item.id,
       name: (item.inventory_items as any)?.name ?? "Sin nombre",
       added_at: item.created_at,
+      action: item.action as "withdrawn" | "returned",
+      quantity: item.quantity,
     })
     itemsCountMap[sessionId] = (itemsCountMap[sessionId] ?? 0) + 1
   }

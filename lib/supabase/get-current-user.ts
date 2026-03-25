@@ -1,11 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { cache } from "react"
 
-/**
- * Returns the authenticated user + profile for the current request.
- * Wrapped in React.cache so layout + page components share a single DB read
- * per request instead of each making their own round-trip.
- */
 export const getCurrentUser = cache(async () => {
   const supabase = await createClient()
 
@@ -17,7 +12,7 @@ export const getCurrentUser = cache(async () => {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name")
+    .select("*")
     .eq("id", user.id)
     .single()
 

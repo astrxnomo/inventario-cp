@@ -12,13 +12,15 @@ import { Label } from "@/components/ui/label"
 import { loginAction } from "@/lib/actions/auth/login"
 import type { AuthState } from "@/lib/actions/auth/shared"
 import Link from "next/link"
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { SubmitButton } from "../ui/submit-button"
 
 const initialState: AuthState = {}
 
 export function LoginForm() {
   const [state, action] = useActionState(loginAction, initialState)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   return (
     <Card className="w-full max-w-sm">
@@ -45,6 +47,8 @@ export function LoginForm() {
               placeholder="tu@email.com"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             {state.fieldErrors?.email && (
               <p className="text-xs text-destructive">
@@ -69,6 +73,8 @@ export function LoginForm() {
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {state.fieldErrors?.password && (
               <p className="text-xs text-destructive">

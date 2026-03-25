@@ -1,7 +1,7 @@
 import { userProfileSchema } from "@/lib/schemas/users"
 import { z } from "zod"
 
-export type UserProfileRow = z.infer<typeof userProfileSchema>
+export type Profile = z.infer<typeof userProfileSchema>
 
 // ─── Dashboard KPIs ───────────────────────────────────────────────────────────
 export interface DashboardKpis {

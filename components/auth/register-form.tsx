@@ -13,13 +13,17 @@ import { Label } from "@/components/ui/label"
 import { registerAction } from "@/lib/actions/auth/register"
 import type { AuthState } from "@/lib/actions/auth/shared"
 import Link from "next/link"
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { SubmitButton } from "../ui/submit-button"
 
 const initialState: AuthState = {}
 
 export function RegisterForm() {
   const [state, action] = useActionState(registerAction, initialState)
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirm, setConfirm] = useState("")
 
   if (state.success) {
     return (
@@ -68,6 +72,8 @@ export function RegisterForm() {
               placeholder="Juan Pérez"
               autoComplete="name"
               autoFocus
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
             {state.fieldErrors?.full_name && (
               <p className="text-xs text-destructive">
@@ -84,6 +90,8 @@ export function RegisterForm() {
               type="email"
               placeholder="tu@email.com"
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             {state.fieldErrors?.email && (
               <p className="text-xs text-destructive">
@@ -100,6 +108,8 @@ export function RegisterForm() {
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {state.fieldErrors?.password && (
               <p className="text-xs text-destructive">
@@ -116,6 +126,8 @@ export function RegisterForm() {
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
             />
             {state.fieldErrors?.confirm && (
               <p className="text-xs text-destructive">

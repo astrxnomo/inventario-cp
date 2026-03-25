@@ -144,7 +144,7 @@ export type Database = {
       inventory_items: {
         Row: {
           cabinet_id: string
-          category_id: string
+          category_id: string | null
           created_at: string
           id: string
           name: string
@@ -153,7 +153,7 @@ export type Database = {
         }
         Insert: {
           cabinet_id: string
-          category_id: string
+          category_id?: string | null
           created_at?: string
           id?: string
           name: string
@@ -162,7 +162,7 @@ export type Database = {
         }
         Update: {
           cabinet_id?: string
-          category_id?: string
+          category_id?: string | null
           created_at?: string
           id?: string
           name?: string
@@ -256,6 +256,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           role: Database["public"]["Enums"]["user_role"]
@@ -263,6 +264,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
           role?: Database["public"]["Enums"]["user_role"]
@@ -270,6 +272,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           role?: Database["public"]["Enums"]["user_role"]
