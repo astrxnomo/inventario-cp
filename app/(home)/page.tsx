@@ -30,18 +30,7 @@ export default async function HomePage() {
         userName={profile.full_name}
       />
 
-      <main id="main-content" className="pb-8">
-        <div className="mx-auto max-w-7xl px-4 pt-8 pb-5 sm:px-6">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Gabinetes
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {cabinets.length === 0
-              ? "No hay gabinetes registrados aún."
-              : `${cabinets.length} gabinete${cabinets.length !== 1 ? "s" : ""} en el sistema`}
-          </p>
-        </div>
-
+      <main id="main-content" className="pt-12">
         <div className="mx-auto max-w-7xl">
           <CabinetGrid initialCabinets={cabinets} userId={user.id} />
         </div>

@@ -12,6 +12,7 @@ import {
 import { signOut } from "@/lib/actions/auth/sign-out"
 import { Clock, LogOut, Settings, User } from "lucide-react"
 import Link from "next/link"
+
 import { Button } from "../ui/button"
 
 const ROLE_LABELS: Record<string, string> = {
@@ -43,9 +44,9 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="flex items-center gap-1.5">
+        <Button>
           <User className="h-4 w-4" />
-          <span>{displayName}</span>
+          <span className="hidden lg:block">{displayName}</span>
         </Button>
       </DropdownMenuTrigger>
 
