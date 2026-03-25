@@ -25,7 +25,6 @@ export function AppNav({ userEmail, userRole, userName }: AppNavProps) {
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           {isAdmin && (
             <Button asChild variant="outline">
               <Link href="/admin/users">
@@ -39,6 +38,7 @@ export function AppNav({ userEmail, userRole, userName }: AppNavProps) {
             userRole={userRole}
             userName={userName}
           />
+          <ThemeToggle />
         </div>
       </div>
     </header>

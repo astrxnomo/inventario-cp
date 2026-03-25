@@ -20,16 +20,11 @@ export default async function AdminLayout({
     redirect("/")
   }
 
-  const { user, profile } = current
+  const { profile } = current
 
   return (
     <SidebarProvider>
-      <AppSidebar
-        variant="sidebar"
-        userEmail={user.email}
-        userRole={profile.role}
-        userName={profile.full_name}
-      />
+      <AppSidebar variant="sidebar" user={profile} />
       <SidebarInset>
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
           <SidebarTrigger />

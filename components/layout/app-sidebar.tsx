@@ -4,7 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import * as React from "react"
 
-import { UserMenu } from "@/components/layout/user-menu"
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +17,7 @@ import {
 import {
   ActivitySquare,
   Archive,
+  ArrowLeft,
   Box,
   Calendar,
   History,
@@ -25,6 +25,8 @@ import {
   Tags,
   Users,
 } from "lucide-react"
+import { NavUser } from "./nav-user"
+import { Profile } from "@/lib/types/users"
 
 const adminLinks = [{ href: "/admin/users", label: "Usuarios", icon: Users }]
 
@@ -41,17 +43,10 @@ const logsLinks = [
 ]
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  userEmail?: string
-  userRole?: string
-  userName?: string | null
+  user: Profile
 }
 
-export function AppSidebar({
-  userEmail,
-  userRole,
-  userName,
-  ...props
-}: AppSidebarProps) {
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const pathname = usePathname()
 
   return (
@@ -79,101 +74,118 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="px-3 pb-2">
-        <SidebarMenu className="gap-1">
-          {adminLinks.map((link) => {
-            const Icon = link.icon
-            const isActive = pathname.startsWith(link.href)
-
-            return (
-              <SidebarMenuItem key={link.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
-                >
-                  <Link href={link.href}>
-                    <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
-                      <Icon className="size-4" />
-                    </span>
-                    <span>{link.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )
-          })}
-        </SidebarMenu>
-
-        <SidebarSeparator className="my-3" />
-
-        {inventoryLinks.length > 0 && (
-          <>
+      <SidebarContent className="mt-5 flex flex-col justify-between gap-6 px-3 pb-2">
+        <div>
+          <SidebarMenu className="gap-1">
             <p className="px-2 pb-2 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 uppercase">
-              Inventario
+              Gestión
             </p>
-            <SidebarMenu className="gap-1">
-              {inventoryLinks.map((link) => {
-                const Icon = link.icon
-                const isActive = pathname.startsWith(link.href)
+            {adminLinks.map((link) => {
+              const Icon = link.icon
+              const isActive = pathname.startsWith(link.href)
 
-                return (
-                  <SidebarMenuItem key={link.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
-                    >
-                      <Link href={link.href}>
-                        <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
-                          <Icon className="size-4" />
-                        </span>
-                        <span>{link.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </>
-        )}
+              return (
+                <SidebarMenuItem key={link.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
+                  >
+                    <Link href={link.href}>
+                      <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
+                        <Icon className="size-4" />
+                      </span>
+                      <span>{link.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
 
-        <SidebarSeparator className="my-3" />
+          <SidebarSeparator className="my-3" />
 
-        <p className="px-2 pb-2 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 uppercase">
-          Logs
-        </p>
+          {inventoryLinks.length > 0 && (
+            <>
+              <p className="px-2 pb-2 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 uppercase">
+                Inventario
+              </p>
+              <SidebarMenu className="gap-1">
+                {inventoryLinks.map((link) => {
+                  const Icon = link.icon
+                  const isActive = pathname.startsWith(link.href)
+
+                  return (
+                    <SidebarMenuItem key={link.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
+                      >
+                        <Link href={link.href}>
+                          <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
+                            <Icon className="size-4" />
+                          </span>
+                          <span>{link.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </>
+          )}
+
+          <SidebarSeparator className="my-3" />
+
+          <p className="px-2 pb-2 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 uppercase">
+            Registros
+          </p>
+          <SidebarMenu className="gap-1">
+            {logsLinks.map((link) => {
+              const Icon = link.icon
+              const isActive = pathname.startsWith(link.href)
+
+              return (
+                <SidebarMenuItem key={link.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
+                  >
+                    <Link href={link.href}>
+                      <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
+                        <Icon className="size-4" />
+                      </span>
+                      <span>{link.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+
+          <SidebarSeparator className="my-3" />
+        </div>
+
         <SidebarMenu className="gap-1">
-          {logsLinks.map((link) => {
-            const Icon = link.icon
-            const isActive = pathname.startsWith(link.href)
-
-            return (
-              <SidebarMenuItem key={link.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
-                >
-                  <Link href={link.href}>
-                    <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
-                      <Icon className="size-4" />
-                    </span>
-                    <span>{link.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )
-          })}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="h-10 rounded-xl px-2.5 data-[active=true]:bg-sidebar-primary/12 data-[active=true]:text-sidebar-primary"
+            >
+              <Link href="/">
+                <span className="flex size-7 items-center justify-center rounded-md bg-sidebar-accent/60 group-data-[active=true]/menu-button:bg-sidebar-primary/16">
+                  <ArrowLeft className="size-4" />
+                </span>
+                <span>Volver a los gabinetes</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-
-      <SidebarFooter className="px-3 pt-2 pb-3">
-        <SidebarSeparator className="mb-2" />
-        <UserMenu
-          userEmail={userEmail}
-          userRole={userRole}
-          userName={userName}
-        />
+      <SidebarFooter>
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )
