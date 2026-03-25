@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { useCabinets } from "@/hooks/use-cabinets"
 import type { Cabinet, CabinetStatus } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
-import { Wifi, WifiOff } from "lucide-react"
+import { Search, Wifi, WifiOff, X } from "lucide-react"
 import * as React from "react"
 import { CabinetCard } from "./cabinet-card"
 import { CabinetDetail } from "./cabinet-detail"
@@ -28,7 +28,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
-  const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all")
+  const [statusFilter] = React.useState<StatusFilter>("all")
 
   const selectedCabinet = React.useMemo(
     () =>
@@ -42,6 +42,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
   }
 
   const q = search.toLowerCase().trim()
+  const hasQuery = q.length > 0
 
   const filteredWithMatches = React.useMemo(() => {
     return cabinets
@@ -104,33 +105,37 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-2 px-4 pb-4 sm:px-6">
-        <Input
-          placeholder="Buscar por gabinete, ubicación o artículo..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:max-w-sm"
-        />
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-800 dark:bg-gray-950">
-            {STATUS_FILTERS.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setStatusFilter(f.id)}
-                className={cn(
-                  "rounded-md px-3 py-1 text-xs font-medium transition-colors",
-                  statusFilter === f.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800",
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
+      <div className="px-4 pb-4 sm:px-6">
+        <div className="mx-auto w-full max-w-xl">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-sky-200/40 via-cyan-200/35 to-emerald-200/40 blur-sm dark:from-sky-800/30 dark:via-cyan-800/20 dark:to-emerald-800/30" />
+            <div className="relative rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur dark:border-gray-700/70 dark:bg-gray-900/70">
+              <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+              <Input
+                placeholder="Buscar por gabinete u objetos..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-12 border-0 bg-transparent pr-28 pl-9 text-sm shadow-none focus-visible:ring-0"
+              />
+
+              {hasQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="absolute top-1/2 right-2 inline-flex -translate-y-1/2 items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-1 text-[11px] font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                  <X className="h-3 w-3" />
+                  Limpiar
+                </button>
+              )}
+            </div>
           </div>
-          <span className="text-xs text-muted-foreground">
-            {filteredWithMatches.length} de {cabinets.length}
-          </span>
+
+          <p className="mt-2 px-1 text-xs text-gray-500 dark:text-gray-400">
+            {hasQuery
+              ? `${filteredWithMatches.length} resultado${filteredWithMatches.length === 1 ? "" : "s"}`
+              : `${cabinets.length} gabinete${cabinets.length === 1 ? "" : "s"} disponibles`}
+          </p>
         </div>
       </div>
 
@@ -144,7 +149,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 dark:border-gray-800">
+        <div className="mt-8 grid grid-cols-2 rounded border-t border-l border-gray-200 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 dark:border-gray-800">
           {filteredWithMatches.map(({ cabinet, matchedItems }) => {
             return (
               <CabinetCard

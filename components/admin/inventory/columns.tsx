@@ -48,6 +48,7 @@ export const inventoryItemColumns: ColumnDef<InventoryItem>[] = [
     },
     enableSorting: true,
   },
+
   {
     accessorKey: "quantity",
     header: ({ column }) => (
@@ -56,25 +57,6 @@ export const inventoryItemColumns: ColumnDef<InventoryItem>[] = [
     cell: ({ row }) => {
       const quantity = row.getValue("quantity") as number
       return <Badge variant="outline">{quantity}</Badge>
-    },
-  },
-  {
-    accessorKey: "category_name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Categoría" />
-    ),
-    cell: ({ row }) => {
-      const category = row.getValue("category_name") as string | undefined
-      return (
-        <Badge variant="outline">
-          <Tag className="size-2" />
-          {category || "Sin categoría"}
-        </Badge>
-      )
-    },
-    filterFn: (row, id, value) => {
-      const category = row.getValue(id) as string | undefined
-      return value.includes(category || "Sin categoría")
     },
   },
   {
@@ -96,6 +78,26 @@ export const inventoryItemColumns: ColumnDef<InventoryItem>[] = [
       return value.includes(cabinet || "Sin gabinete")
     },
   },
+  {
+    accessorKey: "category_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Categoría" />
+    ),
+    cell: ({ row }) => {
+      const category = row.getValue("category_name") as string | undefined
+      return (
+        <Badge variant="outline">
+          <Tag className="size-2" />
+          {category || "Sin categoría"}
+        </Badge>
+      )
+    },
+    filterFn: (row, id, value) => {
+      const category = row.getValue(id) as string | undefined
+      return value.includes(category || "Sin categoría")
+    },
+  },
+
   {
     accessorKey: "created_at",
     header: ({ column }) => (

@@ -133,6 +133,7 @@ export function CabinetDetail({
     } else {
       const result = await withdrawCabinetItems({
         cabinetId: cabinet!.id,
+        cabinetLocation: cabinet!.location ?? undefined,
         userId,
         items: payload,
       })

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { authorizeUser } from "@/lib/actions/users/authorize-user"
 import { deleteUser } from "@/lib/actions/users/delete-user"
-import { CheckCircle, Pencil, ShieldAlert, Trash } from "lucide-react"
+import { Check, Pencil, ShieldUser, Trash } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { ChangeRoleDialog } from "./change-role-dialog"
@@ -80,21 +80,22 @@ export function UserActions({
     <>
       <div className="flex items-center gap-2">
         {user.role === "pending" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 px-2 text-muted-foreground hover:text-green-600"
-            onClick={handleAuthorize}
-            disabled={isAuthorizing}
-            aria-label="Autorizar"
-          >
-            <CheckCircle />
-          </Button>
+          <>
+            <Button
+              size="icon"
+              className="h-8 border-emerald-500/20 bg-emerald-500/10 px-2 text-emerald-700 text-muted-foreground hover:bg-emerald-500/20 dark:text-emerald-400"
+              onClick={handleAuthorize}
+              disabled={isAuthorizing}
+              aria-label="Autorizar"
+            >
+              <Check />
+            </Button>
+            <hr className="mx-2 h-4 border-l border-muted" />
+          </>
         )}
-
         {currentUserRole === "root" && (
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             className="h-8 px-2 text-muted-foreground hover:text-primary"
             onClick={handleOpenChangeRole}
@@ -103,7 +104,7 @@ export function UserActions({
             }
             aria-label="Cambiar rol"
           >
-            <ShieldAlert />
+            <ShieldUser />
           </Button>
         )}
 

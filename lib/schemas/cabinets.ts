@@ -8,6 +8,7 @@ const withdrawItemSchema = z.object({
 
 export const withdrawSchema = z.object({
   cabinetId: z.string().uuid("ID de gabinete inválido"),
+  cabinetLocation: z.string().optional(),
   userId: z.string().uuid("ID de usuario inválido"),
   items: z.array(withdrawItemSchema).min(1, "Selecciona al menos un artículo"),
 })

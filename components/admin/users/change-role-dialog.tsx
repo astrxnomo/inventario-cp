@@ -77,9 +77,6 @@ export function ChangeRoleDialog({
                 <SelectItem value="pending">Pendiente</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
-              El rol 'Root' no se puede asignar manualmente.
-            </p>
           </div>
         </div>
 
