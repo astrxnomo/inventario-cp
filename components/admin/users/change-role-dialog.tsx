@@ -18,15 +18,12 @@ import { useState } from "react"
 import { updateUserRole } from "@/lib/actions/users/update-role"
 import { toast } from "sonner"
 
+import type { UserProfile } from "./columns"
+
 interface ChangeRoleDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  user: {
-    id: string
-    full_name?: string | null
-    email: string
-    role: "pending" | "user" | "admin" | "root"
-  }
+  user: UserProfile
 }
 
 export function ChangeRoleDialog({

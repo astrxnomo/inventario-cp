@@ -2,36 +2,10 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { ActionButtonsRow } from "@/components/admin/action-buttons-row"
-import { ChangeRoleDialog } from "./change-role-dialog"
-import { EditUserDialog } from "./edit-dialog"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { authorizeUser } from "@/lib/actions/users/authorize-user"
-import { deleteUser } from "@/lib/actions/users/delete-user"
 import { formatDate } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import {
-  CheckCircle,
-  Clock,
-  MoreHorizontal,
-  Pencil,
-  ShieldAlert,
-  ShieldCheck,
-  Trash2,
-  User,
-} from "lucide-react"
-import Link from "next/link"
-import { useState, useTransition } from "react"
-import { toast } from "sonner"
+import { Clock, ShieldAlert, ShieldCheck, User } from "lucide-react"
+import { UserActions } from "./user-actions"
 
 export type UserProfile = {
   id: string
@@ -68,108 +42,6 @@ const roleLabels = {
   admin: "Admin",
   user: "Usuario",
   pending: "Pendiente",
-}
-
-function UserActions({
-  user,
-  currentUserRole,
-  currentUserId,
-}: {
-  user: UserProfile
-  currentUserRole?: string
-  currentUserId?: string
-}) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [showEditDialog, setShowEditDialog] = useState(false)
-  const [showRoleDialog, setShowRoleDialog] = useState(false)
-  const [isPending, startTransition] = useTransition()
-
-  const handleDelete = () => {
-    startTransition(async () => {
-      const result = await deleteUser(user.id)
-      if (result.error) {
-        toast.error(result.error)
-      } else {
-        toast.success("Usuario eliminado correctamente")
-        setShowDeleteDialog(false)
-      }
-    })
-  }
-
-  const handleAuthorize = () => {
-    startTransition(async () => {
-      const result = await authorizeUser(user.id)
-      if (result.error) {
-        toast.error(result.error)
-      } else {
-        toast.success("Usuario autorizado correctamente")
-      }
-    })
-  }
-
-  const handleOpenEdit = () => setShowEditDialog(true)
-  const handleOpenChangeRole = () => {
-    if (user.id === currentUserId || user.user_id === currentUserId) {
-      toast.error("No puedes cambiar tu propio rol")
-      return
-    }
-    setShowRoleDialog(true)
-  }
-
-  return (
-    <>
-      <ActionButtonsRow
-        onEdit={handleOpenEdit}
-        onDelete={async () => {
-          setShowDeleteDialog(true)
-          return {}
-        }}
-        actions={
-          [
-            user.role === "pending"
-              ? {
-                  icon: <CheckCircle className="h-4 w-4 text-green-600" />,
-                  onClick: handleAuthorize,
-                  label: "Autorizar",
-                  visible: true,
-                }
-              : null,
-            {
-              icon: <ShieldAlert className="h-4 w-4" />,
-              onClick: handleOpenChangeRole,
-              label: "Cambiar rol",
-              visible: currentUserRole === "root",
-              disabled:
-                user.id === currentUserId || user.user_id === currentUserId,
-            },
-          ].filter(Boolean) as any
-        }
-      />
-
-      <EditUserDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        user={user}
-      />
-
-      <ChangeRoleDialog
-        open={showRoleDialog}
-        onOpenChange={setShowRoleDialog}
-        user={user}
-      />
-
-      <ConfirmDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        title="¿Estás seguro?"
-        description={`Esta acción eliminará al usuario "${user.full_name || user.email}". Si el usuario tiene registros asociados, la eliminación podría fallar.`}
-        onConfirm={handleDelete}
-        confirmLabel="Eliminar"
-        intent="destructive"
-        isLoading={isPending}
-      />
-    </>
-  )
 }
 
 export const userColumns: ColumnDef<UserProfile>[] = [

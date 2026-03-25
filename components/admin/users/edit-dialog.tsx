@@ -13,10 +13,12 @@ import { useState } from "react"
 import { updateUser } from "@/lib/actions/users/update-user"
 import { toast } from "sonner"
 
+import type { UserProfile } from "./columns"
+
 interface EditUserDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  user: { id: string; full_name?: string | null; email?: string }
+  user: UserProfile
 }
 
 export function EditUserDialog({

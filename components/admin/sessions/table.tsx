@@ -1,10 +1,11 @@
 "use client"
 
 import { DataTable } from "@/components/tables/data-table"
+import { RefreshButton } from "@/components/ui/refresh-button"
 import { useState } from "react"
 import { adminSessionColumns, type AdminSession } from "./columns"
-import { RefreshButton } from "@/components/ui/refresh-button"
-import { SessionItemsModal } from "./session-items-modal"
+import type { ColumnDef } from "@tanstack/react-table"
+import { SessionTimeline } from "./timeline"
 
 interface SessionsTableProps {
   sessions: AdminSession[]
@@ -36,13 +37,17 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
       value: cabinet,
     }))
 
-  // Extraer opciones de items (por rango)
-  const itemsOptions = [
-    { label: "Sin items", value: "0" },
-    { label: "1-5 items", value: "1-5" },
-    { label: "6-10 items", value: "6-10" },
-    { label: "11+ items", value: "11+" },
-  ]
+  // Extraer opciones de items por nombre (para filtrar por item específico)
+  const itemNameOptions = Array.from(
+    new Set(
+      sessions
+        .flatMap((s) => s.items ?? [])
+        .map((it) => it.name)
+        .filter((n): n is string => Boolean(n)),
+    ),
+  )
+    .sort()
+    .map((name) => ({ label: name, value: name }))
 
   // Filtrar por rango de fechas
   const filteredSessions = sessions.filter((session) => {
@@ -57,10 +62,34 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
     return true
   })
 
+  // Construir columnas agregando una columna oculta `items` con filtro personalizado
+  const columns: ColumnDef<AdminSession, any>[] =
+    adminSessionColumns(setSelectedSession)
+
+  columns.push({
+    id: "items",
+    accessorKey: "items",
+    header: () => null,
+    cell: () => null,
+    enableHiding: true,
+    // filterValue expected to be an array of selected item names
+    filterFn: (row, _columnId, filterValue) => {
+      if (
+        !filterValue ||
+        (Array.isArray(filterValue) && filterValue.length === 0)
+      )
+        return true
+      const items = row.original.items
+      if (!items || items.length === 0) return false
+      const selected = Array.isArray(filterValue) ? filterValue : [filterValue]
+      return items.some((it) => selected.includes(it.name))
+    },
+  })
+
   return (
     <>
       <DataTable
-        columns={adminSessionColumns(setSelectedSession)}
+        columns={columns}
         data={filteredSessions}
         searchColumn="user_name"
         searchPlaceholder="Buscar por usuario..."
@@ -70,10 +99,11 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
             label: "Gabinete",
             options: cabinetOptions,
           },
+
           {
-            id: "items_count",
-            label: "Items",
-            options: itemsOptions,
+            id: "items",
+            label: "Objeto",
+            options: itemNameOptions,
           },
         ]}
         showDateFilter
@@ -84,12 +114,11 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
         pageSize={10}
         actions={<RefreshButton />}
       />
-      {selectedSession && (
-        <SessionItemsModal
-          session={selectedSession}
-          onClose={() => setSelectedSession(null)}
-        />
-      )}
+      <SessionTimeline
+        session={selectedSession}
+        open={!!selectedSession}
+        onOpenChange={(open) => !open && setSelectedSession(null)}
+      />
     </>
   )
 }

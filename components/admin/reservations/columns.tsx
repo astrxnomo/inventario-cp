@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { Badge } from "@/components/ui/badge"
 import { formatDate, isFuture, isPast } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertCircle, Archive, Box, Calendar, User } from "lucide-react"
+import { AlertCircle, Box, Calendar, User } from "lucide-react"
 
 export type AdminReservation = {
   id: string
@@ -83,19 +83,7 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
     ),
     enableSorting: true,
   },
-  {
-    accessorKey: "cabinet_name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Gabinete" />
-    ),
-    cell: ({ row }) => (
-      <Badge variant="outline">
-        <Archive className="size-2" />
-        {row.getValue("cabinet_name") || "Sin gabinete"}
-      </Badge>
-    ),
-    enableSorting: true,
-  },
+
   {
     accessorKey: "quantity",
     header: ({ column }) => (

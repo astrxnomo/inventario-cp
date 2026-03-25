@@ -2,62 +2,10 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { deleteCategory } from "@/lib/actions/categories/delete-category"
 import type { Category } from "@/lib/types/categories"
 import { ColumnDef } from "@tanstack/react-table"
 import { Tag } from "lucide-react"
-import { useState } from "react"
-import { ActionButtonsRow } from "../action-buttons-row"
-import { CategoryForm } from "./form"
-
-function CategoryActions({ category }: { category: Category }) {
-  const [showEditDialog, setShowEditDialog] = useState(false)
-
-  return (
-    <>
-      <ActionButtonsRow
-        onEdit={() => setShowEditDialog(true)}
-        onDelete={() => deleteCategory(category.id)}
-        deleteDescription={
-          <>
-            Esta acción eliminará la categoría "{category.name}".
-            {(category._count?.inventory_items || 0) > 0 && (
-              <div className="mt-2 rounded-lg border border-amber-500/50 bg-amber-50 p-3 font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-400">
-                ⚠️ Advertencia: Esta categoría tiene{" "}
-                {category._count?.inventory_items} items asociados. No se podrá
-                eliminar hasta que se muevan o eliminen los items.
-              </div>
-            )}
-          </>
-        }
-      />
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Editar categoría</DialogTitle>
-            <DialogDescription>
-              Actualiza los detalles de la categoría.
-            </DialogDescription>
-          </DialogHeader>
-          <CategoryForm
-            initialData={category}
-            isDialog
-            onSuccess={() => setShowEditDialog(false)}
-          />
-        </DialogContent>
-      </Dialog>
-    </>
-  )
-}
+import { CategoryActions } from "./category-actions"
 
 export const categoryColumns = [
   {

@@ -2,21 +2,11 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { deleteCabinet } from "@/lib/actions/cabinets/delete-cabinet"
 import type { Cabinet } from "@/lib/types/cabinets"
 import { formatDate } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertTriangle, Archive, Check, Lock } from "lucide-react"
-import { useState } from "react"
-import { ActionButtonsRow } from "../action-buttons-row"
-import { CabinetForm } from "./form"
+import { AlertTriangle, Archive, Check, Lock, Unlock } from "lucide-react"
+import { CabinetActions } from "./cabinet-actions"
 
 export const statusOptions = [
   {
@@ -25,56 +15,11 @@ export const statusOptions = [
     icon: Check,
   },
   {
-    label: "En uso",
-    value: "in_use",
-    icon: AlertTriangle,
-  },
-  {
     label: "Bloqueado",
     value: "locked",
     icon: Lock,
   },
 ]
-
-function CabinetActions({ cabinet }: { cabinet: Cabinet }) {
-  const [showEditDialog, setShowEditDialog] = useState(false)
-
-  return (
-    <>
-      <ActionButtonsRow
-        onEdit={() => setShowEditDialog(true)}
-        onDelete={() => deleteCabinet(cabinet.id)}
-        deleteDescription={
-          <>
-            Esta acción no se puede deshacer. Eliminará el gabinete "
-            {cabinet.name}" y todos sus datos asociados.
-            {(cabinet._count?.inventory_items || 0) > 0 && (
-              <div className="mt-2 rounded-lg border border-amber-500/50 bg-amber-50 p-3 font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-400">
-                ⚠️ Advertencia: Este gabinete contiene items.
-              </div>
-            )}
-          </>
-        }
-      />
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Editar gabinete</DialogTitle>
-            <DialogDescription>
-              Actualiza los detalles del gabinete.
-            </DialogDescription>
-          </DialogHeader>
-          <CabinetForm
-            initialData={cabinet}
-            isDialog
-            onSuccess={() => setShowEditDialog(false)}
-            onCancel={() => setShowEditDialog(false)}
-          />
-        </DialogContent>
-      </Dialog>
-    </>
-  )
-}
 
 export const cabinetColumns: ColumnDef<Cabinet>[] = [
   {
@@ -117,7 +62,7 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
             variant="outline"
             className="border-green-500/20 bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:border-green-500/30 dark:bg-green-500/15 dark:text-green-400"
           >
-            <Check className="mr-1 h-3 w-3" />
+            <Unlock className="h-3 w-3" />
             Disponible
           </Badge>
         )
@@ -129,7 +74,7 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
             variant="outline"
             className="border-amber-500/20 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-400"
           >
-            <AlertTriangle className="mr-1 h-3 w-3" />
+            <AlertTriangle className="h-3 w-3" />
             En uso
           </Badge>
         )
@@ -141,7 +86,7 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
             variant="outline"
             className="border-red-500/20 bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-400"
           >
-            <Lock className="mr-1 h-3 w-3" />
+            <Lock className="h-3 w-3" />
             Bloqueado
           </Badge>
         )

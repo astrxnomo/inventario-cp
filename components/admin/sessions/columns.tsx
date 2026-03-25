@@ -5,13 +5,15 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatDistance } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { Archive, Clock, User } from "lucide-react"
+import { Archive, ClipboardClock, Clock, User } from "lucide-react"
 
 export type SessionItem = {
   id: string
   name: string
   category?: string
   added_at: string
+  action: "withdrawn" | "returned"
+  quantity: number
 }
 
 export type AdminSession = {
@@ -143,10 +145,10 @@ export const adminSessionColumns = (
       return (
         <Button
           variant="outline"
-          size="sm"
           onClick={() => onViewItems?.(row.original)}
           className="cursor-pointer"
         >
+          <ClipboardClock />
           {count || 0}
         </Button>
       )

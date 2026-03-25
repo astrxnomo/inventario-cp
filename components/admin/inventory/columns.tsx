@@ -2,23 +2,13 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { deleteItem } from "@/lib/actions/inventory/delete-item"
 import type { CabinetRow } from "@/lib/types/cabinets"
 import type { Category } from "@/lib/types/categories"
 import { InventoryItem } from "@/lib/types/inventory"
 import { formatDate } from "@/lib/utils"
 import { ColumnDef, Row, Table } from "@tanstack/react-table"
 import { Archive, Box, Tag } from "lucide-react"
-import { useState } from "react"
-import { ActionButtonsRow } from "../action-buttons-row"
-import { InventoryForm } from "./form"
+import { InventoryActions } from "./inventory-actions"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -30,7 +20,6 @@ function DataTableRowActions<TData extends InventoryItem>({
   table,
 }: DataTableRowActionsProps<TData>) {
   const item = row.original
-  const [showEditDialog, setShowEditDialog] = useState(false)
 
   const meta = table.options.meta as
     | { categories: Category[]; cabinets: CabinetRow[] }
@@ -39,30 +28,7 @@ function DataTableRowActions<TData extends InventoryItem>({
   const cabinets = meta?.cabinets || []
 
   return (
-    <>
-      <ActionButtonsRow
-        onEdit={() => setShowEditDialog(true)}
-        onDelete={() => deleteItem(item.id)}
-        deleteDescription={`Esta acción no se puede deshacer. Eliminará permanentemente el item "${item.name}".`}
-      />
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Editar item</DialogTitle>
-            <DialogDescription>
-              Actualiza los detalles del artículo.
-            </DialogDescription>
-          </DialogHeader>
-          <InventoryForm
-            initialData={item}
-            categories={categories}
-            cabinets={cabinets}
-            isDialog
-            onSuccess={() => setShowEditDialog(false)}
-          />
-        </DialogContent>
-      </Dialog>
-    </>
+    <InventoryActions item={item} categories={categories} cabinets={cabinets} />
   )
 }
 

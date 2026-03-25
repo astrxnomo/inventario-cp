@@ -23,7 +23,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     <Button
       type="button"
       variant="outline"
-      size="icon-sm"
+      size="icon"
       className={className}
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
