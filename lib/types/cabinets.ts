@@ -57,9 +57,11 @@ export type ActionResult<T> =
 
 // ─── User session history ─────────────────────────────────────────────────────
 export interface HistorySessionItem {
+  id: string
   name: string
   quantity: number
   action: "withdrawn" | "returned"
+  added_at: string
 }
 
 export interface HistorySession {
@@ -67,7 +69,6 @@ export interface HistorySession {
   cabinet_name: string
   opened_at: string
   closed_at: string | null
-  notes: string | null
   items: HistorySessionItem[]
 }
 

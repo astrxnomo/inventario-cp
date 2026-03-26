@@ -16,9 +16,13 @@ export async function withdrawCabinetItems(
     }
   }
 
-  await openCabinetWithMqtt("centro/a1", {
+  const cabinetOpened = await openCabinetWithMqtt("centro/a1", {
     id: payload.cabinetLocation,
   })
+
+  if (!cabinetOpened) {
+    return { data: null, error: "Error al abrir el gabinete" }
+  }
 
   const supabase = await createClient()
 
