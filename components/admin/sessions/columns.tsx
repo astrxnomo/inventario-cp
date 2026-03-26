@@ -3,9 +3,17 @@
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { formatDate, formatDistance } from "@/lib/utils"
+import { es, formatDate, formatDistance } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { Archive, ClipboardClock, Clock, User } from "lucide-react"
+import {
+  Archive,
+  Box,
+  ClipboardClock,
+  Clock,
+  Lock,
+  Unlock,
+  User,
+} from "lucide-react"
 
 export type SessionItem = {
   id: string
@@ -74,11 +82,16 @@ export const adminSessionColumns = (
     cell: ({ row }) => {
       const date = new Date(row.getValue("opened_at"))
       return (
-        <div className="flex flex-col">
-          <span className="text-sm">{formatDate(date, "d MMM yyyy")}</span>
-          <span className="text-xs text-muted-foreground">
-            {formatDate(date, "h:mm a")}
-          </span>
+        <div className="flex items-center gap-2">
+          <Unlock className="size-4 text-muted-foreground" />
+          <div>
+            <div className="text-sm font-medium">
+              {formatDate(date, "d MMM yyyy")}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {formatDate(date, "h:mm a")}
+            </div>
+          </div>
         </div>
       )
     },
@@ -98,18 +111,23 @@ export const adminSessionColumns = (
             variant="outline"
             className="border-green-500/20 bg-green-500/10 text-green-700 dark:text-green-400"
           >
-            <Clock className="mr-1 size-3" />
+            <Clock className="size-4" />
             En curso
           </Badge>
         )
       }
       const date = new Date(closedAt)
       return (
-        <div className="flex flex-col">
-          <span className="text-sm">{formatDate(date, "d MMM yyyy")}</span>
-          <span className="text-xs text-muted-foreground">
-            {formatDate(date, "h:mm a")}
-          </span>
+        <div className="flex items-center gap-2">
+          <Lock className="size-4 text-muted-foreground" />
+          <div>
+            <div className="text-sm font-medium">
+              {formatDate(date, "d MMM yyyy")}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {formatDate(date, "h:mm a")}
+            </div>
+          </div>
         </div>
       )
     },
@@ -129,7 +147,7 @@ export const adminSessionColumns = (
 
       return (
         <span className="text-sm text-muted-foreground">
-          {formatDistance(openedAt, closedAt)}
+          {formatDistance(openedAt, closedAt, { locale: es })}
         </span>
       )
     },
@@ -143,14 +161,10 @@ export const adminSessionColumns = (
     cell: ({ row }) => {
       const count = row.getValue("items_count") as number
       return (
-        <Button
-          variant="outline"
-          onClick={() => onViewItems?.(row.original)}
-          className="cursor-pointer"
-        >
-          <ClipboardClock />
+        <Badge variant="outline">
+          <Box className="size-4" />
           {count || 0}
-        </Button>
+        </Badge>
       )
     },
     enableSorting: true,
@@ -158,14 +172,18 @@ export const adminSessionColumns = (
   {
     accessorKey: "notes",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notas" />
+      <DataTableColumnHeader column={column} title="Acciones" />
     ),
     cell: ({ row }) => {
-      const notes = row.getValue("notes") as string | null
       return (
-        <span className="line-clamp-1 text-sm text-muted-foreground">
-          {notes || "-"}
-        </span>
+        <Button
+          variant="outline"
+          onClick={() => onViewItems?.(row.original)}
+          className="cursor-pointer"
+        >
+          <ClipboardClock />
+          Detalles
+        </Button>
       )
     },
     enableSorting: false,

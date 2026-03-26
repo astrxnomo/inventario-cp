@@ -13,7 +13,7 @@ export async function getUserSessionHistory(
     .select(
       `id, opened_at, closed_at, notes,
        cabinets(name),
-       session_items(quantity, action, inventory_items(name))`,
+       session_items(id, quantity, action, created_at, inventory_items(name))`,
     )
     .eq("user_id", userId)
     .order("opened_at", { ascending: false })
@@ -30,16 +30,20 @@ export async function getUserSessionHistory(
     notes: session.notes,
     items: (
       (session.session_items as unknown as Array<{
+        id: string
         quantity: number
         action: "withdrawn" | "returned"
+        created_at: string
         inventory_items: { name: string } | null
       }>) ?? []
     ).map((si) => ({
+      id: si.id,
       name:
         (si.inventory_items as unknown as { name: string } | null)?.name ??
         "Artículo desconocido",
       quantity: si.quantity,
       action: si.action,
+      added_at: si.created_at,
     })),
   }))
 }

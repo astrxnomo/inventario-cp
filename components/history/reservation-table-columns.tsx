@@ -2,8 +2,9 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import type { ItemReservation } from "@/lib/types/reservations"
-import { formatDate, isAfter, isBefore } from "@/lib/utils"
+import { cn, formatDate, isAfter, isBefore } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
 import {
   Box,
@@ -11,6 +12,8 @@ import {
   CalendarClockIcon,
   CalendarIcon,
   CalendarXIcon,
+  Clock,
+  XCircle,
 } from "lucide-react"
 
 export type { ItemReservation }
@@ -19,26 +22,37 @@ const statusConfig = {
   active: {
     label: "Activa",
     variant: "default" as const,
-    icon: CalendarCheckIcon,
+    icon: Clock,
+    className:
+      "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
   },
   completed: {
     label: "Completada",
     variant: "secondary" as const,
     icon: CalendarCheckIcon,
+    className: "",
   },
   cancelled: {
     label: "Cancelada",
     variant: "destructive" as const,
     icon: CalendarXIcon,
+    className: "",
   },
   expired: {
     label: "Expirada",
     variant: "outline" as const,
     icon: CalendarClockIcon,
+    className: "",
   },
 }
 
-export const reservationColumns: ColumnDef<ItemReservation>[] = [
+export function getReservationStatusConfig(status: ItemReservation["status"]) {
+  return statusConfig[status]
+}
+
+export const reservationColumns = (
+  onCancel?: (reservation: ItemReservation) => void,
+): ColumnDef<ItemReservation>[] => [
   {
     accessorKey: "item_name",
     header: ({ column }) => (
@@ -58,7 +72,7 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
       )
     },
     enableHiding: false,
-    // @ts-ignore - filterFn personalizado
+    // @ts-expect-error - filterFn personalizado
     filterFn: "fuzzy",
   },
   {
@@ -99,7 +113,7 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
       return (
         <div className="flex items-center gap-2">
           <CalendarIcon
-            className={`size-4 ${isUpcoming ? "text-blue-600" : "text-muted-foreground"}`}
+            className={`size-4 ${isUpcoming ? "text-emerald-600" : "text-muted-foreground"}`}
           />
           <div>
             <div className="text-sm font-medium">
@@ -125,7 +139,7 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
       return (
         <div className="flex items-center gap-2">
           <CalendarIcon
-            className={`size-4 ${isPast ? "text-red-600" : "text-muted-foreground"}`}
+            className={`size-4 ${isPast ? "text-destructive" : "text-muted-foreground"}`}
           />
           <div>
             <div className="text-sm font-medium">
@@ -150,7 +164,10 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
       const Icon = config.icon
 
       return (
-        <Badge variant={config.variant} className="gap-1">
+        <Badge
+          variant={config.variant}
+          className={cn("gap-1", config.className)}
+        >
           <Icon className="size-3" />
           {config.label}
         </Badge>
@@ -166,11 +183,39 @@ export const reservationColumns: ColumnDef<ItemReservation>[] = [
     cell: ({ row }) => {
       const note = row.getValue("note") as string | null
       return (
-        <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+        <div className="max-w-50 truncate text-sm text-muted-foreground">
           {note || "—"}
         </div>
       )
     },
+  },
+  {
+    id: "actions",
+    header: "Acciones",
+    cell: ({ row }) => {
+      const reservation = row.original
+      const canCancel =
+        reservation.can_cancel && reservation.status === "active"
+
+      if (!canCancel) {
+        return <span className="text-sm text-muted-foreground">—</span>
+      }
+
+      return (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="text-destructive hover:text-destructive"
+          onClick={() => onCancel?.(reservation)}
+        >
+          <XCircle className="size-4" />
+          Cancelar
+        </Button>
+      )
+    },
+    enableSorting: false,
+    enableHiding: false,
   },
 ]
 

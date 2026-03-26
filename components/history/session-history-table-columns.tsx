@@ -2,14 +2,17 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import type { HistorySession } from "@/lib/types/cabinets"
 import { es, formatDate, formatDistance } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { Archive, ClockIcon, DoorClosedIcon, DoorOpenIcon } from "lucide-react"
+import { Archive, Box, ClipboardClock, Clock, Lock, Unlock } from "lucide-react"
 
 export type { HistorySession }
 
-export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
+export const sessionHistoryColumns = (
+  onViewTimeline?: (session: HistorySession) => void,
+): ColumnDef<HistorySession>[] => [
   {
     accessorKey: "cabinet_name",
     header: ({ column }) => (
@@ -17,11 +20,14 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="font-medium">{row.getValue("cabinet_name") || "—"}</div>
+        <div className="flex items-center gap-2">
+          <Archive className="h-4 w-4 text-muted-foreground" />
+          <span className="font-medium">{row.getValue("cabinet_name")}</span>
+        </div>
       )
     },
     enableHiding: false,
-    // @ts-ignore - filterFn personalizado
+    // @ts-expect-error - filterFn personalizado
     filterFn: "fuzzy",
   },
   {
@@ -33,7 +39,7 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
       const date = new Date(row.getValue("opened_at"))
       return (
         <div className="flex items-center gap-2">
-          <DoorOpenIcon className="size-4 text-green-600" />
+          <Unlock className="size-4 text-muted-foreground" />
           <div>
             <div className="text-sm font-medium">
               {formatDate(date, "d MMM yyyy")}
@@ -56,8 +62,8 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
 
       if (!closedAt) {
         return (
-          <Badge variant="secondary" className="gap-1">
-            <ClockIcon className="size-3" />
+          <Badge className="gap-1 bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400">
+            <Clock className="size-3" />
             En curso
           </Badge>
         )
@@ -66,7 +72,7 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
       const date = new Date(closedAt)
       return (
         <div className="flex items-center gap-2">
-          <DoorClosedIcon className="size-4 text-muted-foreground" />
+          <Lock className="size-4 text-muted-foreground" />
           <div>
             <div className="text-sm font-medium">
               {formatDate(date, "d MMM yyyy")}
@@ -94,7 +100,11 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
         locale: es,
       })
 
-      return <div className="text-sm">{duration}</div>
+      return (
+        <div className="text-sm text-muted-foreground normal-case">
+          {duration}
+        </div>
+      )
     },
   },
   {
@@ -108,8 +118,8 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          <Archive className="size-4 text-muted-foreground" />
-          <Badge variant="secondary" className="font-mono">
+          <Badge variant="outline" className="font-mono">
+            <Box className="size-3" />
             {items.length}
           </Badge>
         </div>
@@ -117,15 +127,20 @@ export const sessionHistoryColumns: ColumnDef<HistorySession>[] = [
     },
   },
   {
-    accessorKey: "notes",
-    header: "Notas",
-    cell: ({ row }) => {
-      const notes = row.getValue("notes") as string | null
-      return (
-        <div className="max-w-[200px] truncate text-sm text-muted-foreground">
-          {notes || "—"}
-        </div>
-      )
-    },
+    id: "actions",
+    header: "Acciones",
+    cell: ({ row }) => (
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => onViewTimeline?.(row.original)}
+      >
+        <ClipboardClock className="size-4" />
+        Detalles
+      </Button>
+    ),
+    enableSorting: false,
+    enableHiding: false,
   },
 ]

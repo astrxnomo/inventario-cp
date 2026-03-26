@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { Badge } from "@/components/ui/badge"
 import { formatDate, isFuture, isPast } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertCircle, Box, Calendar, User } from "lucide-react"
+import { AlertCircle, Box, Calendar, Check, Clock, User, X } from "lucide-react"
 
 export type AdminReservation = {
   id: string
@@ -105,7 +105,7 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
       return (
         <div className="flex flex-col">
           <span
-            className={`text-sm ${isUpcoming ? "text-blue-600 dark:text-blue-400" : ""}`}
+            className={`text-sm ${isUpcoming ? "text-emerald-600 dark:text-emerald-400" : ""}`}
           >
             {formatDate(date, "d MMM yyyy")}
           </span>
@@ -142,6 +142,17 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
     enableSorting: true,
   },
   {
+    accessorKey: "notes",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Notas" />
+    ),
+    cell: ({ row }) => (
+      <p className="text-sm text-muted-foreground">
+        {row.getValue("notes") || "-"}
+      </p>
+    ),
+  },
+  {
     accessorKey: "status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Estado" />
@@ -150,6 +161,10 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
       const status = row.getValue("status") as AdminReservation["status"]
       return (
         <Badge variant="outline" className={statusColors[status]}>
+          {status === "active" && <Clock />}
+          {status === "completed" && <Check />}
+          {status === "cancelled" && <X />}
+          {status === "expired" && <Clock />}
           {statusLabels[status]}
         </Badge>
       )
