@@ -1,0 +1,55 @@
+import { createClient } from "@/lib/supabase/server"
+import type { MaintenanceHistoryEntry } from "@/lib/types/maintenance"
+import "server-only"
+
+export async function getMaintenanceHistory(): Promise<
+  MaintenanceHistoryEntry[]
+> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("maintenance_history")
+    .select(
+      `
+      id,
+      maintenance_id,
+      created_at,
+      date,
+      items_maintenance!inner(
+        id,
+        interval_days,
+        item_id,
+        inventory_items(id, name, cabinets(name))
+      )
+    `,
+    )
+    .order("date", { ascending: false })
+
+  if (error) {
+    console.error("Error fetching maintenance history:", error)
+    return []
+  }
+
+  return (data ?? []).map((row: any) => {
+    const maintenance = Array.isArray(row.items_maintenance)
+      ? row.items_maintenance[0]
+      : row.items_maintenance
+    const item = Array.isArray(maintenance?.inventory_items)
+      ? maintenance?.inventory_items[0]
+      : maintenance?.inventory_items
+    const cabinet = Array.isArray(item?.cabinets)
+      ? item?.cabinets[0]
+      : item?.cabinets
+
+    return {
+      id: row.id,
+      maintenance_id: row.maintenance_id,
+      created_at: row.created_at,
+      date: row.date ?? row.created_at,
+      item_id: maintenance?.item_id ?? "",
+      item_name: item?.name ?? "Item sin nombre",
+      cabinet_name: cabinet?.name ?? "Sin gabinete",
+      interval_days: maintenance?.interval_days ?? 0,
+    }
+  })
+}

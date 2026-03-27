@@ -3,7 +3,6 @@
 import { withdrawSchema } from "@/lib/schemas/cabinets"
 import { createClient } from "@/lib/supabase/server"
 import type { ActionResult, WithdrawPayload } from "@/lib/types/cabinets"
-import { openCabinetWithMqtt } from "@/lib/actions/cabinets/open-with-mqtt"
 
 export async function withdrawCabinetItems(
   payload: WithdrawPayload,
@@ -16,13 +15,13 @@ export async function withdrawCabinetItems(
     }
   }
 
-  const cabinetOpened = await openCabinetWithMqtt("centro/a1", {
-    id: payload.cabinetLocation,
-  })
+  // const cabinetOpened = await openCabinetWithMqtt("centro/a1", {
+  //   id: payload.cabinetLocation,
+  // })
 
-  if (!cabinetOpened) {
-    return { data: null, error: "Error al abrir el gabinete" }
-  }
+  // if (!cabinetOpened) {
+  //   return { data: null, error: "Error al abrir el gabinete" }
+  // }
 
   const supabase = await createClient()
 

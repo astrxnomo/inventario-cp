@@ -21,7 +21,7 @@ export type AccessLog = {
 
 export const actionOptions = [
   { label: "Apertura solicitada", value: "open_requested", icon: LogIn },
-  { label: "Apertura concedida", value: "open_granted", icon: Unlock },
+  { label: "Apertura", value: "open_granted", icon: Unlock },
   { label: "Apertura denegada", value: "open_denied", icon: AlertCircle },
   { label: "Cerrado", value: "closed", icon: Lock },
 ]
@@ -44,7 +44,7 @@ const actionIcons = {
 
 const actionLabels = {
   open_requested: "Apertura solicitada",
-  open_granted: "Apertura concedida",
+  open_granted: "Apertura",
   open_denied: "Apertura denegada",
   closed: "Cerrado",
 }

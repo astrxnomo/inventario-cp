@@ -24,6 +24,7 @@ import {
   Shield,
   Tags,
   Users,
+  Wrench,
 } from "lucide-react"
 import { NavUser } from "./nav-user"
 import { Profile } from "@/lib/types/users"
@@ -34,6 +35,7 @@ const inventoryLinks = [
   { href: "/admin/inventory", label: "Objetos", icon: Box },
   { href: "/admin/cabinets", label: "Gabinetes", icon: Archive },
   { href: "/admin/categories", label: "Categorías", icon: Tags },
+  { href: "/admin/maintenance", label: "Mantenimiento", icon: Wrench },
 ]
 
 const logsLinks = [

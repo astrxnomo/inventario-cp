@@ -75,6 +75,12 @@ function CommandInput({
             "w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
             className,
           )}
+          onKeyDown={(e) => {
+            e.stopPropagation()
+            if (props && typeof (props as any).onKeyDown === "function") {
+              ;(props as any).onKeyDown(e)
+            }
+          }}
           {...props}
         />
         <InputGroupAddon>
