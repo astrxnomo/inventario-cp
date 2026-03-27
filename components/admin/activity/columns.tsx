@@ -78,15 +78,10 @@ export const activityLogColumns: ColumnDef<AccessLog>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <User className="size-3 text-muted-foreground" />
-            <span className="text-sm font-medium">
-              {row.getValue("user_name") || "Sin nombre"}
-            </span>
-          </div>
-          <span className="text-xs text-muted-foreground">
-            {row.original.user_email}
+        <div className="flex items-center gap-2">
+          <User className="size-4 text-muted-foreground" />
+          <span className="text-sm font-medium">
+            {row.getValue("user_name") || "Sin nombre"}
           </span>
         </div>
       )

@@ -32,17 +32,17 @@ export async function getAccessLogs(): Promise<AccessLog[]> {
   const { data: profilesData } = userIds.length
     ? await supabase
         .from("profiles")
-        .select("user_id, full_name, email")
-        .in("user_id", userIds)
+        .select("id, full_name, email")
+        .in("id", userIds)
     : {
         data: [] as Array<{
-          user_id: string
+          id: string
           full_name: string | null
           email: string
         }>,
       }
 
-  const profilesMap = new Map((profilesData ?? []).map((p) => [p.user_id, p]))
+  const profilesMap = new Map((profilesData ?? []).map((p) => [p.id, p]))
 
   return (data ?? []).map((log) => ({
     id: log.id,
