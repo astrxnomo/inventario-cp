@@ -53,7 +53,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="px-3 pt-3 pb-2">
+      <SidebarHeader className="standalone:pt-12">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="h-auto rounded-xl border border-sidebar-border/70 bg-sidebar-accent/40 transition-colors hover:bg-sidebar-accent">
@@ -61,7 +61,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                 href="/admin/dashboard"
                 className="flex items-center justify-center"
               >
-                <CentroLogo className="mx-auto h-auto w-40 max-w-full sm:w-48 md:w-56" />
+                <CentroLogo className="mx-auto h-auto w-24 max-w-full sm:w-32 md:w-40" />
               </Link>
             </div>
           </SidebarMenuItem>

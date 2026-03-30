@@ -25,16 +25,17 @@ export default async function AdminLayout({
   return (
     <SidebarProvider>
       <AppSidebar variant="sidebar" user={profile} />
-      <SidebarInset>
-        <header className="safe-area-top sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
-          <SidebarTrigger />
-          <span className="text-sm font-medium text-muted-foreground">
-            Administración Inventario
-          </span>
-          <div className="ml-auto">
-            <ThemeToggle />
+      <SidebarInset className="">
+        <header className="sticky z-10 w-full border-b bg-background/80 backdrop-blur-sm standalone:fixed">
+          <div className="mx-auto flex h-14 w-full items-center justify-between gap-2 px-4 standalone:mt-8">
+            <SidebarTrigger />
+
+            <div className="ml-auto">
+              <ThemeToggle />
+            </div>
           </div>
         </header>
+        <div className="h-0 standalone:h-20" />
         {children}
       </SidebarInset>
     </SidebarProvider>

@@ -1,6 +1,6 @@
 {
-  "name": "Centro Prototipado",
-  "short_name": "cenprototipado",
+  "name": "Inventario Centro Prototipado",
+  "short_name": "Inventario CP",
   "description": "Sistema de gestión de inventario para el Centro de Prototipado",
   "start_url": "/",
   "scope": "/",
