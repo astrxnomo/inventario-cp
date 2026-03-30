@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -35,11 +34,13 @@ export function ResetPasswordForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/reset-password">
-            <Button variant="outline" className="w-full">
-              Usar otro email
-            </Button>
-          </Link>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="w-full text-sm text-muted-foreground underline-offset-4 hover:underline"
+          >
+            Usar otro email
+          </button>
         </CardContent>
       </Card>
     )
@@ -84,7 +85,7 @@ export function ResetPasswordForm() {
 
           <p className="text-center text-sm">
             <Link
-              href="/login"
+              href="/auth"
               className="text-muted-foreground underline-offset-4 hover:underline"
             >
               ← Volver al login

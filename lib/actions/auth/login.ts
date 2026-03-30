@@ -20,7 +20,31 @@ export async function loginAction(
 
   const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword(result.data)
-  if (error) return { error: "Email o contraseña incorrectos" }
+  if (error) {
+    const m = (error.message || "").toLowerCase()
+    // Map common supabase/auth errors to friendly messages
+    if (
+      m.includes("invalid login") ||
+      m.includes("invalid password") ||
+      m.includes("email or password")
+    ) {
+      return { error: "Email o contraseña incorrectos" }
+    }
+    if (m.includes("email not confirmed") || m.includes("unconfirmed")) {
+      return {
+        error: "Tu email no está verificado. Revisa tu bandeja de entrada.",
+      }
+    }
+    if (m.includes("too many requests") || m.includes("rate")) {
+      return { error: "Demasiados intentos. Intenta de nuevo más tarde." }
+    }
+    if (error.status && error.status >= 500) {
+      return { error: "Error del servidor. Intenta de nuevo más tarde." }
+    }
+
+    // Fallback to the provided message when it's safe and informative
+    return { error: error.message || "No se pudo iniciar sesión" }
+  }
 
   redirect("/")
 }

@@ -10,7 +10,7 @@ import { redirect } from "next/navigation"
 
 export default async function HistoryPage() {
   const current = await getCurrentUser()
-  if (!current) redirect("/login")
+  if (!current) redirect("/auth")
 
   const { user, profile } = current
 

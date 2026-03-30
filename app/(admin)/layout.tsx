@@ -15,7 +15,7 @@ export default async function AdminLayout({
 }) {
   const current = await getCurrentUser()
 
-  if (!current) redirect("/login")
+  if (!current) redirect("/auth")
   if (!current.profile || !["admin", "root"].includes(current.profile.role)) {
     redirect("/")
   }

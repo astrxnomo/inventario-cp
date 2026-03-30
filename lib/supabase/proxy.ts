@@ -41,16 +41,18 @@ export async function updateSession(request: NextRequest) {
 
   const user = data?.claims
 
+  const staticAssetPathPattern =
+    /^\/_next\/|^\/favicon\.|^\/icon-|^\/manifest\.json$|^\/app-logo\.svg$/
+
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
     !request.nextUrl.pathname.startsWith("/reset-password") &&
-    !request.nextUrl.pathname.startsWith("/register")
+    !staticAssetPathPattern.test(request.nextUrl.pathname)
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
-    url.pathname = "/login"
+    url.pathname = "/auth"
     return NextResponse.redirect(url)
   }
 

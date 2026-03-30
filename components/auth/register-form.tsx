@@ -39,7 +39,7 @@ export function RegisterForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/login">
+          <Link href="/auth">
             <Button variant="outline" className="w-full">
               Ir al login
             </Button>
@@ -51,10 +51,6 @@ export function RegisterForm() {
 
   return (
     <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Crear cuenta</CardTitle>
-        <CardDescription>Ingresa tus datos para registrarte.</CardDescription>
-      </CardHeader>
       <CardContent>
         <form action={action} className="space-y-4">
           {state.error && (
@@ -64,7 +60,7 @@ export function RegisterForm() {
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="full_name">Nombre completo</Label>
+            <Label htmlFor="full_name">Nombre</Label>
             <Input
               id="full_name"
               name="full_name"
@@ -139,16 +135,6 @@ export function RegisterForm() {
           <SubmitButton pendingText="Creando cuenta…">
             Crear cuenta
           </SubmitButton>
-
-          <p className="text-center text-sm text-muted-foreground">
-            ¿Ya tienes cuenta?{" "}
-            <Link
-              href="/login"
-              className="text-foreground underline-offset-4 hover:underline"
-            >
-              Inicia sesión
-            </Link>
-          </p>
         </form>
       </CardContent>
     </Card>

@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { loginAction } from "@/lib/actions/auth/login"
@@ -24,12 +18,6 @@ export function LoginForm() {
 
   return (
     <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Iniciar sesión</CardTitle>
-        <CardDescription>
-          Ingresa tus credenciales para acceder.
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <form action={action} className="space-y-4">
           {state.error && (
@@ -84,16 +72,6 @@ export function LoginForm() {
           </div>
 
           <SubmitButton pendingText="Ingresando…">Iniciar sesión</SubmitButton>
-
-          <p className="text-center text-sm text-muted-foreground">
-            ¿No tienes cuenta?{" "}
-            <Link
-              href="/register"
-              className="text-foreground underline-offset-4 hover:underline"
-            >
-              Regístrate
-            </Link>
-          </p>
         </form>
       </CardContent>
     </Card>
