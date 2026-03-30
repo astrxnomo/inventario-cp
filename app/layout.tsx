@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import "./globals.css"
-import { Metadata } from "next"
+import { Metadata, Viewport } from "next"
 
 const geistHeading = Geist({ subsets: ["latin"], variable: "--font-heading" })
 
@@ -17,8 +17,14 @@ const fontMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Inventario - Centro de Prototipado ",
-  description:
-    "Sistema de gestión de inventarios para el Centro de Prototipado",
+  description: "Sistema de gestión de inventario para el Centro de Prototipado",
+  manifest: "/manifest.json",
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 }
 
 export default function RootLayout({
@@ -38,6 +44,16 @@ export default function RootLayout({
         geistHeading.variable,
       )}
     >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-title" content="Centro Prototipado" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+      </head>
       <body>
         <ThemeProvider>
           {children}
