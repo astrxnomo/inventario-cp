@@ -53,7 +53,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="standalone:pt-12">
+      <SidebarHeader className="standalone:mt-12 md:standalone:mt-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="h-auto rounded-xl border border-sidebar-border/70 bg-sidebar-accent/40 transition-colors hover:bg-sidebar-accent">

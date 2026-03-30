@@ -27,12 +27,9 @@ export default async function AdminLayout({
       <AppSidebar variant="sidebar" user={profile} />
       <SidebarInset className="">
         <header className="sticky z-10 w-full border-b bg-background/80 backdrop-blur-sm standalone:fixed">
-          <div className="mx-auto flex h-14 w-full items-center justify-between gap-2 px-4 standalone:mt-8">
+          <div className="flex h-14 items-center justify-between px-4 standalone:mt-8 md:standalone:mt-0">
             <SidebarTrigger />
-
-            <div className="ml-auto">
-              <ThemeToggle />
-            </div>
+            <ThemeToggle />
           </div>
         </header>
         <div className="h-0 standalone:h-20" />
