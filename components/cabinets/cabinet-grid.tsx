@@ -93,7 +93,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
           "fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-all duration-500",
           isConnected
             ? "border-primary/20 bg-primary/5 text-primary dark:border-primary/40 dark:bg-primary/10"
-            : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400",
+            : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-400",
         )}
       >
         {isConnected ? (
@@ -101,7 +101,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
         ) : (
           <WifiOff className="h-3 w-3" />
         )}
-        {isConnected ? "En vivo" : "Sin conexión"}
+        {isConnected ? "En vivo" : "Cargando..."}
       </div>
 
       {/* Toolbar */}

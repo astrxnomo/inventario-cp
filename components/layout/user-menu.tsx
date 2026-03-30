@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { signOut } from "@/lib/actions/auth/sign-out"
-import { Clock, LogOut, Settings, User } from "lucide-react"
+import { Clock, LogOut, Settings, Shield, User } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "../ui/button"
@@ -29,7 +29,7 @@ const ROLE_BADGE_VARIANT: Record<
   pending: "outline",
   user: "secondary",
   admin: "default",
-  root: "destructive",
+  root: "default",
 }
 
 interface UserMenuProps {
@@ -78,6 +78,17 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
             </div>
           </div>
         </DropdownMenuLabel>
+
+        <DropdownMenuSeparator />
+
+        {["admin", "root"].includes(userRole ?? "") && (
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/admin/dashboard" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Administración
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

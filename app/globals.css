@@ -128,3 +128,28 @@
     @apply font-sans;
   }
 }
+
+/* Safe-area helpers for iOS / PWA fullscreen (standalone) */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-top-const: constant(safe-area-inset-top);
+}
+
+/* Basic: only the inset */
+.safe-area-top {
+  padding-top: var(--safe-area-inset-top);
+  padding-top: var(--safe-area-inset-top-const);
+}
+
+/* Common presets to combine with existing paddings/heights */
+.safe-area-top-4 {
+  padding-top: calc(var(--safe-area-inset-top) + 1rem);
+  padding-top: calc(var(--safe-area-inset-top-const) + 1rem);
+}
+
+.safe-area-top-h-14 {
+  height: calc(var(--safe-area-inset-top) + 3.5rem);
+  height: calc(var(--safe-area-inset-top-const) + 3.5rem);
+}
+
+/* Optional: combine with existing paddings in components, e.g. add className="safe-area-top" */

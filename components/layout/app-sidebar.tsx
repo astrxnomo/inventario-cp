@@ -21,13 +21,13 @@ import {
   Box,
   Calendar,
   History,
-  Shield,
   Tags,
   Users,
   Wrench,
 } from "lucide-react"
 import { NavUser } from "./nav-user"
 import { Profile } from "@/lib/types/users"
+import { CentroLogo } from "../ui/centro-logo"
 
 const adminLinks = [{ href: "/admin/users", label: "Usuarios", icon: Users }]
 
@@ -56,22 +56,14 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       <SidebarHeader className="px-3 pt-3 pb-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="h-auto rounded-xl border border-sidebar-border/70 bg-sidebar-accent/40 p-2.5 transition-colors hover:bg-sidebar-accent"
-            >
-              <Link href="/admin/dashboard">
-                <span className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Shield className="size-4" />
-                </span>
-                <span className="flex flex-col leading-tight">
-                  <span className="text-[11px] font-medium text-sidebar-foreground/70">
-                    Inventario Inteligente
-                  </span>
-                  <span className="text-sm font-semibold">Administración</span>
-                </span>
+            <div className="h-auto rounded-xl border border-sidebar-border/70 bg-sidebar-accent/40 transition-colors hover:bg-sidebar-accent">
+              <Link
+                href="/admin/dashboard"
+                className="flex items-center justify-center"
+              >
+                <CentroLogo className="mx-auto h-auto w-40 max-w-full sm:w-48 md:w-56" />
               </Link>
-            </SidebarMenuButton>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
