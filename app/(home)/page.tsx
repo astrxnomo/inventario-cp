@@ -30,7 +30,7 @@ export default async function HomePage() {
         userName={profile.full_name}
       />
 
-      <main id="main-content" className="md:pt-10">
+      <main id="main-content" className="pt-5 md:pt-10">
         <div className="mx-auto max-w-7xl">
           <CabinetGrid initialCabinets={cabinets} userId={user.id} />
         </div>

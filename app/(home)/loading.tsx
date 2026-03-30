@@ -5,7 +5,7 @@ export default function CabinetsLoading() {
   return (
     <div className="min-h-screen bg-background">
       <AppNav />
-      <main id="main-content" className="lg:pt-10">
+      <main id="main-content" className="pt-5 md:pt-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mx-auto w-full max-w-xl pb-4">
             <div className="relative">
