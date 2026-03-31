@@ -66,7 +66,7 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
   {
     accessorKey: "item_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Item" />
+      <DataTableColumnHeader column={column} title="Articulo" />
     ),
     cell: ({ row }) => (
       <div className="flex flex-col">

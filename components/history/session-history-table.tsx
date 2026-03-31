@@ -117,7 +117,7 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
             />
             <div className="flex flex-wrap items-center gap-2">
               <MobileFacetedFilter
-                title="Item"
+                title="Articulo"
                 options={itemOptions.map((item) => ({
                   label: item,
                   value: item,
@@ -186,7 +186,7 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      Objetos registrados
+                      Articulos registrados
                     </span>
                     <Badge variant="outline" className="font-mono">
                       <Box className="mr-1 size-3" />

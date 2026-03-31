@@ -36,7 +36,7 @@ export default async function HistoryPage() {
               Mi historial
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Consulta tus sesiones de gabinete y reservas de items
+              Consulta tus sesiones de gabinete y reservas de articulos
             </p>
           </div>
           <RefreshButton />

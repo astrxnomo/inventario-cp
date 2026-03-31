@@ -79,15 +79,16 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
 
-        <DropdownMenuSeparator />
-
         {["admin", "root"].includes(userRole ?? "") && (
-          <DropdownMenuItem asChild className="cursor-pointer">
-            <Link href="/admin/dashboard" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Administración
-            </Link>
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link href="/admin/dashboard" className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Administración
+              </Link>
+            </DropdownMenuItem>
+          </>
         )}
 
         <DropdownMenuSeparator />

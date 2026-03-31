@@ -67,8 +67,8 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
     adminSessionColumns(setSelectedSession)
 
   columns.push({
-    id: "items",
-    accessorKey: "items",
+    id: "Articulo",
+    accessorKey: "Articulo",
     header: () => null,
     cell: () => null,
     enableHiding: true,
@@ -101,8 +101,8 @@ export function SessionsTable({ sessions }: SessionsTableProps) {
           },
 
           {
-            id: "items",
-            label: "Objeto",
+            id: "Articulo",
+            label: "Articulo",
             options: itemNameOptions,
           },
         ]}

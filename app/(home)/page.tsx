@@ -31,7 +31,7 @@ export default async function HomePage() {
       />
 
       <main id="main-content" className="pt-5 md:pt-10">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-6xl">
           <CabinetGrid initialCabinets={cabinets} userId={user.id} />
         </div>
       </main>

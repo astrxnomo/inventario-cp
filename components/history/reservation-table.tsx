@@ -139,7 +139,7 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
             />
             <div className="flex flex-wrap items-center gap-2">
               <MobileFacetedFilter
-                title="Item"
+                title="Articulo"
                 options={itemOptions.map((item) => ({
                   label: item,
                   value: item,

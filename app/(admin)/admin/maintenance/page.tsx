@@ -18,11 +18,9 @@ export default async function AdminMaintenancePage() {
             Mantenimiento
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {maintenanceItems.length} item
-            {maintenanceItems.length !== 1 ? "s" : ""} con mantenimiento
-            configurado · {history.length} registro
-            {history.length !== 1 ? "s" : ""} historico
-            {history.length !== 1 ? "s" : ""}
+            {maintenanceItems.length} articulo
+            {maintenanceItems.length !== 1 ? "s" : ""} con seguimiento de
+            mantenimiento
           </p>
         </div>
       </div>

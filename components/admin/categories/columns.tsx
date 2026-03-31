@@ -26,7 +26,7 @@ export const categoryColumns = [
   {
     accessorKey: "_count.inventory_items",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Objetos" />
+      <DataTableColumnHeader column={column} title="Articulos" />
     ),
     cell: ({ row }) => {
       const count = row.original._count?.inventory_items || 0

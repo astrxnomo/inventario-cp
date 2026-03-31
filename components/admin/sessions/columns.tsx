@@ -156,7 +156,7 @@ export const adminSessionColumns = (
   {
     accessorKey: "items_count",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Items" />
+      <DataTableColumnHeader column={column} title="Articulo" />
     ),
     cell: ({ row }) => {
       const count = row.getValue("items_count") as number

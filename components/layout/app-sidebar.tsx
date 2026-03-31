@@ -32,7 +32,7 @@ import { CentroLogo } from "../ui/centro-logo"
 const adminLinks = [{ href: "/admin/users", label: "Usuarios", icon: Users }]
 
 const inventoryLinks = [
-  { href: "/admin/inventory", label: "Objetos", icon: Box },
+  { href: "/admin/inventory", label: "Articulos", icon: Box },
   { href: "/admin/cabinets", label: "Gabinetes", icon: Archive },
   { href: "/admin/categories", label: "Categorías", icon: Tags },
   { href: "/admin/maintenance", label: "Mantenimiento", icon: Wrench },

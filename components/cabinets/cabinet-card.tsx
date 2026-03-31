@@ -16,7 +16,7 @@ function getZonePalette(location: string | null) {
   if (normalized.startsWith("A-")) {
     return {
       surfaceClass:
-        "bg-linear-to-br from-green-50 via-emerald-50 to-lime-50 text-emerald-950 hover:from-green-100 hover:via-emerald-50 hover:to-lime-100 dark:from-green-950/30 dark:via-emerald-950/30 dark:to-lime-950/30 dark:text-emerald-400 dark:hover:from-green-900/40 dark:hover:via-emerald-900/40 dark:hover:to-lime-900/40",
+        "bg-linear-to-br from-green-50 via-emerald-50 to-emerald-50 text-emerald-950 hover:from-green-100 hover:via-emerald-50 hover:to-emerald-100 dark:from-green-950/30 dark:via-emerald-950/30 dark:to-emerald-950/30 dark:text-emerald-400 dark:hover:from-green-900/40 dark:hover:via-emerald-900/40 dark:hover:to-emerald-900/40",
       metaClass: "text-emerald-700/70 dark:text-emerald-400/70",
       chipClass:
         "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400",
@@ -38,8 +38,8 @@ function getZonePalette(location: string | null) {
 
   return {
     surfaceClass:
-      "bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 text-slate-900 hover:from-gray-100 hover:via-slate-50 hover:to-gray-100 dark:from-gray-900/40 dark:via-slate-900/40 dark:to-gray-800/40 dark:text-slate-200 dark:hover:from-gray-800/50 dark:hover:via-slate-800/50 dark:hover:to-gray-700/50",
-    metaClass: "text-slate-400 dark:text-slate-500",
+      "bg-linear-to-br from-gray-50 via-gray-50 to-gray-100 text-slate-900 hover:from-gray-100 hover:via-gray-50 hover:to-gray-100 dark:from-gray-700/40 dark:via-gray-900/40 dark:to-gray-800/40 dark:text-gray-200 dark:hover:from-gray-800/50 dark:hover:via-gray-800/50 dark:hover:to-gray-700/50",
+    metaClass: "text-gray-400 dark:text-slate-500",
     chipClass:
       "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
   }
@@ -62,7 +62,7 @@ export function CabinetCard({
     <button
       onClick={() => onClick(cabinet)}
       className={cn(
-        "group relative w-full cursor-pointer border-r border-b border-gray-200 p-3.5 text-left transition-all duration-200 ease-out dark:border-gray-800",
+        "group relative w-full cursor-pointer rounded-xl p-3 text-left transition-all duration-200 ease-out",
         palette.surfaceClass,
         cabinet.status === "locked" && "opacity-50 grayscale-[0.15]",
         "hover:z-10 hover:brightness-[0.97] active:scale-[0.98] dark:hover:brightness-110",

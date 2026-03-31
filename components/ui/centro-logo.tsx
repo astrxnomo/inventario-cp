@@ -1,18 +1,5 @@
 import { cn } from "@/lib/utils"
 
-function AccentedE() {
-  return (
-    <span className="relative inline-block">
-      E
-      <span
-        className="pointer-events-none absolute right-0 left-0 bg-[#42C8E8]"
-        style={{ height: "0.08em", top: "0.44em" }}
-        aria-hidden="true"
-      />
-    </span>
-  )
-}
-
 interface CentroLogoProps {
   className?: string
 }

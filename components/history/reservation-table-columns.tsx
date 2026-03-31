@@ -56,7 +56,7 @@ export const reservationColumns = (
   {
     accessorKey: "item_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Item" />
+      <DataTableColumnHeader column={column} title="Articulo" />
     ),
     cell: ({ row }) => {
       return (

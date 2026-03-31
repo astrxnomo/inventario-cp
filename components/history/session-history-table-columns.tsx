@@ -108,8 +108,8 @@ export const sessionHistoryColumns = (
     },
   },
   {
-    id: "items",
-    header: "Objetos",
+    id: "Articulo",
+    header: "Articulos",
     cell: ({ row }) => {
       const items = row.original.items
       if (!items || items.length === 0) {
