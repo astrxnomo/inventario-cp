@@ -9,10 +9,10 @@ export async function setCabinetStatus(
 ): Promise<{ error?: string }> {
   try {
     const supabase = await assertAdmin()
-    const { error } = await supabase.from("cabinets").update({ status }).eq(
-      "id",
-      id,
-    )
+    const { error } = await supabase
+      .from("cabinets")
+      .update({ status })
+      .eq("id", id)
     if (error) return { error: error.message }
     revalidatePath("/admin/cabinets")
     return {}

@@ -34,7 +34,9 @@ export function DataTableSkeleton({
       <div className="space-y-2">
         <div
           className="hidden gap-2 rounded-lg border border-border/60 bg-background/60 p-2 sm:grid"
-          style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+          }}
         >
           {Array.from({ length: columnCount }).map((_, i) => (
             <Skeleton key={`head-${i}`} className="h-5 rounded-md" />
