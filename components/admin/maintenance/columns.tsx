@@ -14,6 +14,7 @@ import {
   CalendarClock,
   ClipboardClock,
   Clock4,
+  User,
   Wrench,
 } from "lucide-react"
 import { MaintenanceHistoryActions } from "./maintenance-history-actions"
@@ -29,7 +30,7 @@ export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
   {
     accessorKey: "item_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Item" />
+      <DataTableColumnHeader column={column} title="Articulo" />
     ),
     cell: ({ row }) => (
       <div className="flex items-center gap-2 font-medium">
@@ -70,21 +71,7 @@ export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
     },
     enableSorting: true,
   },
-  {
-    accessorKey: "created_at",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Agregado" />
-    ),
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"))
-      return (
-        <span className="text-muted-foreground">
-          {formatDate(date, "d MMM yyyy")}
-        </span>
-      )
-    },
-    enableSorting: true,
-  },
+
   {
     id: "actions",
     cell: ({ row, table }) => {
@@ -112,7 +99,7 @@ export const maintenanceHistoryColumns: ColumnDef<MaintenanceHistoryEntry>[] = [
   {
     accessorKey: "item_name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Item" />
+      <DataTableColumnHeader column={column} title="Articulo" />
     ),
     cell: ({ row }) => (
       <div className="flex items-center gap-2 font-medium">
@@ -123,30 +110,7 @@ export const maintenanceHistoryColumns: ColumnDef<MaintenanceHistoryEntry>[] = [
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableSorting: true,
   },
-  {
-    accessorKey: "cabinet_name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Gabinete" />
-    ),
-    cell: ({ row }) => (
-      <Badge variant="outline">
-        <Archive className="size-3" />
-        {(row.getValue("cabinet_name") as string) || "Sin gabinete"}
-      </Badge>
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "interval_days",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Intervalo" />
-    ),
-    cell: ({ row }) => {
-      const days = row.getValue("interval_days") as number
-      return <span className="text-muted-foreground">{days} dias</span>
-    },
-    enableSorting: true,
-  },
+
   {
     accessorKey: "date",
     header: ({ column }) => (
@@ -165,6 +129,22 @@ export const maintenanceHistoryColumns: ColumnDef<MaintenanceHistoryEntry>[] = [
               {formatDate(date, "h:mm a")}
             </p>
           </div>
+        </div>
+      )
+    },
+    enableSorting: true,
+  },
+  {
+    accessorKey: "registered_by_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Registrado por" />
+    ),
+    cell: ({ row }) => {
+      const name = row.getValue("registered_by_name") as string | null
+      return (
+        <div className="flex items-center gap-2">
+          <User className="size-4 text-muted-foreground" />
+          <span className="text-sm font-medium">{name || "Sin nombre"}</span>
         </div>
       )
     },
@@ -193,6 +173,7 @@ export const maintenanceHistoryColumns: ColumnDef<MaintenanceHistoryEntry>[] = [
     },
     enableSorting: true,
   },
+
   {
     id: "actions",
     cell: ({ row, table }) => {

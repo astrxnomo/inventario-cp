@@ -13,6 +13,7 @@ export async function getMaintenanceHistory(): Promise<
       `
       id,
       maintenance_id,
+      registered_by,
       created_at,
       date,
       items_maintenance!inner(
@@ -29,8 +30,27 @@ export async function getMaintenanceHistory(): Promise<
     console.error("Error fetching maintenance history:", error)
     return []
   }
+  const rows = data ?? []
 
-  return (data ?? []).map((row: any) => {
+  // Resolve registered_by ids to profile names
+  const registeredByIds = Array.from(
+    new Set(rows.map((r: any) => r.registered_by).filter(Boolean)),
+  )
+
+  const profilesMap = new Map<
+    string,
+    { full_name?: string | null; email?: string | null }
+  >()
+  if (registeredByIds.length > 0) {
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .in("id", registeredByIds)
+
+    ;(profilesData ?? []).forEach((p: any) => profilesMap.set(p.id, p))
+  }
+
+  return rows.map((row: any) => {
     const maintenance = Array.isArray(row.items_maintenance)
       ? row.items_maintenance[0]
       : row.items_maintenance
@@ -50,6 +70,10 @@ export async function getMaintenanceHistory(): Promise<
       item_name: item?.name ?? "Item sin nombre",
       cabinet_name: cabinet?.name ?? "Sin gabinete",
       interval_days: maintenance?.interval_days ?? 0,
+      registered_by: row.registered_by ?? null,
+      registered_by_name:
+        (row.registered_by && profilesMap.get(row.registered_by)?.full_name) ||
+        null,
     }
   })
 }

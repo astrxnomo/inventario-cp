@@ -75,29 +75,20 @@ export function MaintenanceTables({
   }, [history, historyDateFrom, historyDateTo])
 
   return (
-    <Tabs defaultValue="items" className="space-y-4">
+    <Tabs defaultValue="Articulo" className="space-y-4">
       <TabsList>
-        <TabsTrigger value="items">Items</TabsTrigger>
-        <TabsTrigger value="history">Historial</TabsTrigger>
+        <TabsTrigger value="Articulo">Articulos</TabsTrigger>
+        <TabsTrigger value="history">Historial de mantenimientos</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="items" className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight">
-            Items con mantenimiento
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Configura cada cuanto tiempo requiere mantenimiento cada item.
-          </p>
-        </div>
-
+      <TabsContent value="Articulo" className="space-y-4">
         <DataTable
           columns={maintenanceColumns}
           data={maintenanceItems}
           filterFields={[
             {
               id: "item_name",
-              label: "Item",
+              label: "Articulo",
               options: maintenanceOptions,
             },
             {
@@ -117,23 +108,13 @@ export function MaintenanceTables({
       </TabsContent>
 
       <TabsContent value="history" className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight">
-            Historial de mantenimiento
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Consulta registros y filtra por los items que requieren
-            mantenimiento.
-          </p>
-        </div>
-
         <DataTable
           columns={maintenanceHistoryColumns}
           data={filteredHistory}
           filterFields={[
             {
               id: "item_name",
-              label: "Item",
+              label: "Articulo",
               options: maintenanceOptions,
             },
           ]}

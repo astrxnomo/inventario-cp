@@ -28,6 +28,16 @@ export async function registerMaintenanceHistory(
       insertObj.date = new Date(parsed.data.date).toISOString()
     }
 
+    // set registered_by to current user id (admin performing the action)
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      insertObj.registered_by = user?.id ?? null
+    } catch {
+      insertObj.registered_by = null
+    }
+
     const { error } = await supabase
       .from("maintenance_history")
       .insert(insertObj)

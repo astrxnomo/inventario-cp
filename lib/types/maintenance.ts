@@ -16,4 +16,6 @@ export type MaintenanceHistoryEntry = {
   item_name: string
   cabinet_name?: string | null
   interval_days: number
+  registered_by?: string | null
+  registered_by_name?: string | null
 }

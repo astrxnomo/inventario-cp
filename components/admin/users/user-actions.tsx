@@ -1,19 +1,10 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+
 import { authorizeUser } from "@/lib/actions/users/authorize-user"
-import { deleteUser } from "@/lib/actions/users/delete-user"
-import { Check, Pencil, ShieldUser, Trash } from "lucide-react"
+
+import { Check, Pencil, ShieldUser } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { ChangeRoleDialog } from "./change-role-dialog"
@@ -29,28 +20,10 @@ export function UserActions({
   currentUserRole?: string
   currentUserId?: string
 }) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [,] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showRoleDialog, setShowRoleDialog] = useState(false)
-  const [isDeleting, startDelete] = useTransition()
   const [isAuthorizing, startAuthorize] = useTransition()
-
-  const handleDelete = () => {
-    startDelete(async () => {
-      try {
-        const result = await deleteUser(user.id)
-        if (result.error) {
-          toast.error(result.error)
-        } else {
-          toast.success("Usuario eliminado correctamente")
-          setShowDeleteDialog(false)
-        }
-      } catch (error) {
-        toast.error("Error al eliminar el usuario")
-        console.error(error)
-      }
-    })
-  }
 
   const handleAuthorize = () => {
     startAuthorize(async () => {
@@ -83,7 +56,7 @@ export function UserActions({
           <>
             <Button
               size="icon"
-              className="h-8 border-emerald-500/20 bg-emerald-500/10 px-2 text-emerald-700 text-muted-foreground hover:bg-emerald-500/20 dark:text-emerald-400"
+              className="h-8 border-emerald-500/20 bg-emerald-500/10 px-2 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400"
               onClick={handleAuthorize}
               disabled={isAuthorizing}
               aria-label="Autorizar"
@@ -117,16 +90,6 @@ export function UserActions({
         >
           <Pencil />
         </Button>
-
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 px-2 text-muted-foreground hover:text-destructive"
-          onClick={() => setShowDeleteDialog(true)}
-          aria-label="Eliminar"
-        >
-          <Trash />
-        </Button>
       </div>
 
       <EditUserDialog
@@ -140,32 +103,6 @@ export function UserActions({
         onOpenChange={setShowRoleDialog}
         user={user}
       />
-
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción eliminará al usuario &quot;
-              {user.full_name || user.email}
-              &quot;. Si el usuario tiene registros asociados, la eliminación
-              podría fallar.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={isDeleting}
-              onClick={handleDelete}
-            >
-              {isDeleting ? "Eliminando..." : "Eliminar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   )
 }

@@ -27,7 +27,7 @@ export function EditUserDialog({
   user,
 }: EditUserDialogProps) {
   const [name, setName] = useState(user.full_name || "")
-  const [email, setEmail] = useState(user.email || "")
+  const [email] = useState(user.email || "")
   const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = async () => {
@@ -53,10 +53,6 @@ export function EditUserDialog({
           <div className="space-y-2">
             <Label>Nombre</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Email</Label>
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
         </div>
 
