@@ -11,46 +11,64 @@ export default function Loading() {
         <Skeleton className="h-9 w-24 self-start rounded-xl sm:self-auto" />
       </div>
 
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div
-            key={`kpi-skeleton-${index}`}
-            className="rounded-xl border bg-card p-4 shadow-sm"
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-9 w-9 rounded-xl" />
-            </div>
-            <Skeleton className="mb-2 h-8 w-16" />
-            <Skeleton className="h-3 w-28" />
-          </div>
-        ))}
-      </section>
-
-      <section className="mt-6 grid gap-4 lg:grid-cols-2">
+      <section className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
           <div
-            key={`chart-skeleton-${index}`}
-            className="rounded-xl border bg-card shadow-sm"
+            key={`kpi-skeleton-${index}`}
+            className="rounded-xl border border-border/80 bg-card p-4 shadow-sm"
           >
-            <div className="space-y-2 border-b p-4">
-              <Skeleton className="h-5 w-44" />
-              <Skeleton className="h-4 w-64" />
+            <div className="mb-4 flex items-center justify-between">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-10 w-10 rounded-xl" />
             </div>
-            <div className="p-4">
-              <Skeleton className="h-[300px] w-full rounded-lg" />
-            </div>
+            <Skeleton className="mb-3 h-9 w-20" />
+            <Skeleton className="h-3 w-32" />
           </div>
         ))}
       </section>
 
-      <section className="mt-6 space-y-3 rounded-xl border bg-card p-4 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-24 rounded-md" />
-          <Skeleton className="h-8 w-24 rounded-md" />
-          <Skeleton className="h-8 w-24 rounded-md" />
+      <section className="mt-6">
+        <div className="mb-4 flex flex-wrap gap-2">
+          <Skeleton className="h-9 w-24 rounded-md" />
+          <Skeleton className="h-9 w-24 rounded-md" />
+          <Skeleton className="h-9 w-24 rounded-md" />
+          <Skeleton className="h-9 w-24 rounded-md" />
+          <Skeleton className="h-9 w-28 rounded-md" />
         </div>
-        <Skeleton className="h-[240px] w-full rounded-lg" />
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={`chart-skeleton-${index}`}
+              className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm"
+            >
+              <div className="space-y-2 border-b p-4">
+                <Skeleton className="h-5 w-44" />
+                <Skeleton className="h-4 w-64 max-w-[85%]" />
+              </div>
+              <div className="p-4">
+                <Skeleton className="h-[280px] w-full rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-6 grid gap-4 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={`summary-skeleton-${index}`}
+            className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm"
+          >
+            <div className="space-y-2 border-b p-4">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-48 max-w-[80%]" />
+            </div>
+            <div className="p-4">
+              <Skeleton className="h-[180px] w-full rounded-lg" />
+            </div>
+          </div>
+        ))}
       </section>
     </main>
   )
