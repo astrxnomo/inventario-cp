@@ -13,6 +13,7 @@ import {
   Archive,
   CalendarClock,
   ClipboardClock,
+  ClockAlert,
   Clock4,
   User,
   Wrench,
@@ -66,6 +67,59 @@ export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
         <Badge variant="outline" className="gap-1">
           <Clock4 className="size-3" />
           Cada {days} dia{days !== 1 ? "s" : ""}
+        </Badge>
+      )
+    },
+    enableSorting: true,
+  },
+  {
+    accessorKey: "days_until_next_maintenance",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Próximo mantenimiento" />
+    ),
+    cell: ({ row }) => {
+      const daysLeft = row.original.days_until_next_maintenance
+      const status = row.original.maintenance_status
+      const lastMaintenanceAt = row.original.last_maintenance_at
+
+      if (!lastMaintenanceAt) {
+        return (
+          <Badge variant="outline" className="gap-1 text-muted-foreground">
+            <ClipboardClock className="size-3" />
+            No ha registrado mantenimiento
+          </Badge>
+        )
+      }
+
+      if (status === "overdue") {
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <ClockAlert className="size-3" />
+            Vencido hace {Math.abs(daysLeft)} dia
+            {Math.abs(daysLeft) !== 1 ? "s" : ""}
+          </Badge>
+        )
+      }
+
+      if (status === "due_soon") {
+        return (
+          <Badge
+            variant="outline"
+            className="gap-1 border-amber-500 text-amber-700 dark:text-amber-400"
+          >
+            <ClockAlert className="size-3" />
+            En {daysLeft} dia{daysLeft !== 1 ? "s" : ""}
+          </Badge>
+        )
+      }
+
+      return (
+        <Badge
+          variant="outline"
+          className="gap-1 border-emerald-500 text-emerald-700 dark:text-emerald-400"
+        >
+          <Clock4 className="size-3" />
+          En {daysLeft} dia{daysLeft !== 1 ? "s" : ""}
         </Badge>
       )
     },

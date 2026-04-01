@@ -5,6 +5,10 @@ export type MaintenanceItem = {
   created_at: string
   item_name: string
   cabinet_name?: string | null
+  last_maintenance_at: string | null
+  next_maintenance_at: string
+  days_until_next_maintenance: number
+  maintenance_status: "overdue" | "due_soon" | "healthy"
 }
 
 export type MaintenanceHistoryEntry = {
