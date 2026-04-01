@@ -3,7 +3,7 @@ const nextConfig = {
   reactCompiler: true,
   logging: {
     browserToTerminal: true,
-  }
+  },
 }
 
 export default nextConfig
