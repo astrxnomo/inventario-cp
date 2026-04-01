@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button"
 
 import { authorizeUser } from "@/lib/actions/users/authorize-user"
+import { updateUserRole } from "@/lib/actions/users/update-role"
 
-import { Check, Pencil, ShieldUser } from "lucide-react"
+import { Ban, Check, Pencil, ShieldUser } from "lucide-react"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import { ChangeRoleDialog } from "./change-role-dialog"
@@ -24,6 +25,9 @@ export function UserActions({
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showRoleDialog, setShowRoleDialog] = useState(false)
   const [isAuthorizing, startAuthorize] = useTransition()
+  const [isRestricting, startRestrict] = useTransition()
+  const adminCannotManageTarget =
+    currentUserRole === "admin" && ["admin", "root"].includes(user.role)
 
   const handleAuthorize = () => {
     startAuthorize(async () => {
@@ -49,6 +53,22 @@ export function UserActions({
     setShowRoleDialog(true)
   }
 
+  const handleRestrict = () => {
+    startRestrict(async () => {
+      try {
+        const result = await updateUserRole(user.id, "denied")
+        if (result.error) {
+          toast.error(result.error)
+        } else {
+          toast.success("Usuario restringido correctamente")
+        }
+      } catch (error) {
+        toast.error("Error al restringir el usuario")
+        console.error(error)
+      }
+    })
+  }
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -63,17 +83,28 @@ export function UserActions({
             >
               <Check />
             </Button>
+            <Button
+              size="icon"
+              className="dark:text-destructive-400 h-8 border-destructive/20 bg-destructive/10 px-2 text-destructive hover:bg-destructive/20"
+              onClick={handleRestrict}
+              disabled={isRestricting}
+              aria-label="Restringir"
+            >
+              <Ban />
+            </Button>
             <hr className="mx-2 h-4 border-l border-muted" />
           </>
         )}
-        {currentUserRole === "root" && (
+        {["admin", "root"].includes(currentUserRole ?? "") && (
           <Button
             variant="outline"
             size="icon"
             className="h-8 px-2 text-muted-foreground hover:text-primary"
             onClick={handleOpenChangeRole}
             disabled={
-              user.id === currentUserId || user.user_id === currentUserId
+              user.id === currentUserId ||
+              user.user_id === currentUserId ||
+              adminCannotManageTarget
             }
             aria-label="Cambiar rol"
           >
@@ -102,6 +133,7 @@ export function UserActions({
         open={showRoleDialog}
         onOpenChange={setShowRoleDialog}
         user={user}
+        currentUserRole={currentUserRole}
       />
     </>
   )

@@ -7,14 +7,14 @@ export type UserProfile = {
   user_id: string
   email: string
   full_name: string | null
-  role: "pending" | "user" | "admin" | "root"
+  role: "pending" | "denied" | "user" | "admin" | "root"
   created_at: string
 }
 
 type ProfileRow = {
   id: string
   full_name: string | null
-  role: "pending" | "user" | "admin" | "root"
+  role: "pending" | "denied" | "user" | "admin" | "root"
   created_at: string
   email: string | null
 }

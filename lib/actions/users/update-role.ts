@@ -23,16 +23,52 @@ export async function updateUserRole(
     return { error: "No puedes cambiar tu propio rol." }
   }
 
-  // Verify caller has root privileges
-  const { data: isRoot, error: rootCheckError } = await supabase.rpc("is_root")
+  const { data: callerProfile, error: callerProfileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", currentUser.id)
+    .single<{ role: "root" | "admin" | "user" | "pending" | "denied" }>()
 
-  if (rootCheckError) {
-    console.error("Error checking root privileges:", rootCheckError)
-    return { error: "Error verificando permisos" }
+  if (callerProfileError || !callerProfile) {
+    return { error: "No se pudo verificar el rol del usuario actual." }
   }
 
-  if (!isRoot) {
-    return { error: "No autorizado. Se requieren permisos de Root." }
+  const callerRole = callerProfile.role
+
+  if (!["admin", "root"].includes(callerRole)) {
+    return {
+      error: "No autorizado. Se requieren permisos de administrador o root.",
+    }
+  }
+
+  const { data: targetProfile, error: targetProfileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", targetUserId)
+    .single<{ role: "root" | "admin" | "user" | "pending" | "denied" }>()
+
+  if (targetProfileError || !targetProfile) {
+    return { error: "No se pudo verificar el rol del usuario objetivo." }
+  }
+
+  if (
+    callerRole === "admin" &&
+    ["admin", "root"].includes(targetProfile.role)
+  ) {
+    return {
+      error:
+        "No autorizado: admin no puede cambiar el rol de usuarios admin o root.",
+    }
+  }
+
+  if (
+    callerRole === "admin" &&
+    !["user", "pending", "denied"].includes(newRole)
+  ) {
+    return {
+      error:
+        "No autorizado: admin solo puede asignar roles usuario, pendiente o restringido.",
+    }
   }
 
   const { error } = await supabase.rpc("change_user_role", {

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import type { Database } from "@/lib/supabase/types"
+
 import type { CabinetAdmin, CabinetItemAdmin } from "@/lib/types/cabinets"
 
 export type { CabinetAdmin, CabinetItemAdmin }

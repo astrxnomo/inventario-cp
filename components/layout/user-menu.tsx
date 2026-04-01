@@ -10,13 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { signOut } from "@/lib/actions/auth/sign-out"
-import { Clock, LogOut, Settings, Shield, User } from "lucide-react"
+import { Ban, Clock, LogOut, Settings, Shield, User } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "../ui/button"
 
 const ROLE_LABELS: Record<string, string> = {
   pending: "Pendiente",
+  denied: "Restringido",
   user: "Usuario",
   admin: "Admin",
   root: "Root",
@@ -27,6 +28,7 @@ const ROLE_BADGE_VARIANT: Record<
   "default" | "secondary" | "destructive" | "outline"
 > = {
   pending: "outline",
+  denied: "destructive",
   user: "secondary",
   admin: "default",
   root: "default",
@@ -83,7 +85,7 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href="/admin/dashboard" className="flex items-center gap-2">
+              <Link href="/admin" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
                 Administración
               </Link>
@@ -106,6 +108,13 @@ export function UserMenu({ userEmail, userRole, userName }: UserMenuProps) {
             Mi historial
           </Link>
         </DropdownMenuItem>
+
+        {userRole === "denied" && (
+          <DropdownMenuItem className="cursor-default text-destructive focus:text-destructive">
+            <Ban className="h-4 w-4" />
+            Cuenta restringida
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

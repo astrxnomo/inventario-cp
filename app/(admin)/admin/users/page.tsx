@@ -21,6 +21,7 @@ export default async function AdminUsersPage() {
   }
 
   const pending = users.filter((u) => u.role === "pending").length
+  const visibleUsers = users.filter((u) => u.role !== "denied")
 
   return (
     <main id="main-content" className="w-full px-4 py-6 lg:px-6">
@@ -30,8 +31,9 @@ export default async function AdminUsersPage() {
             Usuarios
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {users.length} usuario{users.length !== 1 ? "s" : ""} registrado
-            {users.length !== 1 ? "s" : ""}
+            {visibleUsers.length} usuario{visibleUsers.length !== 1 ? "s" : ""}{" "}
+            registrado
+            {visibleUsers.length !== 1 ? "s" : ""}
             {pending > 0 && (
               <span className="ml-2 font-medium text-amber-600">
                 · {pending} pendiente{pending !== 1 ? "s" : ""} de autorización

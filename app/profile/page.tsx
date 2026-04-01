@@ -9,7 +9,7 @@ export default async function ProfilePage() {
 
   const { user, profile } = current
 
-  if (!profile || profile.role === "pending") redirect("/")
+  if (!profile || ["pending", "denied"].includes(profile.role)) redirect("/")
 
   return (
     <div className="min-h-screen bg-background">

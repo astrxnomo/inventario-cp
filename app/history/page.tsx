@@ -14,7 +14,7 @@ export default async function HistoryPage() {
 
   const { user, profile } = current
 
-  if (!profile || profile.role === "pending") redirect("/")
+  if (!profile || ["pending", "denied"].includes(profile.role)) redirect("/")
 
   const [sessions, reservations] = await Promise.all([
     getUserSessionHistory(user.id),

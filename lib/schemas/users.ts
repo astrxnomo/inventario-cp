@@ -6,5 +6,5 @@ export const userProfileSchema = z.object({
   created_at: z.string().datetime(),
   full_name: z.string().nullable(),
   email: z.string().email(),
-  role: z.enum(["admin", "user", "pending", "root"]),
+  role: z.enum(["admin", "user", "pending", "denied", "root"]),
 })

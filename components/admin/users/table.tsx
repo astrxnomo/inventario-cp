@@ -4,6 +4,7 @@ import { useState } from "react"
 import { DataTable } from "@/components/tables/data-table"
 import { userColumns, userRoleOptions, type UserProfile } from "./columns"
 import { RefreshButton } from "@/components/ui/refresh-button"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 
 interface UsersTableProps {
   users: UserProfile[]
@@ -18,6 +19,9 @@ export function UsersTable({
 }: UsersTableProps) {
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: "role", value: ["pending", "user", "admin", "root"] },
+  ])
 
   const handleDateRangeChange = (from: string, to: string) => {
     setDateFrom(from)
@@ -55,6 +59,8 @@ export function UsersTable({
       onDateRangeChange={handleDateRangeChange}
       dateFrom={dateFrom}
       dateTo={dateTo}
+      columnFilters={columnFilters}
+      onColumnFiltersChange={setColumnFilters}
       pageSize={10}
       actions={
         <div className="flex items-center gap-2">

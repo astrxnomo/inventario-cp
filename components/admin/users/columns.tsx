@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { Clock, User } from "lucide-react"
+import { Ban, Clock, User } from "lucide-react"
 import { UserActions } from "./user-actions"
 
 export type UserProfile = {
@@ -12,7 +12,7 @@ export type UserProfile = {
   user_id: string
   email: string
   full_name: string | null
-  role: "pending" | "user" | "admin" | "root"
+  role: "pending" | "denied" | "user" | "admin" | "root"
   created_at: string
 }
 
@@ -21,6 +21,7 @@ export const userRoleOptions = [
   { label: "Admin", value: "admin", icon: User },
   { label: "Usuario", value: "user", icon: User },
   { label: "Pendiente", value: "pending", icon: Clock },
+  { label: "Restringido", value: "denied", icon: Ban },
 ]
 
 const roleColors = {
@@ -30,6 +31,7 @@ const roleColors = {
   user: "bg-primary/10 text-primary-700 dark:text-primary-400 border-primary/20",
   pending:
     "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
+  denied: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
 }
 
 const roleIcons = {
@@ -37,6 +39,7 @@ const roleIcons = {
   admin: User,
   user: User,
   pending: Clock,
+  denied: Ban,
 }
 
 const roleLabels = {
@@ -44,6 +47,7 @@ const roleLabels = {
   admin: "Administrador",
   user: "Usuario",
   pending: "Pendiente",
+  denied: "Restringido",
 }
 
 export const userColumns: ColumnDef<UserProfile>[] = [

@@ -24,12 +24,14 @@ interface ChangeRoleDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   user: UserProfile
+  currentUserRole?: string
 }
 
 export function ChangeRoleDialog({
   open,
   onOpenChange,
   user,
+  currentUserRole,
 }: ChangeRoleDialogProps) {
   const [role, setRole] = useState<string>(user.role)
   const [isSaving, setIsSaving] = useState(false)
@@ -52,6 +54,8 @@ export function ChangeRoleDialog({
     }
   }
 
+  const isRoot = currentUserRole === "root"
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -72,9 +76,10 @@ export function ChangeRoleDialog({
                 <SelectValue placeholder="Seleccionar rol" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
+                {isRoot && <SelectItem value="admin">Admin</SelectItem>}
                 <SelectItem value="user">Usuario</SelectItem>
                 <SelectItem value="pending">Pendiente</SelectItem>
+                <SelectItem value="denied">Restringido</SelectItem>
               </SelectContent>
             </Select>
           </div>
