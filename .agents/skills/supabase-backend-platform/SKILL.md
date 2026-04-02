@@ -1,11 +1,22 @@
 ---
 name: supabase-backend-platform
 description: Supabase open-source Firebase alternative with Postgres, authentication, storage, and realtime subscriptions. Use when building full-stack applications requiring integrated backend services with Next.js, React, or Vue.
-progressive_disclosure:
+metadata:
   entry_point:
-    summary: "Supabase open-source Firebase alternative with Postgres, authentication, storage, and realtime subscriptions. Use when building full-stack applications requiring integrated backend services with Ne..."
-    when_to_use: "When working with supabase-backend-platform or related functionality."
-    quick_start: "1. Review the core concepts below. 2. Apply patterns to your use case. 3. Follow best practices for implementation."
+    summary: "Supabase open-source Firebase alternative with Postgres, authentication, storage, and realtime subscriptions."
+    when_to_use:
+      - "When building full-stack applications"
+      - "When auth, database, and storage are required"
+      - "When realtime subscriptions are needed"
+      - "When using Next.js, React, or Vue"
+    quick_start:
+      - "Create project on Supabase console"
+      - "npm install @supabase/supabase-js"
+      - "Initialize client with URL and anon key"
+      - "Use auth, database, storage, realtime"
+    token_estimate:
+      entry: "80-95"
+      full: "5000-6000"
 ---
 # Supabase Backend Platform Skill
 
