@@ -2,9 +2,19 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { formatDate, isFuture, isPast } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertCircle, Box, Calendar, Check, Clock, User, X } from "lucide-react"
+import {
+  AlertCircle,
+  Box,
+  Calendar,
+  Check,
+  Clock,
+  User,
+  X,
+  XCircle,
+} from "lucide-react"
 
 export type AdminReservation = {
   id: string
@@ -173,5 +183,39 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
+  },
+  {
+    id: "actions",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Acciones" />
+    ),
+    cell: ({ row, table }) => {
+      const reservation = row.original
+
+      if (reservation.status !== "active") {
+        return <span className="text-xs text-muted-foreground">-</span>
+      }
+
+      return (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="border-destructive/30 text-destructive hover:text-destructive"
+          onClick={() => {
+            const onCancel = (
+              table.options.meta as {
+                onCancel?: (reservation: AdminReservation) => void
+              }
+            )?.onCancel
+            onCancel?.(reservation)
+          }}
+        >
+          <XCircle className="size-4" />
+          Cancelar
+        </Button>
+      )
+    },
+    enableSorting: false,
   },
 ]

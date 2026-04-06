@@ -1,21 +1,29 @@
 "use client"
 
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DataTable } from "@/components/tables/data-table"
-import { useState } from "react"
+import { cancelReservation } from "@/lib/actions/reservations/cancel-reservation"
+import { useRouter } from "next/navigation"
+import { useState, useTransition } from "react"
 import {
   adminReservationColumns,
   reservationStatusOptions,
   type AdminReservation,
 } from "./columns"
 import { RefreshButton } from "@/components/ui/refresh-button"
+import { toast } from "sonner"
 
 interface ReservationsTableProps {
   reservations: AdminReservation[]
 }
 
 export function ReservationsTable({ reservations }: ReservationsTableProps) {
+  const router = useRouter()
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
+  const [reservationToCancel, setReservationToCancel] =
+    useState<AdminReservation | null>(null)
+  const [isCancelling, startCancelling] = useTransition()
 
   const handleDateRangeChange = (from: string, to: string) => {
     setDateFrom(from)
@@ -35,26 +43,69 @@ export function ReservationsTable({ reservations }: ReservationsTableProps) {
     return true
   })
 
+  const handleCancel = () => {
+    if (!reservationToCancel) return
+
+    startCancelling(async () => {
+      try {
+        const result = await cancelReservation(reservationToCancel.id)
+        if (result.error) {
+          toast.error(result.error)
+          return
+        }
+
+        toast.success("Reserva cancelada correctamente")
+        setReservationToCancel(null)
+        router.refresh()
+      } catch (error) {
+        console.error(error)
+        toast.error("No se pudo cancelar la reserva")
+      }
+    })
+  }
+
   return (
-    <DataTable
-      columns={adminReservationColumns}
-      data={filteredReservations}
-      searchColumn="user_name"
-      searchPlaceholder="Buscar por usuario..."
-      filterFields={[
-        {
-          id: "status",
-          label: "Estado",
-          options: reservationStatusOptions,
-        },
-      ]}
-      showDateFilter
-      dateFilterColumn="starts_at"
-      onDateRangeChange={handleDateRangeChange}
-      dateFrom={dateFrom}
-      dateTo={dateTo}
-      pageSize={10}
-      actions={<RefreshButton />}
-    />
+    <>
+      <DataTable
+        columns={adminReservationColumns}
+        data={filteredReservations}
+        searchColumn="user_name"
+        searchPlaceholder="Buscar por usuario..."
+        filterFields={[
+          {
+            id: "status",
+            label: "Estado",
+            options: reservationStatusOptions,
+          },
+        ]}
+        showDateFilter
+        dateFilterColumn="starts_at"
+        onDateRangeChange={handleDateRangeChange}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        pageSize={10}
+        actions={<RefreshButton />}
+        meta={{
+          onCancel: (reservation: AdminReservation) =>
+            setReservationToCancel(reservation),
+        }}
+      />
+
+      <ConfirmDialog
+        open={!!reservationToCancel}
+        onOpenChange={(open) => !open && setReservationToCancel(null)}
+        title="Cancelar reserva"
+        description={
+          reservationToCancel
+            ? `Se cancelara la reserva de ${reservationToCancel.item_name ?? "este articulo"}. Esta accion no se puede deshacer.`
+            : undefined
+        }
+        confirmLabel="Si, cancelar"
+        cancelLabel="Mantener"
+        intent="destructive"
+        isLoading={isCancelling}
+        onConfirm={handleCancel}
+      />
+    </>
   )
 }
