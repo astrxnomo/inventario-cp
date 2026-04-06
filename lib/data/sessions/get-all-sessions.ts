@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export type SessionItem = {
   id: string
+  item_id: string
   name: string
   category?: string
   added_at: string
@@ -87,6 +88,7 @@ export async function getAllSessions(): Promise<AdminSession[]> {
     }
     itemsMap[sessionId].push({
       id: item.id,
+      item_id: (item.inventory_items as any)?.id,
       name: (item.inventory_items as any)?.name ?? "Sin nombre",
       added_at: item.created_at,
       action: item.action as "withdrawn" | "returned",

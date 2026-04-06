@@ -86,11 +86,10 @@ export function CabinetCard({
         </div>
 
         {/* Location code */}
-        <div>
-          <p className="font-mono text-2xl leading-none font-semibold tracking-[0.16em] text-current uppercase sm:text-2xl">
-            {locationLabel}
-          </p>
-        </div>
+
+        <p className="font-mono text-2xl leading-none font-semibold tracking-[0.16em] text-current uppercase sm:text-2xl">
+          {locationLabel}
+        </p>
 
         {/* Bottom meta */}
         <div className="space-y-1.5">
@@ -107,8 +106,7 @@ export function CabinetCard({
             {activeSessions > 0 && (
               <span className="flex items-center gap-1 font-medium text-amber-600 dark:text-amber-400">
                 <Users className="h-3 w-3" />
-                {activeSessions} sesión{activeSessions !== 1 ? "es" : ""} activa
-                {activeSessions !== 1 ? "s" : ""}
+                {activeSessions}
               </span>
             )}
           </div>

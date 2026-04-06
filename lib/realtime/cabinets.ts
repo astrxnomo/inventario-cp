@@ -22,7 +22,11 @@ export interface CabinetsGridCallbacks {
   onCabinetUpdate: (id: string, changes: Partial<CabinetRow>) => void
   onCabinetDelete: (id: string) => void
   /** Cabinet session opened (+1) or closed (-1) — update that cabinet's count inline */
-  onSessionChanged: (cabinetId: string, delta: 1 | -1) => void
+  onSessionChanged: (
+    cabinetId: string,
+    delta: 1 | -1,
+    isCurrentUserSession: boolean,
+  ) => void
   onInventoryInsert: (cabinetId: string, itemName: string) => void
   onInventoryDelete: (cabinetId: string, itemName: string) => void
   onConnected: (connected: boolean) => void
@@ -36,6 +40,7 @@ export interface CabinetsGridCallbacks {
  * Returns an unsubscribe function — call it inside `useEffect` cleanup.
  */
 export function subscribeCabinetsGrid(
+  currentUserId: string,
   callbacks: CabinetsGridCallbacks,
 ): () => void {
   const supabase = createClient()
@@ -55,9 +60,12 @@ export function subscribeCabinetsGrid(
           >
           callbacks.onInventoryInsert(row.cabinet_id, row.name)
         } else if (payload.table === "cabinet_sessions") {
-          const cabinetId = (payload.record as { cabinet_id: string })
-            .cabinet_id
-          callbacks.onSessionChanged(cabinetId, 1)
+          const row = payload.record as { cabinet_id: string; user_id: string }
+          callbacks.onSessionChanged(
+            row.cabinet_id,
+            1,
+            row.user_id === currentUserId,
+          )
         }
       },
     )
@@ -69,9 +77,19 @@ export function subscribeCabinetsGrid(
           const row = payload.record as unknown as CabinetRow
           callbacks.onCabinetUpdate(row.id, row)
         } else if (payload.table === "cabinet_sessions") {
-          const cabinetId = (payload.record as { cabinet_id: string })
-            .cabinet_id
-          callbacks.onSessionChanged(cabinetId, -1)
+          const row = payload.record as {
+            cabinet_id: string
+            user_id: string
+            closed_at: string | null
+          }
+          // Only decrement when a session transitions from open to closed.
+          if (row.closed_at) {
+            callbacks.onSessionChanged(
+              row.cabinet_id,
+              -1,
+              row.user_id === currentUserId,
+            )
+          }
         }
       },
     )
@@ -87,9 +105,15 @@ export function subscribeCabinetsGrid(
           if (old.cabinet_id)
             callbacks.onInventoryDelete(old.cabinet_id, old.name ?? "")
         } else if (payload.table === "cabinet_sessions") {
-          const cabinetId = (payload.old_record as { cabinet_id: string })
-            .cabinet_id
-          callbacks.onSessionChanged(cabinetId, -1)
+          const oldRow = payload.old_record as {
+            cabinet_id: string
+            user_id: string
+          }
+          callbacks.onSessionChanged(
+            oldRow.cabinet_id,
+            -1,
+            oldRow.user_id === currentUserId,
+          )
         }
       },
     )

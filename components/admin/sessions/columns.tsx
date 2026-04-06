@@ -17,6 +17,7 @@ import {
 
 export type SessionItem = {
   id: string
+  item_id: string
   name: string
   category?: string
   added_at: string

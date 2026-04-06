@@ -60,7 +60,7 @@ export default async function HomePage() {
     )
   }
 
-  const cabinets = await getCabinetsWithCounts()
+  const cabinets = await getCabinetsWithCounts(user.id)
 
   return (
     <div className="min-h-screen bg-background">

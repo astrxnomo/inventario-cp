@@ -18,6 +18,7 @@ export type Cabinet = CabinetRow & {
   _count: {
     inventory_items: number
     active_sessions: number
+    my_active_sessions: number
   }
   item_names: string[]
 }

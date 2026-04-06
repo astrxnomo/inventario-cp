@@ -16,15 +16,16 @@ interface CabinetGridProps {
 
 type StatusFilter = "all" | CabinetStatus
 
-const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
-  { id: "all", label: "Todos" },
-  { id: "available", label: "Disponibles" },
-  { id: "in_use", label: "En uso" },
-  { id: "locked", label: "Bloqueados" },
-]
+function normalizeForSearch(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+}
 
 export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
-  const { cabinets } = useCabinets(initialCabinets)
+  const { cabinets } = useCabinets(initialCabinets, userId)
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
@@ -41,31 +42,52 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
     setDrawerOpen(true)
   }
 
-  const q = search.toLowerCase().trim()
+  const q = normalizeForSearch(search)
   const hasQuery = q.length > 0
 
   const filteredWithMatches = React.useMemo(() => {
     return cabinets
       .filter((c) => {
+        const normalizedName = normalizeForSearch(c.name)
+        const normalizedLocation = normalizeForSearch(c.location ?? "")
         const matchSearch =
           !q ||
-          c.name.toLowerCase().includes(q) ||
-          (c.location ?? "").toLowerCase().includes(q) ||
-          c.item_names.some((n) => n.toLowerCase().includes(q))
+          normalizedName.includes(q) ||
+          normalizedLocation.includes(q) ||
+          c.item_names.some((n) => normalizeForSearch(n).includes(q))
         const matchStatus = statusFilter === "all" || c.status === statusFilter
         return matchSearch && matchStatus
       })
+      .sort((a, b) => a.name.localeCompare(b.name))
       .map((cabinet) => ({
         cabinet,
         matchedItems: q
           ? [
               ...new Set(
-                cabinet.item_names.filter((n) => n.toLowerCase().includes(q)),
+                cabinet.item_names.filter((n) =>
+                  normalizeForSearch(n).includes(q),
+                ),
               ),
             ]
           : undefined,
       }))
   }, [cabinets, q, statusFilter])
+
+  const myCabinets = React.useMemo(
+    () =>
+      filteredWithMatches.filter(
+        ({ cabinet }) => cabinet._count.my_active_sessions > 0,
+      ),
+    [filteredWithMatches],
+  )
+
+  const otherCabinets = React.useMemo(
+    () =>
+      filteredWithMatches.filter(
+        ({ cabinet }) => cabinet._count.my_active_sessions === 0,
+      ),
+    [filteredWithMatches],
+  )
 
   if (cabinets.length === 0) {
     return (
@@ -112,7 +134,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
               )}
             </div>
           </div>
-        </div>
+        </div>{" "}
       </div>
 
       {/* Grid */}
@@ -125,17 +147,59 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
           </div>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-2 p-2 sm:grid-cols-3 md:mt-12 lg:grid-cols-4 xl:grid-cols-5">
-          {filteredWithMatches.map(({ cabinet, matchedItems }) => {
-            return (
-              <CabinetCard
-                key={cabinet.id}
-                cabinet={cabinet}
-                onClick={handleCardClick}
-                matchedItems={matchedItems}
-              />
-            )
-          })}
+        <div className="mt-8 space-y-8 p-2 md:mt-12">
+          {myCabinets.length > 0 && (
+            <section className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <h2 className="text-sm font-semibold">
+                  Gabinetes que estas usando
+                </h2>
+                <span className="text-xs text-muted-foreground">
+                  {myCabinets.length}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {myCabinets.map(({ cabinet, matchedItems }) => (
+                  <CabinetCard
+                    key={cabinet.id}
+                    cabinet={cabinet}
+                    onClick={handleCardClick}
+                    matchedItems={matchedItems}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="space-y-3">
+            {myCabinets.length > 0 && (
+              <div className="flex items-center justify-between px-1">
+                <h2 className="text-sm font-semibold text-foreground">
+                  Resto de gabinetes
+                </h2>
+                <span className="text-xs text-muted-foreground">
+                  {otherCabinets.length}
+                </span>
+              </div>
+            )}
+
+            {otherCabinets.length === 0 ? (
+              <div className="rounded-lg border border-dashed px-3 py-6 text-center text-sm text-muted-foreground">
+                No hay otros gabinetes con ese criterio.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {otherCabinets.map(({ cabinet, matchedItems }) => (
+                  <CabinetCard
+                    key={cabinet.id}
+                    cabinet={cabinet}
+                    onClick={handleCardClick}
+                    matchedItems={matchedItems}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       )}
 

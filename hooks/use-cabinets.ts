@@ -4,18 +4,22 @@ import { subscribeCabinetsGrid } from "@/lib/realtime/cabinets"
 import type { Cabinet, CabinetRow } from "@/lib/types/cabinets"
 import { useEffect, useState } from "react"
 
-export function useCabinets(initialCabinets: Cabinet[]) {
+export function useCabinets(initialCabinets: Cabinet[], userId: string) {
   const [cabinets, setCabinets] = useState<Cabinet[]>(initialCabinets)
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = subscribeCabinetsGrid({
+    const unsubscribe = subscribeCabinetsGrid(userId, {
       onCabinetInsert(row: CabinetRow) {
         setCabinets((prev) => [
           ...prev,
           {
             ...row,
-            _count: { inventory_items: 0, active_sessions: 0 },
+            _count: {
+              inventory_items: 0,
+              active_sessions: 0,
+              my_active_sessions: 0,
+            },
             item_names: [],
           },
         ])
@@ -31,11 +35,18 @@ export function useCabinets(initialCabinets: Cabinet[]) {
         setCabinets((prev) => prev.filter((c) => c.id !== id))
       },
 
-      onSessionChanged(cabinetId: string, delta: 1 | -1) {
+      onSessionChanged(
+        cabinetId: string,
+        delta: 1 | -1,
+        isCurrentUserSession: boolean,
+      ) {
         setCabinets((prev) =>
           prev.map((c) => {
             if (c.id !== cabinetId) return c
             const activeSessions = Math.max(0, c._count.active_sessions + delta)
+            const myActiveSessions = isCurrentUserSession
+              ? Math.max(0, c._count.my_active_sessions + delta)
+              : c._count.my_active_sessions
             return {
               ...c,
               status:
@@ -44,7 +55,11 @@ export function useCabinets(initialCabinets: Cabinet[]) {
                     ? "in_use"
                     : "available"
                   : "locked",
-              _count: { ...c._count, active_sessions: activeSessions },
+              _count: {
+                ...c._count,
+                active_sessions: activeSessions,
+                my_active_sessions: myActiveSessions,
+              },
             }
           }),
         )
@@ -97,7 +112,7 @@ export function useCabinets(initialCabinets: Cabinet[]) {
     })
 
     return unsubscribe
-  }, [])
+  }, [userId])
 
   return { cabinets, isConnected }
 }
