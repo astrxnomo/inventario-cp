@@ -13,12 +13,15 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { toast } from "sonner"
 import { MobileFacetedFilter } from "./mobile-faceted-filter"
+import { MobilePagination } from "./mobile-pagination"
 import {
   getReservationStatusConfig,
   reservationColumns,
   reservationStatusOptions,
   type ItemReservation,
 } from "./reservation-table-columns"
+
+const MOBILE_ITEMS_PER_PAGE = 5
 
 interface ReservationTableProps {
   reservations: ItemReservation[]
@@ -34,6 +37,7 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
   const [reservationToCancel, setReservationToCancel] =
     useState<ItemReservation | null>(null)
   const [isCancelling, startCancelling] = useTransition()
+  const [currentPage, setCurrentPage] = useState(1)
 
   const handleDateRangeChange = (from: string, to: string) => {
     setDateFrom(from)
@@ -106,6 +110,19 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
     mobileItemFilters.length > 0 ||
     mobileCabinetFilters.length > 0
 
+  // Reset a página 1 cuando cambian los filtros
+  const resetToFirstPage = () => setCurrentPage(1)
+
+  // Paginación móvil
+  const totalPages = Math.ceil(
+    mobileFilteredReservations.length / MOBILE_ITEMS_PER_PAGE,
+  )
+  const paginatedReservations = useMemo(() => {
+    const startIndex = (currentPage - 1) * MOBILE_ITEMS_PER_PAGE
+    const endIndex = startIndex + MOBILE_ITEMS_PER_PAGE
+    return mobileFilteredReservations.slice(startIndex, endIndex)
+  }, [mobileFilteredReservations, currentPage])
+
   const handleCancel = () => {
     if (!reservationToCancel) return
 
@@ -134,7 +151,10 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
           <CardContent className="space-y-3 pt-6">
             <Input
               value={mobileSearch}
-              onChange={(event) => setMobileSearch(event.target.value)}
+              onChange={(event) => {
+                setMobileSearch(event.target.value)
+                resetToFirstPage()
+              }}
               placeholder="Buscar por item o gabinete..."
             />
             <div className="flex flex-wrap items-center gap-2">
@@ -145,7 +165,10 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
                   value: item,
                 }))}
                 selectedValues={mobileItemFilters}
-                onChange={setMobileItemFilters}
+                onChange={(values) => {
+                  setMobileItemFilters(values)
+                  resetToFirstPage()
+                }}
               />
               <MobileFacetedFilter
                 title="Gabinete"
@@ -154,7 +177,10 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
                   value: cabinet,
                 }))}
                 selectedValues={mobileCabinetFilters}
-                onChange={setMobileCabinetFilters}
+                onChange={(values) => {
+                  setMobileCabinetFilters(values)
+                  resetToFirstPage()
+                }}
               />
               {mobileHasFilters && (
                 <Button
@@ -165,6 +191,7 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
                     setMobileSearch("")
                     setMobileItemFilters([])
                     setMobileCabinetFilters([])
+                    resetToFirstPage()
                   }}
                 >
                   Limpiar
@@ -180,82 +207,92 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
             No hay reservas para mostrar.
           </div>
         ) : (
-          mobileFilteredReservations.map((reservation) => {
-            const startDate = new Date(reservation.starts_at)
-            const endDate = new Date(reservation.ends_at)
-            const startsSoon = isAfter(startDate, new Date())
-            const ended = isBefore(endDate, new Date())
-            const status = getReservationStatusConfig(reservation.status)
-            const StatusIcon = status.icon
+          <>
+            {paginatedReservations.map((reservation) => {
+              const startDate = new Date(reservation.starts_at)
+              const endDate = new Date(reservation.ends_at)
+              const startsSoon = isAfter(startDate, new Date())
+              const ended = isBefore(endDate, new Date())
+              const status = getReservationStatusConfig(reservation.status)
+              const StatusIcon = status.icon
 
-            return (
-              <Card key={reservation.id}>
-                <CardHeader className="space-y-3 pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base">
-                      {reservation.item_name}
-                    </CardTitle>
-                    <Badge
-                      variant={status.variant}
-                      className={`gap-1 ${status.className}`}
-                    >
-                      <StatusIcon className="size-3" />
-                      {status.label}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {reservation.item_category} · {reservation.cabinet_name}
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Cantidad</span>
-                    <Badge variant="secondary" className="font-mono">
-                      {reservation.quantity}
-                    </Badge>
-                  </div>
-
-                  <div className="rounded-md border bg-muted/20 p-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CalendarCheckIcon
-                        className={`size-4 ${startsSoon ? "text-emerald-600" : "text-muted-foreground"}`}
-                      />
-                      <span className="font-medium">
-                        Inicio: {formatDate(startDate, "d MMM yyyy, h:mm a")}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Clock
-                        className={`size-4 ${ended ? "text-destructive" : "text-muted-foreground"}`}
-                      />
-                      <span>
-                        Fin: {formatDate(endDate, "d MMM yyyy, h:mm a")}
-                      </span>
-                    </div>
-                  </div>
-
-                  {reservation.note && (
-                    <p className="text-sm text-muted-foreground">
-                      {reservation.note}
-                    </p>
-                  )}
-
-                  {reservation.can_cancel &&
-                    reservation.status === "active" && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full border-destructive/30 text-destructive hover:text-destructive"
-                        onClick={() => setReservationToCancel(reservation)}
+              return (
+                <Card key={reservation.id}>
+                  <CardHeader className="space-y-3 pb-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base">
+                        {reservation.item_name}
+                      </CardTitle>
+                      <Badge
+                        variant={status.variant}
+                        className={`gap-1 ${status.className}`}
                       >
-                        <XCircle className="size-4" />
-                        Cancelar reserva
-                      </Button>
+                        <StatusIcon className="size-3" />
+                        {status.label}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {reservation.item_category} · {reservation.cabinet_name}
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Cantidad</span>
+                      <Badge variant="secondary" className="font-mono">
+                        {reservation.quantity}
+                      </Badge>
+                    </div>
+
+                    <div className="rounded-md border bg-muted/20 p-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <CalendarCheckIcon
+                          className={`size-4 ${startsSoon ? "text-emerald-600" : "text-muted-foreground"}`}
+                        />
+                        <span className="font-medium">
+                          Inicio: {formatDate(startDate, "d MMM yyyy, h:mm a")}
+                        </span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-2">
+                        <Clock
+                          className={`size-4 ${ended ? "text-destructive" : "text-muted-foreground"}`}
+                        />
+                        <span>
+                          Fin: {formatDate(endDate, "d MMM yyyy, h:mm a")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {reservation.note && (
+                      <p className="text-sm text-muted-foreground">
+                        {reservation.note}
+                      </p>
                     )}
-                </CardContent>
-              </Card>
-            )
-          })
+
+                    {reservation.can_cancel &&
+                      reservation.status === "active" && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full border-destructive/30 text-destructive hover:text-destructive"
+                          onClick={() => setReservationToCancel(reservation)}
+                        >
+                          <XCircle className="size-4" />
+                          Cancelar reserva
+                        </Button>
+                      )}
+                  </CardContent>
+                </Card>
+              )
+            })}
+
+            <MobilePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={mobileFilteredReservations.length}
+              itemsPerPage={MOBILE_ITEMS_PER_PAGE}
+              onPageChange={setCurrentPage}
+            />
+          </>
         )}
       </div>
 

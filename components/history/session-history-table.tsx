@@ -9,11 +9,14 @@ import { cn, formatDate } from "@/lib/utils"
 import { Box, ClipboardClock, LockIcon, Unlock, X } from "lucide-react"
 import { useMemo, useState } from "react"
 import { MobileFacetedFilter } from "./mobile-faceted-filter"
+import { MobilePagination } from "./mobile-pagination"
 import {
   sessionHistoryColumns,
   type HistorySession,
 } from "./session-history-table-columns"
 import { SessionTimeline } from "./session-timeline"
+
+const MOBILE_ITEMS_PER_PAGE = 5
 
 interface SessionHistoryTableProps {
   sessions: HistorySession[]
@@ -28,6 +31,7 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
   const [selectedSession, setSelectedSession] = useState<HistorySession | null>(
     null,
   )
+  const [currentPage, setCurrentPage] = useState(1)
 
   const handleDateRangeChange = (from: string, to: string) => {
     setDateFrom(from)
@@ -105,6 +109,19 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
     mobileItemFilters.length > 0 ||
     mobileCabinetFilters.length > 0
 
+  // Reset a página 1 cuando cambian los filtros
+  const resetToFirstPage = () => setCurrentPage(1)
+
+  // Paginación móvil
+  const totalPages = Math.ceil(
+    mobileFilteredSessions.length / MOBILE_ITEMS_PER_PAGE,
+  )
+  const paginatedSessions = useMemo(() => {
+    const startIndex = (currentPage - 1) * MOBILE_ITEMS_PER_PAGE
+    const endIndex = startIndex + MOBILE_ITEMS_PER_PAGE
+    return mobileFilteredSessions.slice(startIndex, endIndex)
+  }, [mobileFilteredSessions, currentPage])
+
   return (
     <>
       <div className="space-y-4 md:hidden">
@@ -112,7 +129,10 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
           <CardContent className="space-y-3 pt-6">
             <Input
               value={mobileSearch}
-              onChange={(event) => setMobileSearch(event.target.value)}
+              onChange={(event) => {
+                setMobileSearch(event.target.value)
+                resetToFirstPage()
+              }}
               placeholder="Buscar por item o gabinete..."
             />
             <div className="flex flex-wrap items-center gap-2">
@@ -123,7 +143,10 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
                   value: item,
                 }))}
                 selectedValues={mobileItemFilters}
-                onChange={setMobileItemFilters}
+                onChange={(values) => {
+                  setMobileItemFilters(values)
+                  resetToFirstPage()
+                }}
               />
               <MobileFacetedFilter
                 title="Gabinete"
@@ -132,7 +155,10 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
                   value: cabinet,
                 }))}
                 selectedValues={mobileCabinetFilters}
-                onChange={setMobileCabinetFilters}
+                onChange={(values) => {
+                  setMobileCabinetFilters(values)
+                  resetToFirstPage()
+                }}
               />
               {mobileHasFilters && (
                 <Button
@@ -143,6 +169,7 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
                     setMobileSearch("")
                     setMobileItemFilters([])
                     setMobileCabinetFilters([])
+                    resetToFirstPage()
                   }}
                 >
                   Limpiar
@@ -158,69 +185,81 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
             No hay sesiones para mostrar.
           </div>
         ) : (
-          mobileFilteredSessions.map((session) => {
-            const openedAt = new Date(session.opened_at)
-            const closedAt = session.closed_at
-              ? new Date(session.closed_at)
-              : null
+          <>
+            {paginatedSessions.map((session) => {
+              const openedAt = new Date(session.opened_at)
+              const closedAt = session.closed_at
+                ? new Date(session.closed_at)
+                : null
 
-            return (
-              <Card key={session.id}>
-                <CardHeader className="space-y-3 pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base">
-                      {session.cabinet_name}
-                    </CardTitle>
-                    <Badge
-                      className={cn(
-                        closedAt
-                          ? "dark:text-destructive-400 bg-destructive text-destructive dark:bg-destructive/20"
-                          : "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
-                      )}
+              return (
+                <Card key={session.id}>
+                  <CardHeader className="space-y-3 pb-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base">
+                        {session.cabinet_name}
+                      </CardTitle>
+                      <Badge
+                        className={cn(
+                          closedAt
+                            ? "dark:text-destructive-400 bg-destructive text-destructive dark:bg-destructive/20"
+                            : "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
+                        )}
+                      >
+                        {closedAt ? <LockIcon /> : <Unlock />}
+                        {closedAt ? "Cerrada" : "En curso"}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        Articulos registrados
+                      </span>
+                      <Badge variant="outline" className="font-mono">
+                        <Box className="mr-1 size-3" />
+                        {session.items?.length ?? 0}
+                      </Badge>
+                    </div>
+                    <div className="rounded-md border bg-muted/20 p-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Unlock className="size-4 text-muted-foreground" />
+                        <span>
+                          {formatDate(openedAt, "d MMM yyyy, h:mm a")}
+                        </span>
+                      </div>
+                      <div className="mt-1 flex items-center gap-2">
+                        {closedAt && (
+                          <>
+                            <LockIcon className="size-4 text-muted-foreground" />
+                            {formatDate(closedAt, "d MMM yyyy, h:mm a")}
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setSelectedSession(session)}
                     >
-                      {closedAt ? <LockIcon /> : <Unlock />}
-                      {closedAt ? "Cerrada" : "En curso"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      Articulos registrados
-                    </span>
-                    <Badge variant="outline" className="font-mono">
-                      <Box className="mr-1 size-3" />
-                      {session.items?.length ?? 0}
-                    </Badge>
-                  </div>
-                  <div className="rounded-md border bg-muted/20 p-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Unlock className="size-4 text-muted-foreground" />
-                      <span>{formatDate(openedAt, "d MMM yyyy, h:mm a")}</span>
-                    </div>
-                    <div className="mt-1 flex items-center gap-2">
-                      {closedAt && (
-                        <>
-                          <LockIcon className="size-4 text-muted-foreground" />
-                          {formatDate(closedAt, "d MMM yyyy, h:mm a")}
-                        </>
-                      )}
-                    </div>
-                  </div>
+                      <ClipboardClock className="size-4" />
+                      Ver detalles
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
+            })}
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setSelectedSession(session)}
-                  >
-                    <ClipboardClock className="size-4" />
-                    Ver detalles
-                  </Button>
-                </CardContent>
-              </Card>
-            )
-          })
+            <MobilePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={mobileFilteredSessions.length}
+              itemsPerPage={MOBILE_ITEMS_PER_PAGE}
+              onPageChange={setCurrentPage}
+            />
+          </>
         )}
       </div>
 
