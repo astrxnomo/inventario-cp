@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertCircle, Archive, Lock, LogIn, Unlock, User } from "lucide-react"
+import { AlertCircle, Archive, ArchiveRestore, LogIn, User } from "lucide-react"
 
 export type AccessLog = {
   id: string
@@ -21,9 +21,9 @@ export type AccessLog = {
 
 export const actionOptions = [
   { label: "Apertura solicitada", value: "open_requested", icon: LogIn },
-  { label: "Apertura", value: "open_granted", icon: Unlock },
+  { label: "Apertura para sacar", value: "open_granted", icon: Archive },
   { label: "Apertura denegada", value: "open_denied", icon: AlertCircle },
-  { label: "Cerrado", value: "closed", icon: Lock },
+  { label: "Apertura para devolver", value: "closed", icon: ArchiveRestore },
 ]
 
 const actionColors = {
@@ -37,16 +37,16 @@ const actionColors = {
 
 const actionIcons = {
   open_requested: LogIn,
-  open_granted: Unlock,
+  open_granted: Archive,
   open_denied: AlertCircle,
-  closed: Lock,
+  closed: ArchiveRestore,
 }
 
 const actionLabels = {
   open_requested: "Apertura solicitada",
-  open_granted: "Apertura",
+  open_granted: "Apertura para sacar",
   open_denied: "Apertura denegada",
-  closed: "Cerrado",
+  closed: "Apertura para devolver",
 }
 
 export const activityLogColumns: ColumnDef<AccessLog>[] = [
@@ -111,7 +111,7 @@ export const activityLogColumns: ColumnDef<AccessLog>[] = [
       const Icon = actionIcons[action]
       return (
         <Badge variant="outline" className={actionColors[action]}>
-          <Icon className="mr-1 size-3" />
+          <Icon className="size-4" />
           {actionLabels[action]}
         </Badge>
       )

@@ -115,7 +115,7 @@ export function SessionTimeline({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="size-5" />
@@ -126,7 +126,7 @@ export function SessionTimeline({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto pr-1">
           {isActive && (
             <div className="rounded-lg border border-amber-500/30 bg-amber-50/60 p-3 dark:bg-amber-950/20">
               <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
@@ -267,14 +267,12 @@ export function SessionTimeline({
 
           {/* Cierre */}
           {closedAt ? (
-            <div className="flex items-center gap-3 border-l-4 border-secondary pl-4">
-              <div className="flex size-8 items-center justify-center rounded-full bg-secondary/50">
-                <Package className="size-4 text-secondary-foreground" />
+            <div className="flex items-center gap-3 border-l-4 border-primary pl-4">
+              <div className="flex size-8 items-center justify-center rounded-full bg-primary/20">
+                <Package className="size-4 text-primary" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-secondary-foreground">
-                  Sesión cerrada
-                </p>
+                <p className="font-medium text-primary">Sesión cerrada</p>
                 <p className="text-sm text-muted-foreground">
                   {formatDate(closedAt, "d MMM, h:mm a")}
                 </p>
