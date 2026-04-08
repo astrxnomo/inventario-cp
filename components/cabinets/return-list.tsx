@@ -63,7 +63,9 @@ export function ReturnList({
               className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm text-foreground">{item.name}</p>
+                <p className="text-sm wrap-break-word whitespace-normal text-foreground">
+                  {item.name}
+                </p>
                 <span className="mt-0.5 inline-block rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground uppercase">
                   {item.category}
                 </span>
