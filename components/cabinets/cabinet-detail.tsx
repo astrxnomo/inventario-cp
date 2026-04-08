@@ -5,8 +5,9 @@ import { Drawer, DrawerContent, DrawerFooter } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
 import { addItemsToSession } from "@/lib/actions/cabinets/add-to-session"
 import {
+  openCabinetForReturn,
   returnCabinetItems,
-  returnSingleItem,
+  returnSingleItemWithQuantity,
 } from "@/lib/actions/cabinets/return"
 import { withdrawCabinetItems } from "@/lib/actions/cabinets/withdraw"
 import { fetchCabinetDetailState } from "@/lib/data/cabinets/get-cabinet-detail"
@@ -55,6 +56,8 @@ export function CabinetDetail({
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [addingMore, setAddingMore] = useState(false)
   const [returningItemId, setReturningItemId] = useState<string | null>(null)
+  const [openingForReturn, setOpeningForReturn] = useState(false)
+  const [cabinetOpenedForReturn, setCabinetOpenedForReturn] = useState(false)
   const [reserveOpen, setReserveOpen] = useState(false)
 
   const isReturning = sessionId !== null
@@ -66,6 +69,8 @@ export function CabinetDetail({
       setSelections({})
       setSessionId(null)
       setAddingMore(false)
+      setOpeningForReturn(false)
+      setCabinetOpenedForReturn(false)
       setReserveOpen(false)
       return
     }
@@ -84,6 +89,7 @@ export function CabinetDetail({
       setSessionId(sessionId)
       setItems(items)
       setWithdrawnItems(withdrawnItems)
+      setCabinetOpenedForReturn(false)
     }
 
     load()
@@ -181,6 +187,11 @@ export function CabinetDetail({
   }
 
   async function handleReturn() {
+    if (!cabinetOpenedForReturn) {
+      toast.error("Primero abre el gabinete para devolver los artículos")
+      return
+    }
+
     setSubmitting(true)
     const result = await returnCabinetItems({ sessionId: sessionId!, userId })
     setSubmitting(false)
@@ -191,17 +202,24 @@ export function CabinetDetail({
     }
 
     setSessionId(null)
+    setCabinetOpenedForReturn(false)
     setWithdrawnItems([])
     const itemsResult = await getItemsByCabinet(cabinet!.id, userId)
     setItems(itemsResult.data ?? [])
   }
 
-  async function handleReturnSingle(itemId: string) {
+  async function handleReturnSingle(itemId: string, quantity: number) {
+    if (!cabinetOpenedForReturn) {
+      const opened = await handleOpenForReturn()
+      if (!opened) return
+    }
+
     setReturningItemId(itemId)
-    const result = await returnSingleItem({
+    const result = await returnSingleItemWithQuantity({
       sessionId: sessionId!,
       userId,
       itemId,
+      quantity,
     })
     setReturningItemId(null)
 
@@ -210,14 +228,54 @@ export function CabinetDetail({
       return
     }
 
-    const remaining = withdrawnItems.filter((i) => i.item_id !== itemId)
+    const remaining = withdrawnItems
+      .map((item) =>
+        item.item_id === itemId
+          ? { ...item, quantity: item.quantity - quantity }
+          : item,
+      )
+      .filter((item) => item.quantity > 0)
+
     setWithdrawnItems(remaining)
 
     if (remaining.length === 0) {
       setSessionId(null)
+      setCabinetOpenedForReturn(false)
       const itemsResult = await getItemsByCabinet(cabinet!.id, userId)
       setItems(itemsResult.data ?? [])
     }
+  }
+
+  async function handleOpenForReturn() {
+    if (!cabinet?.location) {
+      toast.error("La ubicación del gabinete es requerida para abrirlo")
+      return false
+    }
+
+    setOpeningForReturn(true)
+    const result = await openCabinetForReturn({
+      userId,
+      cabinetLocation: cabinet.location,
+    })
+    setOpeningForReturn(false)
+
+    if (result.error) {
+      toast.error(result.error)
+      return false
+    }
+
+    setCabinetOpenedForReturn(true)
+    toast.success("Gabinete abierto, ahora confirma la devolución")
+    return true
+  }
+
+  async function handleReturnAllFlow() {
+    if (!cabinetOpenedForReturn) {
+      await handleOpenForReturn()
+      return
+    }
+
+    await handleReturn()
   }
 
   function setQty(itemId: string, qty: number) {
@@ -269,6 +327,7 @@ export function CabinetDetail({
                     withdrawnItems={withdrawnItems}
                     onReturnItem={handleReturnSingle}
                     returningItemId={returningItemId}
+                    canConfirmReturn={cabinetOpenedForReturn}
                   />
                 ) : (
                   <BrowseList
@@ -317,31 +376,35 @@ export function CabinetDetail({
                   </Button>
                 </div>
               ) : isReturning ? (
-                <div className="flex flex-col gap-2">
+                <>
                   <Button
                     size="lg"
                     variant="outline"
-                    disabled={submitting || loading}
+                    disabled={submitting || loading || openingForReturn}
                     onClick={handleStartAddMore}
-                    className="h-11 w-full gap-2 font-semibold"
+                    className="h-10 w-full gap-2 border-border bg-background font-semibold text-foreground hover:bg-muted"
                   >
                     <Plus className="h-4 w-4" />
                     Retirar más artículos
                   </Button>
                   <Button
                     size="lg"
-                    disabled={submitting}
-                    onClick={handleReturn}
-                    className="h-12 w-full gap-2 bg-amber-500 text-base font-semibold text-white hover:bg-amber-600"
+                    disabled={submitting || loading || openingForReturn}
+                    onClick={handleReturnAllFlow}
+                    className="h-12 w-full gap-2 bg-warning text-base font-semibold hover:bg-warning/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
                   >
                     {submitting ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
+                    ) : cabinetOpenedForReturn ? (
                       <RotateCcw className="h-5 w-5" />
+                    ) : (
+                      <Unlock className="h-5 w-5" />
                     )}
-                    Devolver todo
+                    {cabinetOpenedForReturn
+                      ? "Devolver todo"
+                      : "Abrir gabinete"}
                   </Button>
-                </div>
+                </>
               ) : cabinet.status === "locked" ? (
                 <Button
                   size="lg"

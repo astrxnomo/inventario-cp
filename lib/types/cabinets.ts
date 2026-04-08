@@ -2,6 +2,7 @@ import {
   cabinetRowSchema,
   returnSchema,
   returnSingleItemSchema,
+  returnSingleItemWithQuantitySchema,
   withdrawSchema,
 } from "@/lib/schemas/cabinets"
 import type { Database, Tables } from "@/lib/supabase/types"
@@ -50,6 +51,10 @@ export type WithdrawPayload = z.infer<typeof withdrawSchema>
 export type ReturnPayload = z.infer<typeof returnSchema>
 
 export type ReturnSingleItemPayload = z.infer<typeof returnSingleItemSchema>
+
+export type ReturnSingleItemWithQuantityPayload = z.infer<
+  typeof returnSingleItemWithQuantitySchema
+>
 
 // ─── Generic typed action result ──────────────────────────────────────────────
 export type ActionResult<T> =
