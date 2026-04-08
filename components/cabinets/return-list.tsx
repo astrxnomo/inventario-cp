@@ -68,15 +68,15 @@ export function ReturnList({
                   {item.category}
                 </span>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-semibold text-foreground tabular-nums">
-                    {item.quantity}
-                  </span>
-                  <span className="text-[11px] text-muted-foreground">
-                    retirado{item.quantity !== 1 ? "s" : ""}
-                  </span>
-                </div>
+              <div className="flex items-center gap-1">
+                <span className="text-[11px] font-semibold text-foreground tabular-nums">
+                  {item.quantity}
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  retirado{item.quantity !== 1 ? "s" : ""}
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
                 <div className="flex items-center gap-1 rounded-md border border-border bg-muted/40 p-1">
                   <Button
                     size="icon-xs"
@@ -108,7 +108,6 @@ export function ReturnList({
                     <span className="text-xs font-semibold">+</span>
                   </Button>
                 </div>
-
                 {onReturnItem && (
                   <Button
                     size="lg"
@@ -117,7 +116,7 @@ export function ReturnList({
                       isReturning || !!returningItemId || !canConfirmReturn
                     }
                     onClick={() => onReturnItem(item.item_id, selectedQty)}
-                    className="h-7 gap-1 border-border px-2 text-xs font-medium text-foreground hover:bg-muted hover:text-foreground disabled:border-border disabled:text-muted-foreground"
+                    className="h-7 gap-1 border-border px-2 text-sm font-medium text-foreground hover:bg-muted hover:text-foreground disabled:border-border disabled:text-muted-foreground"
                   >
                     {isReturning ? (
                       <Loader2 className="h-3 w-3 animate-spin" />
