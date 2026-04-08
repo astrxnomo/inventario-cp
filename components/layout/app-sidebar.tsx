@@ -9,6 +9,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenuBadge,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -28,6 +29,7 @@ import {
 import { NavUser } from "./nav-user"
 import { Profile } from "@/lib/types/users"
 import { CentroLogo } from "../ui/centro-logo"
+import { cn } from "@/lib/utils"
 
 const adminLinks = [{ href: "/admin/users", label: "Usuarios", icon: Users }]
 
@@ -46,10 +48,36 @@ const logsLinks = [
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: Profile
+  pendingUsersCount?: number
+  maintenanceAttentionCount?: number
+  activeSessionsCount?: number
+  activeReservationsCount?: number
 }
 
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
+export function AppSidebar({
+  user,
+  pendingUsersCount = 0,
+  maintenanceAttentionCount = 0,
+  activeSessionsCount = 0,
+  activeReservationsCount = 0,
+  ...props
+}: AppSidebarProps) {
   const pathname = usePathname()
+
+  const renderBadge = (count: number, animate = false) => {
+    if (count <= 0) return null
+
+    return (
+      <SidebarMenuBadge
+        className={cn(
+          "me-3 rounded-sm bg-primary px-0.5 text-xs font-semibold text-primary-foreground",
+          animate && "animate-pulse",
+        )}
+      >
+        {count > 99 ? "99+" : count}
+      </SidebarMenuBadge>
+    )
+  }
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -87,6 +115,8 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                         <Icon className="size-4" />
                       </span>
                       <span>{link.label}</span>
+                      {link.href === "/admin/users" &&
+                        renderBadge(pendingUsersCount, true)}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -118,6 +148,8 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                             <Icon className="size-4" />
                           </span>
                           <span>{link.label}</span>
+                          {link.href === "/admin/maintenance" &&
+                            renderBadge(maintenanceAttentionCount)}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -149,6 +181,10 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                         <Icon className="size-4" />
                       </span>
                       <span>{link.label}</span>
+                      {link.href === "/admin/sessions" &&
+                        renderBadge(activeSessionsCount)}
+                      {link.href === "/admin/reservations" &&
+                        renderBadge(activeReservationsCount)}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -5,6 +5,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { getAdminSidebarCounts } from "@/lib/data/dashboard/get-admin-sidebar-counts"
+import { getPendingUsersCount } from "@/lib/data/users/get-pending-users-count"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
 import { redirect } from "next/navigation"
 
@@ -21,10 +23,21 @@ export default async function AdminLayout({
   }
 
   const { profile } = current
+  const [pendingUsersCount, sidebarCounts] = await Promise.all([
+    getPendingUsersCount(),
+    getAdminSidebarCounts(),
+  ])
 
   return (
     <SidebarProvider>
-      <AppSidebar variant="sidebar" user={profile} />
+      <AppSidebar
+        variant="sidebar"
+        user={profile}
+        pendingUsersCount={pendingUsersCount}
+        maintenanceAttentionCount={sidebarCounts.maintenanceAttention}
+        activeSessionsCount={sidebarCounts.activeSessions}
+        activeReservationsCount={sidebarCounts.activeReservations}
+      />
       <SidebarInset className="">
         <header className="sticky z-10 w-full border-b bg-background/80 backdrop-blur-sm standalone:fixed">
           <div className="flex h-14 items-center justify-between px-4 standalone:mt-8 md:standalone:mt-0">
