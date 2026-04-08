@@ -31,7 +31,7 @@ export function SessionTimeline({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="flex max-h-[85vh] flex-col sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="size-5" />
@@ -42,7 +42,7 @@ export function SessionTimeline({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto pr-1">
           <div className="flex items-center gap-3 border-l-4 border-primary pl-4">
             <div className="flex size-8 items-center justify-center rounded-full bg-primary/20">
               <Archive className="size-4 text-primary" />
