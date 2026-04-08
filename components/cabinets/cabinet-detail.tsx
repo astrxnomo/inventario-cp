@@ -265,7 +265,6 @@ export function CabinetDetail({
     }
 
     setCabinetOpenedForReturn(true)
-    toast.success("Gabinete abierto, ahora confirma la devolución")
     return true
   }
 
