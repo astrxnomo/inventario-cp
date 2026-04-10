@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Command,
   CommandEmpty,
@@ -57,6 +58,7 @@ export function MaintenanceItemActions({
   const [isDeleting, startDelete] = useTransition()
   const [selectedItemId, setSelectedItemId] = useState(item.item_id)
   const [intervalDays, setIntervalDays] = useState(String(item.interval_days))
+  const [description, setDescription] = useState(item.description ?? "")
   const [comboboxOpen, setComboboxOpen] = useState(false)
 
   const sortedItems = useMemo(
@@ -96,7 +98,7 @@ export function MaintenanceItemActions({
           <DialogHeader>
             <DialogTitle>Editar mantenimiento</DialogTitle>
             <DialogDescription>
-              Actualiza el item y el intervalo de mantenimiento.
+              Actualiza la configuracion del mantenimiento.
             </DialogDescription>
           </DialogHeader>
 
@@ -122,6 +124,7 @@ export function MaintenanceItemActions({
                 const res = await updateItemMaintenance(item.id, {
                   item_id: selectedItemId,
                   interval_days: parsedInterval,
+                  description,
                 })
 
                 if (res.error) {
@@ -144,6 +147,7 @@ export function MaintenanceItemActions({
                     variant="outline"
                     role="combobox"
                     aria-expanded={comboboxOpen}
+                    disabled={item.has_history}
                     className="w-full justify-between font-normal"
                   >
                     {selectedName}
@@ -186,6 +190,12 @@ export function MaintenanceItemActions({
                   </Command>
                 </PopoverContent>
               </Popover>
+              {item.has_history && (
+                <p className="text-xs text-muted-foreground">
+                  Este mantenimiento tiene historial. El item no se puede cambiar,
+                  pero puedes actualizar intervalo y descripcion.
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -200,6 +210,18 @@ export function MaintenanceItemActions({
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor={`description-${item.id}`}>Descripcion (opcional)</Label>
+              <Textarea
+                id={`description-${item.id}`}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={500}
+                placeholder="Detalles del mantenimiento, pasos o notas"
+                rows={3}
+              />
+            </div>
+
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
@@ -208,6 +230,7 @@ export function MaintenanceItemActions({
                   setShowEditDialog(false)
                   setSelectedItemId(item.item_id)
                   setIntervalDays(String(item.interval_days))
+                  setDescription(item.description ?? "")
                 }}
               >
                 Cancelar

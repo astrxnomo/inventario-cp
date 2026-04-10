@@ -2,6 +2,8 @@ export type MaintenanceItem = {
   id: string
   item_id: string
   interval_days: number
+  description: string | null
+  has_history: boolean
   created_at: string
   item_name: string
   cabinet_name?: string | null
@@ -18,6 +20,7 @@ export type MaintenanceHistoryEntry = {
   date: string
   item_id: string
   item_name: string
+  description: string | null
   cabinet_name?: string | null
   interval_days: number
   registered_by?: string | null

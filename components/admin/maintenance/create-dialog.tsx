@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Popover,
   PopoverContent,
@@ -179,6 +180,22 @@ export function CreateMaintenanceDialog({
             {state.fieldErrors?.interval_days && (
               <p className="text-sm text-destructive">
                 {state.fieldErrors.interval_days}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Descripcion (opcional)</Label>
+            <Textarea
+              id="description"
+              name="description"
+              maxLength={500}
+              placeholder="Detalles del mantenimiento, pasos o notas"
+              rows={3}
+            />
+            {state.fieldErrors?.description && (
+              <p className="text-sm text-destructive">
+                {state.fieldErrors.description}
               </p>
             )}
           </div>

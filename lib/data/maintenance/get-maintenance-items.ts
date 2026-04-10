@@ -12,6 +12,7 @@ export async function getMaintenanceItems(): Promise<MaintenanceItem[]> {
       id,
       item_id,
       interval_days,
+      description,
       created_at,
       inventory_items(id, name, cabinets(name))
     `,
@@ -27,6 +28,7 @@ export async function getMaintenanceItems(): Promise<MaintenanceItem[]> {
   const maintenanceIds = rows.map((row: any) => row.id)
 
   const lastMaintenanceMap = new Map<string, string>()
+  const hasHistorySet = new Set<string>()
   if (maintenanceIds.length > 0) {
     const { data: historyRows, error: historyError } = await supabase
       .from("maintenance_history")
@@ -38,6 +40,7 @@ export async function getMaintenanceItems(): Promise<MaintenanceItem[]> {
       console.error("Error fetching maintenance history summary:", historyError)
     } else {
       for (const historyRow of historyRows ?? []) {
+        hasHistorySet.add(historyRow.maintenance_id)
         if (!lastMaintenanceMap.has(historyRow.maintenance_id)) {
           lastMaintenanceMap.set(
             historyRow.maintenance_id,
@@ -79,6 +82,8 @@ export async function getMaintenanceItems(): Promise<MaintenanceItem[]> {
       id: row.id,
       item_id: row.item_id,
       interval_days: row.interval_days,
+      description: row.description ?? null,
+      has_history: hasHistorySet.has(row.id),
       created_at: row.created_at,
       item_name: item?.name ?? "Item sin nombre",
       cabinet_name: cabinet?.name ?? "Sin gabinete",

@@ -26,16 +26,6 @@ export function MaintenanceTables({
   const [historyDateFrom, setHistoryDateFrom] = useState("")
   const [historyDateTo, setHistoryDateTo] = useState("")
 
-  const maintenanceItemIds = useMemo(
-    () => new Set(maintenanceItems.map((item) => item.item_id)),
-    [maintenanceItems],
-  )
-
-  const availableItems = useMemo(
-    () => inventoryItems.filter((item) => !maintenanceItemIds.has(item.id)),
-    [inventoryItems, maintenanceItemIds],
-  )
-
   const maintenanceOptions = useMemo(
     () =>
       Array.from(new Set(maintenanceItems.map((item) => item.item_name)))
@@ -100,7 +90,7 @@ export function MaintenanceTables({
           actions={
             <div className="flex gap-2">
               <RefreshButton />
-              <CreateMaintenanceDialog availableItems={availableItems} />
+              <CreateMaintenanceDialog availableItems={inventoryItems} />
             </div>
           }
           meta={{ inventoryItems }}

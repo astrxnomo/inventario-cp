@@ -19,6 +19,7 @@ export async function getMaintenanceHistory(): Promise<
       items_maintenance!inner(
         id,
         interval_days,
+        description,
         item_id,
         inventory_items(id, name, cabinets(name))
       )
@@ -68,6 +69,7 @@ export async function getMaintenanceHistory(): Promise<
       date: row.date ?? row.created_at,
       item_id: maintenance?.item_id ?? "",
       item_name: item?.name ?? "Item sin nombre",
+      description: maintenance?.description ?? null,
       cabinet_name: cabinet?.name ?? "Sin gabinete",
       interval_days: maintenance?.interval_days ?? 0,
       registered_by: row.registered_by ?? null,

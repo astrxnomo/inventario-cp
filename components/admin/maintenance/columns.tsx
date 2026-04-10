@@ -2,6 +2,12 @@
 
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { formatDate } from "@/lib/utils"
 import type {
   MaintenanceHistoryEntry,
@@ -15,6 +21,7 @@ import {
   ClipboardClock,
   ClockAlert,
   Clock4,
+  FileText,
   User,
   Wrench,
 } from "lucide-react"
@@ -25,6 +32,52 @@ import { RegisterHistoryButton } from "./register-history-button"
 type MaintenanceTableMeta = {
   inventoryItems?: InventoryItem[]
   maintenanceItems?: MaintenanceItem[]
+}
+
+function DescriptionCell({ description }: { description: string | null }) {
+  if (!description) {
+    return (
+      <span className="text-sm text-muted-foreground">Sin descripcion</span>
+    )
+  }
+
+  const isLong = description.length > 100
+
+  if (!isLong) {
+    return (
+      <div className="flex max-w-[320px] items-start gap-2">
+        <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+        <span className="line-clamp-2 text-sm">{description}</span>
+      </div>
+    )
+  }
+
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className="flex max-w-[320px] items-start gap-2 text-left"
+            aria-label="Ver descripcion completa"
+          >
+            <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <span className="line-clamp-2 text-sm underline decoration-dotted underline-offset-2">
+              {description}
+            </span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent
+          className="max-w-sm text-sm leading-relaxed whitespace-pre-wrap"
+          side="top"
+          align="start"
+          sideOffset={8}
+        >
+          {description}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
@@ -43,6 +96,16 @@ export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
     enableSorting: true,
   },
   {
+    accessorKey: "description",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Descripcion" />
+    ),
+    cell: ({ row }) => (
+      <DescriptionCell description={row.original.description} />
+    ),
+    enableSorting: false,
+  },
+  {
     accessorKey: "cabinet_name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Gabinete" />
@@ -56,6 +119,7 @@ export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableSorting: true,
   },
+
   {
     accessorKey: "interval_days",
     header: ({ column }) => (
@@ -72,6 +136,7 @@ export const maintenanceColumns: ColumnDef<MaintenanceItem>[] = [
     },
     enableSorting: true,
   },
+
   {
     accessorKey: "days_until_next_maintenance",
     header: ({ column }) => (
@@ -163,6 +228,16 @@ export const maintenanceHistoryColumns: ColumnDef<MaintenanceHistoryEntry>[] = [
     ),
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableSorting: true,
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Descripcion" />
+    ),
+    cell: ({ row }) => (
+      <DescriptionCell description={row.original.description} />
+    ),
+    enableSorting: false,
   },
 
   {

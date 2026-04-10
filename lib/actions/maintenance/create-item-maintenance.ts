@@ -15,6 +15,7 @@ export async function createItemMaintenance(
   const parsed = itemMaintenanceSchema.safeParse({
     item_id: formData.get("item_id"),
     interval_days: formData.get("interval_days"),
+    description: formData.get("description"),
   })
 
   if (!parsed.success) {
@@ -24,21 +25,15 @@ export async function createItemMaintenance(
   try {
     const supabase = await assertAdmin()
 
-    const { data: existing, error: checkError } = await supabase
-      .from("items_maintenance")
-      .select("id")
-      .eq("item_id", parsed.data.item_id)
-      .maybeSingle()
-
-    if (checkError) return { error: checkError.message }
-    if (existing) {
-      return { error: "Este item ya esta registrado para mantenimiento" }
-    }
-
-    const { error } = await supabase.from("items_maintenance").insert({
+    const insertPayload = {
       item_id: parsed.data.item_id,
       interval_days: parsed.data.interval_days,
-    })
+      description: parsed.data.description ?? null,
+    }
+
+    const { error } = await supabase
+      .from("items_maintenance")
+      .insert(insertPayload)
 
     if (error) return { error: error.message }
 
