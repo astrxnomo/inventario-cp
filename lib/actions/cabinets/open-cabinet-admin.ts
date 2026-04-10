@@ -21,15 +21,19 @@ export async function openCabinetAsAdmin(
   try {
     await assertAdmin()
 
-    await openCabinetWithMqtt(process.env.HIVEMQTT_TOPIC ?? DEFAULT_MQTT_TOPIC, {
-      id: payload.cabinetLocation,
-      cabinetId: payload.cabinetId,
-      source: "admin_quick_open",
-    })
+    await openCabinetWithMqtt(
+      process.env.HIVEMQTT_TOPIC ?? DEFAULT_MQTT_TOPIC,
+      {
+        id: payload.cabinetLocation,
+        cabinetId: payload.cabinetId,
+        source: "admin_quick_open",
+      },
+    )
 
     return {}
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Error al abrir gabinete"
+    const message =
+      error instanceof Error ? error.message : "Error al abrir gabinete"
     return { error: message }
   }
 }
