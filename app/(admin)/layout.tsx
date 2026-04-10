@@ -9,6 +9,7 @@ import { getAdminSidebarCounts } from "@/lib/data/dashboard/get-admin-sidebar-co
 import { getPendingUsersCount } from "@/lib/data/users/get-pending-users-count"
 import { getCurrentUser } from "@/lib/supabase/get-current-user"
 import { redirect } from "next/navigation"
+import { ChatbotBubble } from "@/components/layout/chatbot-bubble"
 
 export default async function AdminLayout({
   children,
@@ -47,6 +48,7 @@ export default async function AdminLayout({
         </header>
         <div className="h-0 standalone:h-20" />
         {children}
+        <ChatbotBubble />
       </SidebarInset>
     </SidebarProvider>
   )
