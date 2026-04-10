@@ -11,6 +11,7 @@ import { Lock, Unlock } from "lucide-react"
 import { Cabinet } from "@/lib/types/cabinets"
 import { cabinetColumns, statusOptions } from "./columns"
 import { CreateCabinetDialog } from "./create-dialog"
+import { QuickOpenSection } from "./quick-open-section"
 import { Button } from "@/components/ui/button"
 
 interface CabinetsTableProps {
@@ -105,6 +106,7 @@ export function CabinetsTable({ data }: CabinetsTableProps) {
                 </>
               )}
             </Button>
+            <QuickOpenSection cabinets={data} />
             <CreateCabinetDialog />
           </div>
         }
