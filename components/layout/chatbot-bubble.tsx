@@ -20,7 +20,7 @@ export function ChatbotBubble() {
         aria-hidden={!isOpen}
       >
         <iframe
-          src="https://streamlit-delta.vercel.app/"
+          src="https://optistock-three.vercel.app/"
           className="h-[65vh] min-h-105 w-full bg-background"
           loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
