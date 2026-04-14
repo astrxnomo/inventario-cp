@@ -36,6 +36,8 @@ export const cabinetColumns: ColumnDef<Cabinet>[] = [
       )
     },
     enableSorting: true,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
   {
     accessorKey: "location",

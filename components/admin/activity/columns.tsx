@@ -87,6 +87,8 @@ export const activityLogColumns: ColumnDef<AccessLog>[] = [
       )
     },
     enableSorting: true,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
   {
     accessorKey: "cabinet_name",

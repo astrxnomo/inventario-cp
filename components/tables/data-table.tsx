@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { normalizeSearchText } from "@/lib/utils"
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 import type { DataTableFilterField } from "@/lib/types/data-table"
@@ -34,14 +35,11 @@ import type { DataTableFilterField } from "@/lib/types/data-table"
 const fuzzyFilter: FilterFn<any> = (row, columnId, value) => {
   const itemValue = row.getValue(columnId)
 
-  // Si no hay valor de búsqueda, mostrar todo
-  if (!value) return true
+  const searchValue = normalizeSearchText(value)
+  if (!searchValue) return true
 
-  // Convertir ambos a string y a minúsculas para comparación insensible a mayúsculas
-  const searchValue = String(value).toLowerCase().trim()
-  const cellValue = String(itemValue ?? "").toLowerCase()
+  const cellValue = normalizeSearchText(itemValue)
 
-  // Buscar si el texto de búsqueda está contenido en el valor de la celda
   return cellValue.includes(searchValue)
 }
 

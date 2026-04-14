@@ -72,6 +72,8 @@ export const adminReservationColumns: ColumnDef<AdminReservation>[] = [
       </div>
     ),
     enableSorting: true,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
   {
     accessorKey: "item_name",

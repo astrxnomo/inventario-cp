@@ -22,6 +22,8 @@ export const categoryColumns = [
       )
     },
     enableSorting: true,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
   {
     accessorKey: "_count.inventory_items",

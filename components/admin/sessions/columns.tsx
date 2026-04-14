@@ -61,6 +61,8 @@ export const adminSessionColumns = (
       </div>
     ),
     enableSorting: true,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
   {
     accessorKey: "cabinet_name",

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Input } from "@/components/ui/input"
 import { cancelReservation } from "@/lib/actions/reservations/cancel-reservation"
-import { formatDate, isAfter, isBefore } from "@/lib/utils"
+import { formatDate, isAfter, isBefore, normalizeSearchText } from "@/lib/utils"
 import { CalendarCheckIcon, Clock, X, XCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
@@ -80,13 +80,13 @@ export function ReservationTable({ reservations }: ReservationTableProps) {
   )
 
   const mobileFilteredReservations = useMemo(() => {
-    const search = mobileSearch.trim().toLowerCase()
+    const search = normalizeSearchText(mobileSearch)
 
     return filteredReservations.filter((reservation) => {
       const matchesSearch =
         !search ||
-        reservation.item_name.toLowerCase().includes(search) ||
-        reservation.cabinet_name.toLowerCase().includes(search)
+        normalizeSearchText(reservation.item_name).includes(search) ||
+        normalizeSearchText(reservation.cabinet_name).includes(search)
 
       const matchesItem =
         mobileItemFilters.length === 0 ||

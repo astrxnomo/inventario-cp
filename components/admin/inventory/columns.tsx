@@ -47,6 +47,8 @@ export const inventoryItemColumns: ColumnDef<InventoryItem>[] = [
       )
     },
     enableSorting: true,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
 
   {

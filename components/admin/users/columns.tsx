@@ -69,6 +69,8 @@ export const userColumns: ColumnDef<UserProfile>[] = [
     },
     enableSorting: true,
     enableHiding: false,
+    // @ts-expect-error - filterFn personalizado
+    filterFn: "fuzzy",
   },
   {
     accessorKey: "email",

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { cn, formatDate } from "@/lib/utils"
+import { cn, formatDate, normalizeSearchText } from "@/lib/utils"
 import { Box, ClipboardClock, LockIcon, Unlock, X } from "lucide-react"
 import { useMemo, useState } from "react"
 import { MobileFacetedFilter } from "./mobile-faceted-filter"
@@ -80,14 +80,14 @@ export function SessionHistoryTable({ sessions }: SessionHistoryTableProps) {
   )
 
   const mobileFilteredSessions = useMemo(() => {
-    const search = mobileSearch.trim().toLowerCase()
+    const search = normalizeSearchText(mobileSearch)
 
     return filteredSessions.filter((session) => {
       const matchesSearch =
         !search ||
-        session.cabinet_name.toLowerCase().includes(search) ||
+        normalizeSearchText(session.cabinet_name).includes(search) ||
         (session.items ?? []).some((item) =>
-          item.name.toLowerCase().includes(search),
+          normalizeSearchText(item.name).includes(search),
         )
 
       const matchesCabinet =
