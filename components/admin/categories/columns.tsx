@@ -22,7 +22,6 @@ export const categoryColumns = [
       )
     },
     enableSorting: true,
-    // @ts-expect-error - filterFn personalizado
     filterFn: "fuzzy",
   },
   {
