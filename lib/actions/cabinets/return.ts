@@ -210,12 +210,14 @@ export async function returnSingleItemWithQuantity(
     return { data: null, error: updateInventoryError.message }
   }
 
-  const { error: insertReturnError } = await supabase.from("session_items").insert({
-    session_id: input.sessionId,
-    item_id: input.itemId,
-    action: "returned",
-    quantity: input.quantity,
-  })
+  const { error: insertReturnError } = await supabase
+    .from("session_items")
+    .insert({
+      session_id: input.sessionId,
+      item_id: input.itemId,
+      action: "returned",
+      quantity: input.quantity,
+    })
 
   if (insertReturnError) {
     return { data: null, error: insertReturnError.message }

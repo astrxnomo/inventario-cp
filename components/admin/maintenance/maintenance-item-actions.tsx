@@ -192,8 +192,8 @@ export function MaintenanceItemActions({
               </Popover>
               {item.has_history && (
                 <p className="text-xs text-muted-foreground">
-                  Este mantenimiento tiene historial. El item no se puede cambiar,
-                  pero puedes actualizar intervalo y descripcion.
+                  Este mantenimiento tiene historial. El item no se puede
+                  cambiar, pero puedes actualizar intervalo y descripcion.
                 </p>
               )}
             </div>
@@ -211,7 +211,9 @@ export function MaintenanceItemActions({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={`description-${item.id}`}>Descripcion (opcional)</Label>
+              <Label htmlFor={`description-${item.id}`}>
+                Descripcion (opcional)
+              </Label>
               <Textarea
                 id={`description-${item.id}`}
                 value={description}

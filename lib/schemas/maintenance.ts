@@ -7,14 +7,11 @@ export const itemMaintenanceSchema = z.object({
     .int("El intervalo debe ser un numero entero")
     .min(1, "El intervalo minimo es 1 dia")
     .max(3650, "El intervalo maximo es 3650 dias"),
-  description: z.preprocess(
-    (value) => {
-      if (typeof value !== "string") return undefined
-      const trimmed = value.trim()
-      return trimmed.length > 0 ? trimmed : undefined
-    },
-    z.string().max(500, "La descripcion no debe exceder 500 caracteres").optional(),
-  ),
+  description: z.preprocess((value) => {
+    if (typeof value !== "string") return undefined
+    const trimmed = value.trim()
+    return trimmed.length > 0 ? trimmed : undefined
+  }, z.string().max(500, "La descripcion no debe exceder 500 caracteres").optional()),
 })
 
 export const maintenanceHistorySchema = z.object({

@@ -26,9 +26,11 @@ export const returnSingleItemSchema = z.object({
   itemId: z.string().uuid("ID de artículo inválido"),
 })
 
-export const returnSingleItemWithQuantitySchema = returnSingleItemSchema.extend({
-  quantity: z.number().int().min(1, "La cantidad debe ser al menos 1"),
-})
+export const returnSingleItemWithQuantitySchema = returnSingleItemSchema.extend(
+  {
+    quantity: z.number().int().min(1, "La cantidad debe ser al menos 1"),
+  },
+)
 
 export type WithdrawInput = z.infer<typeof withdrawSchema>
 export type ReturnInput = z.infer<typeof returnSchema>
